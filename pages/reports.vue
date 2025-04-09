@@ -4,6 +4,14 @@
       <h1 class="text-3xl font-bold text-gray-900">Assessment Reports</h1>
       <div class="flex gap-4 items-center">
         <button 
+          @click="refreshCandidates" 
+          class="text-indigo-600 hover:text-indigo-500 font-medium transition duration-150 flex items-center gap-1"
+          :disabled="isRefreshing"
+        >
+          <span v-if="isRefreshing">Refreshing...</span>
+          <span v-else>Refresh Candidates</span>
+        </button>
+        <button 
           @click="handleLogout" 
           class="text-indigo-600 hover:text-indigo-500 font-medium transition duration-150"
         >
@@ -119,6 +127,7 @@ definePageMeta({
 const router = useRouter()
 const { logout } = useAuthStore()
 const candidates = ref([])
+const isRefreshing = ref(false)
 
 // Fetch candidates from Supabase
 onMounted(async () => {
@@ -128,6 +137,18 @@ onMounted(async () => {
     console.error('Error fetching candidates:', error)
   }
 })
+
+// Refresh candidates function
+const refreshCandidates = async () => {
+  isRefreshing.value = true
+  try {
+    candidates.value = await candidateService.getCandidates()
+  } catch (error) {
+    console.error('Error refreshing candidates:', error)
+  } finally {
+    isRefreshing.value = false
+  }
+}
 
 // New reactive variables
 const customCandidateId = ref('')
