@@ -1,6 +1,21 @@
 import { useSupabase } from '../utils/supabase'
 
 export const candidateService = {
+  async deleteCandidate(candidateId: string) {
+    const supabase = useSupabase()
+    const { error } = await supabase
+      .from('candidate_info')
+      .delete()
+      .eq('candidate_id', candidateId)
+    
+    if (error) {
+      console.error('Error deleting candidate:', error)
+      throw error
+    }
+    
+    return true
+  },
+  
   async saveCandidate(candidateId: string, timezone: string, ip: string) {
     const supabase = useSupabase()
     

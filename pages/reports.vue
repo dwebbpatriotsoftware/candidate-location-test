@@ -69,10 +69,20 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Timezone
               </th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="candidate in candidates" :key="candidate.candidate_id" class="hover:bg-gray-50">
+<tr 
+  v-for="candidate in candidates" 
+  :key="candidate.candidate_id" 
+  :class="[
+    isApprovedTimezone(candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100',
+    'hover:bg-gray-50'
+  ]"
+>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 {{ candidate.candidate_id }}
               </td>
@@ -81,6 +91,14 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ candidate.candidate_timezone }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button 
+                  @click="deleteCandidate(candidate.candidate_id)" 
+                  class="text-red-600 hover:text-red-900"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           </tbody>
@@ -151,6 +169,48 @@ const copyUrl = () => {
       copyStatus.value = 'Copy URL'
     }, 2000)
   }
+}
+
+// Delete candidate function
+const deleteCandidate = async (id) => {
+  try {
+    await candidateService.deleteCandidate(id)
+    // Remove the deleted candidate from the local array
+    candidates.value = candidates.value.filter(c => c.candidate_id !== id)
+  } catch (error) {
+    console.error('Error deleting candidate:', error)
+    // Optionally add error handling UI feedback here
+  }
+}
+
+// List of approved timezones that should be colored green
+const approvedTimezones = [
+  'America/New_York',
+  'America/Chicago',
+  'America/Denver',
+  'America/Los_Angeles',
+  'America/Phoenix',
+  'America/Boise',
+  'America/Detroit',
+  'America/Indianapolis',
+  'America/Kentucky/Louisville',
+  'America/Kentucky/Monticello',
+  'America/Knox_IN',
+  'America/Marengo',
+  'America/Petersburg',
+  'America/Tell_City',
+  'America/Vevay',
+  'America/Vincennes',
+  'America/Winamac',
+  'America/Menominee',
+  'America/North_Dakota/Beulah',
+  'America/North_Dakota/Center',
+  'America/North_Dakota/New_Salem'
+]
+
+// Function to check if a timezone is in the approved list
+const isApprovedTimezone = (timezone) => {
+  return approvedTimezones.includes(timezone)
 }
 
 const handleLogout = () => {
