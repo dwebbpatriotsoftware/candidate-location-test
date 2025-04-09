@@ -1,19 +1,16 @@
 <template>
-  <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-sm">
-    <div class="p-6 border-b border-gray-200">
-      <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-gray-900">Assessment</h1>
-        <NuxtLink 
-          to="/" 
-          class="text-indigo-600 hover:text-indigo-500 font-medium transition duration-150"
-        >
-          Back to Reports
-        </NuxtLink>
-      </div>
-    </div>
-    
+  <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-sm">  
     <ClientOnly>
-      <form v-if="isLoaded" @submit.prevent="submitAssessment" class="p-6 space-y-6">
+      <div v-if="isSubmitted" class="p-6 space-y-4 text-center">
+        <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h2 class="text-xl font-semibold text-gray-900">Assessment Completed</h2>
+        <p class="text-gray-600">Thank you for completing the assessment.</p>
+      </div>
+      <form v-if="isLoaded && !isSubmitted" @submit.prevent="submitAssessment" class="p-6 space-y-6">
         <div class="space-y-6">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -77,6 +74,7 @@ const router = useRouter()
 
 const candidateId = route.query.candidateId
 const isLoaded = ref(false)
+const isSubmitted = ref(false)
 const answers = ref({
   q1: '',
   q2: '',
@@ -107,8 +105,8 @@ onMounted(async () => {
 
 const submitAssessment = async () => {
   try {
-    // Redirect to thank you page or home
-    router.push('/')
+    // Show confirmation instead of redirecting
+    isSubmitted.value = true
   } catch (error) {
     console.error('Error submitting assessment:', error)
   }
