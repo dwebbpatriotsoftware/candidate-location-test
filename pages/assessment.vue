@@ -95,7 +95,12 @@ onMounted(async () => {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
     // Store candidate info in Supabase
-    await candidateService.saveCandidate(candidateId, timezone, ipData.ip)
+    const result = await candidateService.saveCandidate(candidateId, timezone, ipData.ip)
+    
+    // If candidate already exists, show the completion message
+    if (result.isExisting) {
+      isSubmitted.value = true
+    }
     
     isLoaded.value = true
   } catch (error) {

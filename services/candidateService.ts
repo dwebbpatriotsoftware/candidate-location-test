@@ -4,23 +4,46 @@ export const candidateService = {
   async saveCandidate(candidateId: string, timezone: string, ip: string) {
     const supabase = useSupabase()
     
-    let error
-  
-      // Insert new record
-    const { error: insertError } = await supabase
+    // First check if candidate already exists
+    const { data: existingCandidate, error: selectError } = await supabase
+      .from('candidate_info')
+      .select('*')
+      .eq('candidate_id', candidateId)
+      .single()
+    
+    // If there was an error other than "no rows found", handle it
+    if (selectError && selectError.code !== 'PGRST116') {
+      console.error('Error checking for existing candidate:', selectError)
+      throw selectError
+    }
+    
+    // If candidate already exists, return with a flag indicating it's existing
+    if (existingCandidate) {
+      return { 
+        candidate: existingCandidate, 
+        isExisting: true 
+      }
+    }
+    
+    // Otherwise insert new record
+    const { data: newCandidate, error: insertError } = await supabase
       .from('candidate_info')
       .insert({
         candidate_id: candidateId,
         candidate_timezone: timezone,
         candidate_ip: ip
       })
-      
-      error = insertError
+      .select()
+      .single()
     
+    if (insertError) {
+      console.error('Error saving candidate:', insertError)
+      throw insertError
+    }
     
-    if (error) {
-      console.error('Error saving candidate:', error)
-      throw error
+    return { 
+      candidate: newCandidate, 
+      isExisting: false 
     }
   },
 
