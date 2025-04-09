@@ -38,16 +38,15 @@
           
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">
-              Question 3: What is your preferred work environment?
+              Question 3: Have you ever worked with event-driven microservices?
             </label>
             <select 
               v-model="answers.q3" 
               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" 
               required
             >
-              <option value="remote">Remote</option>
-              <option value="hybrid">Hybrid</option>
-              <option value="office">Office</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
             </select>
           </div>
         </div>
