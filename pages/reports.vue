@@ -89,7 +89,13 @@
                 {{ candidate.candidate_id }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ candidate.candidate_ip }}
+                <a 
+                  :href="`https://www.ipqualityscore.com/vpn-ip-address-check/lookup/${candidate.candidate_ip}`" 
+                  target="_blank" 
+                  class="text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  {{ candidate.candidate_ip }}
+                </a>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ candidate.candidate_timezone }}
