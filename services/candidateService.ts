@@ -26,12 +26,6 @@ export const candidateService = {
       .eq('candidate_id', candidateId)
       .single()
     
-    // If there was an error other than "no rows found", handle it
-    if (selectError && selectError.code !== 'PGRST116') {
-      console.error('Error checking for existing candidate:', selectError)
-      throw selectError
-    }
-    
     // If candidate already exists, return with a flag indicating it's existing
     if (existingCandidate) {
       return { 
