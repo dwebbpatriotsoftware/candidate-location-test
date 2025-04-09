@@ -77,10 +77,10 @@
                 {{ candidate.candidate_id }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ candidate.ip_address }}
+                {{ candidate.candidate_ip }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ candidate.timezone }}
+                {{ candidate.candidate_timezone }}
               </td>
             </tr>
           </tbody>
@@ -91,14 +91,25 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+import { candidateService } from '../services/candidateService'
+
 definePageMeta({
   middleware: ['auth']
 })
 
 const router = useRouter()
 const { logout } = useAuthStore()
-const { getAssessments } = useAssessmentStore()
-const candidates = computed(() => getAssessments())
+const candidates = ref([])
+
+// Fetch candidates from Supabase
+onMounted(async () => {
+  try {
+    candidates.value = await candidateService.getCandidates()
+  } catch (error) {
+    console.error('Error fetching candidates:', error)
+  }
+})
 
 // New reactive variables
 const customCandidateId = ref('')

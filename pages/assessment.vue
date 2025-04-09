@@ -70,10 +70,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { candidateService } from '../services/candidateService'
 
 const route = useRoute()
 const router = useRouter()
-const { addAssessment } = useAssessmentStore()
 
 const candidateId = route.query.candidateId
 const isLoaded = ref(false)
@@ -96,13 +96,8 @@ onMounted(async () => {
     // Get timezone
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
-    // Store candidate info
-    addAssessment({
-      candidate_id: candidateId,
-      ip_address: ipData.ip,
-      timezone: timezone,
-      answers: null
-    })
+    // Store candidate info in Supabase
+    await candidateService.saveCandidate(candidateId, timezone, ipData.ip)
     
     isLoaded.value = true
   } catch (error) {
@@ -112,10 +107,15 @@ onMounted(async () => {
 
 const submitAssessment = async () => {
   try {
-    addAssessment({
-      candidate_id: candidateId,
-      answers: answers.value
-    })
+    // Get the current data to preserve timezone and IP
+    const ipResponse = await fetch('https://api.ipify.org?format=json')
+    const ipData = await ipResponse.json()
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    
+    // Update candidate info in Supabase
+    await candidateService.saveCandidate(candidateId, timezone, ipData.ip)
+    
+    // TODO: Store answers in a separate table if needed
     
     // Redirect to thank you page or home
     router.push('/')
