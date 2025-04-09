@@ -43,14 +43,6 @@ const username = ref('')
 const password = ref('')
 const error = ref('')
 
-// const handleLogin = () => {
-//   if (login(username.value, password.value)) {
-//     router.push('/reports')
-//   } else {
-//     error.value = 'Invalid username or password'
-//   }
-// }
-
 const handleLogin = () => {
   if (login(username.value, password.value)) {
     try {

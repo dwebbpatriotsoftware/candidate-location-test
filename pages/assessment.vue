@@ -107,16 +107,6 @@ onMounted(async () => {
 
 const submitAssessment = async () => {
   try {
-    // Get the current data to preserve timezone and IP
-    const ipResponse = await fetch('https://api.ipify.org?format=json')
-    const ipData = await ipResponse.json()
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
-    
-    // Update candidate info in Supabase
-    await candidateService.saveCandidate(candidateId, timezone, ipData.ip)
-    
-    // TODO: Store answers in a separate table if needed
-    
     // Redirect to thank you page or home
     router.push('/')
   } catch (error) {
