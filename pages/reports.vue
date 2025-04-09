@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-6">
-    <div class="flex justify-between items-center">
+      <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold text-gray-900">Assessment Reports</h1>
-      <div class="flex gap-4 items-center">
+      <div class="flex items-center">
         <button 
           @click="refreshCandidates" 
           class="text-indigo-600 hover:text-indigo-500 font-medium transition duration-150 flex items-center gap-1"
@@ -10,12 +10,6 @@
         >
           <span v-if="isRefreshing">Refreshing...</span>
           <span v-else>Refresh Candidates</span>
-        </button>
-        <button 
-          @click="handleLogout" 
-          class="text-indigo-600 hover:text-indigo-500 font-medium transition duration-150"
-        >
-          Logout
         </button>
       </div>
     </div>
@@ -125,7 +119,6 @@ definePageMeta({
 })
 
 const router = useRouter()
-const { logout } = useAuthStore()
 const candidates = ref([])
 const isRefreshing = ref(false)
 
@@ -232,10 +225,5 @@ const approvedTimezones = [
 // Function to check if a timezone is in the approved list
 const isApprovedTimezone = (timezone) => {
   return approvedTimezones.includes(timezone)
-}
-
-const handleLogout = () => {
-  logout()
-  router.push('/login')
 }
 </script>

@@ -6,10 +6,11 @@
           <ClientOnly>
             <NuxtLink 
               v-if="!isAssessmentPage"
-              to="/login" 
+              :to="authLinkDestination" 
               class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-400 transition duration-150 shadow-sm"
+              @click.prevent="handleAuthClick"
             >
-              Login
+              {{ authLinkText }}
             </NuxtLink>
           </ClientOnly>
         </div>
@@ -23,9 +24,30 @@
 
 <script setup>
 const route = useRoute()
+const router = useRouter()
+const { isAuthenticated, logout } = useAuthStore()
 
 // Check if current page is the assessment page
 const isAssessmentPage = computed(() => {
   return route.path === '/assessment'
 })
+
+// Determine auth link text based on authentication state
+const authLinkText = computed(() => {
+  return isAuthenticated.value ? 'Logout' : 'Login'
+})
+
+// Determine auth link destination
+const authLinkDestination = computed(() => {
+  return isAuthenticated.value ? '#' : '/login'
+})
+
+// Handle auth link click
+const handleAuthClick = () => {
+  if (isAuthenticated.value) {
+    logout()
+    // Redirect to home page after logout
+    router.push('/')
+  }
+}
 </script>
