@@ -1,17 +1,22 @@
-import { supabase } from '../utils/supabase'
+import { useSupabase } from '../utils/supabase'
 
 export const candidateService = {
   async saveCandidate(candidateId: string, timezone: string, ip: string) {
-    const { error } = await supabase
+    const supabase = useSupabase()
+    
+    let error
+  
+      // Insert new record
+    const { error: insertError } = await supabase
       .from('candidate_info')
-      .upsert(
-        {
-          candidate_id: candidateId,
-          candidate_timezone: timezone,
-          candidate_ip: ip
-        },
-        { onConflict: 'candidate_id' }
-      )
+      .insert({
+        candidate_id: candidateId,
+        candidate_timezone: timezone,
+        candidate_ip: ip
+      })
+      
+      error = insertError
+    
     
     if (error) {
       console.error('Error saving candidate:', error)
@@ -20,6 +25,7 @@ export const candidateService = {
   },
 
   async getCandidates() {
+    const supabase = useSupabase()
     const { data, error } = await supabase
       .from('candidate_info')
       .select('*')

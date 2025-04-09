@@ -43,9 +43,29 @@ const username = ref('')
 const password = ref('')
 const error = ref('')
 
+// const handleLogin = () => {
+//   if (login(username.value, password.value)) {
+//     router.push('/reports')
+//   } else {
+//     error.value = 'Invalid username or password'
+//   }
+// }
+
 const handleLogin = () => {
   if (login(username.value, password.value)) {
-    router.push('/reports')
+    try {
+      // Use a more explicit navigation approach
+      const currentPath = window.location.pathname;
+      const basePath = currentPath.endsWith('/login') 
+        ? currentPath.substring(0, currentPath.length - 6) 
+        : '';
+      
+      router.push(`${basePath}/reports`)
+    } catch (e) {
+      console.error('Navigation error:', e);
+      // Fallback to simple string-based navigation
+      router.push('/reports');
+    }
   } else {
     error.value = 'Invalid username or password'
   }
