@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-[80vh] flex items-center justify-center">
-    <div class="max-w-md w-full bg-white rounded-lg shadow-sm p-8">
+    <div class="max-w-md w-full bg-white rounded-lg shadow p-4">
       <h2 class="text-2xl font-bold text-center mb-6">Login to Reports</h2>
-      <form @submit.prevent="handleLogin" class="space-y-4">
+      <form @submit.prevent="handleLogin" class="space-y-6">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
           <input
@@ -26,7 +26,7 @@
         </div>
         <button
           type="submit"
-          class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150 shadow-sm"
+          class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500 transition duration-150 shadow-sm"
         >
           Login
         </button>

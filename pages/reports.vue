@@ -69,27 +69,18 @@
                 IP Address
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                TIME ZONE
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 VPN
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 IP
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Timezone
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Alignment
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Question 1
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Question 2
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Question 3
-              </th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -147,6 +138,10 @@
                 </a>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                  :class="isApprovedTimezone(candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
+                {{ candidate.candidate_timezone }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                   :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
                 <select 
                   v-model="candidateVpnStatus[candidate.candidate_id]" 
@@ -167,10 +162,6 @@
                 </select>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  :class="isApprovedTimezone(candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
-                {{ candidate.candidate_timezone }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                   :class="{
                     'bg-green-100': candidateAlignment[candidate.candidate_id] === 'All Aligned',
                     'bg-yellow-100': ['TZ/App align', 'IP/App align', 'TZ/IP align'].includes(candidateAlignment[candidate.candidate_id]),
@@ -187,26 +178,113 @@
                   <option value="No Alignment">No Alignment</option>
                 </select>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ candidate.candidate_answers?.q1 || '-' }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ candidate.candidate_answers?.q2 || '-' }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ candidate.candidate_answers?.q3 || '-' }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <td class="px-6 py-4 text-sm font-medium text-left">
+                <div class="relative group inline-block mr-4">
+                  <button 
+                    @click="openQuestionsModal(candidate)"
+                    class="text-indigo-600 hover:text-indigo-500 focus:outline-none"
+                    aria-label="View candidate responses"
+                  >
+                    <!-- External link icon SVG -->
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      class="h-5 w-5" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        stroke-width="2" 
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
+                      />
+                    </svg>
+                  </button>
+                  <!-- Tooltip -->
+                  <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                    View Assessment Responses
+                  </span>
+                </div>
                 <button 
                   @click="deleteCandidate(candidate.candidate_id)" 
-                  class="text-red-600 hover:text-red-900"
+                  class="text-red-600 hover:text-red-900 focus:outline-none"
+                  aria-label="Delete candidate"
                 >
-                  Delete
+                  <!-- Trashcan icon SVG -->
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    class="h-5 w-5" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path 
+                      stroke-linecap="round" 
+                      stroke-linejoin="round" 
+                      stroke-width="2" 
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
+                    />
+                  </svg>
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+    
+    <!-- Questions Modal -->
+    <div v-if="showQuestionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-medium text-gray-900">
+              Candidate Responses
+            </h3>
+            <button 
+              @click="closeQuestionsModal" 
+              class="text-gray-400 hover:text-gray-500 focus:outline-none"
+            >
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div v-if="currentCandidateQuestions" class="space-y-4">
+            <div class="border-b pb-3">
+              <p class="text-sm font-medium text-gray-500">Candidate ID</p>
+              <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_id }}</p>
+            </div>
+            
+            <div class="space-y-4">
+              <div>
+                <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q1?.question || 'Question 1' }}</p>
+                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q1?.answer || 'No response' }}</p>
+              </div>
+              
+              <div>
+                <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q2?.question || 'Question 2' }}</p>
+                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q2?.answer || 'No response' }}</p>
+              </div>
+              
+              <div>
+                <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q3?.question || 'Question 3' }}</p>
+                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q3?.answer || 'No response' }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-6">
+            <button 
+              @click="closeQuestionsModal" 
+              class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500 transition duration-150"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -227,6 +305,20 @@ const isRefreshing = ref(false)
 const candidateVpnStatus = ref({})
 const candidateIpLocation = ref({})
 const candidateAlignment = ref({})
+
+// Modal state
+const showQuestionsModal = ref(false)
+const currentCandidateQuestions = ref(null)
+
+// Modal functions
+const openQuestionsModal = (candidate) => {
+  currentCandidateQuestions.value = candidate
+  showQuestionsModal.value = true
+}
+
+const closeQuestionsModal = () => {
+  showQuestionsModal.value = false
+}
 
 // Fetch candidates from Supabase
 onMounted(async () => {
