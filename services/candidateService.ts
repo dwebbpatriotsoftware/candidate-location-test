@@ -1,25 +1,25 @@
 import { useSupabase } from '../utils/supabase'
 
 export const candidateService = {
-  async updateCandidateAnswers(candidateId: string, answers: any) {
-    const supabase = useSupabase()
+  // async updateCandidateAnswers(candidateId: string, answers: any) {
+  //   const supabase = useSupabase()
     
-    const { data, error } = await supabase
-      .from('candidate_info')
-      .update({
-        candidate_answers: answers
-      })
-      .eq('candidate_id', candidateId)
-      .select()
-      .single()
+  //   const { data, error } = await supabase
+  //     .from('candidate_info')
+  //     .update({
+  //       candidate_answers: answers
+  //     })
+  //     .eq('candidate_id', candidateId)
+  //     .select()
+  //     .single()
     
-    if (error) {
-      console.error('Error updating candidate answers:', error)
-      throw error
-    }
+  //   if (error) {
+  //     console.error('Error updating candidate answers:', error)
+  //     throw error
+  //   }
     
-    return data
-  },
+  //   return data
+  // },
   
   async deleteCandidate(candidateId: string) {
     const supabase = useSupabase()
@@ -36,7 +36,7 @@ export const candidateService = {
     return true
   },
   
-  async saveCandidate(candidateId: string, timezone: string, ip: string) {
+  async saveCandidate(candidateId: string, timezone: string, ip: string, answers: any) {
     const supabase = useSupabase()
     
     // First check if candidate already exists
@@ -60,7 +60,8 @@ export const candidateService = {
       .insert({
         candidate_id: candidateId,
         candidate_timezone: timezone,
-        candidate_ip: ip
+        candidate_ip: ip,
+        candidate_answers: answers
       })
       .select()
       .single()
