@@ -86,14 +86,11 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-<tr 
-  v-for="candidate in candidates" 
-  :key="candidate.candidate_id" 
-  :class="[
-    isApprovedTimezone(candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100',
-    'hover:bg-gray-50'
-  ]"
->
+            <tr 
+              v-for="candidate in candidates" 
+              :key="candidate.candidate_id" 
+              class="hover:bg-gray-50"
+            > 
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 {{ candidate.candidate_id }}
               </td>
@@ -106,7 +103,8 @@
                   {{ candidate.candidate_ip }}
                 </a>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                  :class="isApprovedTimezone(candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
                 {{ candidate.candidate_timezone }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
