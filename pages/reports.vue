@@ -81,9 +81,6 @@
                 Alignment
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Questions
-              </th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -181,8 +178,8 @@
                   <option value="No Alignment">No Alignment</option>
                 </select>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <div class="relative group">
+              <td class="px-6 py-4 text-sm font-medium text-left">
+                <div class="relative group inline-block mr-4">
                   <button 
                     @click="openQuestionsModal(candidate)"
                     class="text-indigo-600 hover:text-indigo-500 focus:outline-none"
@@ -209,8 +206,6 @@
                     View Assessment Responses
                   </span>
                 </div>
-              </td>
-<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button 
                   @click="deleteCandidate(candidate.candidate_id)" 
                   class="text-red-600 hover:text-red-900 focus:outline-none"
