@@ -1,53 +1,53 @@
 <template>
-  <div class="max-w-2xl mx-auto">
-    <div class="mb-8 text-center">
-      <h1 class="text-3xl text-purple-800 mb-2">Making accounting and payroll fast, simple, and affordable for millions of American businesses and their accountants.</h1>
+  <div class="space-y-6">
+    <div class="flex justify-between items-center">
+      <h1 class="text-3xl font-bold text-gray-900">Making accounting and payroll fast, simple, and affordable for millions of American businesses and their accountants.</h1>
     </div>
     
-    <div class="bg-purple-50 rounded-lg shadow-sm p-8">  
+    <div class="bg-white rounded-lg shadow p-4">  
       <ClientOnly>
         <div v-if="isSubmitted" class="p-6 space-y-4 text-center">
-          <div class="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center">
-            <svg class="w-8 h-8 text-purple-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="mx-auto w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center">
+            <svg class="w-8 h-8 text-indigo-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
-          <h2 class="text-xl font-semibold text-purple-900">Assessment Completed</h2>
+          <h2 class="text-xl font-semibold text-gray-900">Assessment Completed</h2>
           <p class="text-gray-700">Thank you for completing the assessment.</p>
         </div>
-        <form v-if="isLoaded && !isSubmitted" @submit.prevent="submitAssessment" class="space-y-8">
+        <form v-if="isLoaded && !isSubmitted" @submit.prevent="submitAssessment" class="space-y-6">
           <div class="space-y-6">
             <div>
-              <label class="block text-sm font-bold text-purple-900 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Question 1: What is your favorite programming language?
               </label>
               <input 
                 v-model="answers.q1.answer" 
                 type="text" 
-                class="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" 
                 required
               >
             </div>
             
             <div>
-              <label class="block text-sm font-bold text-purple-900 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Question 2: How many years of experience do you have?
               </label>
               <input 
                 v-model="answers.q2.answer" 
                 type="number" 
-                class="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" 
                 required
               >
             </div>
             
             <div>
-              <label class="block text-sm font-bold text-purple-900 mb-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">
                 Question 3: Have you ever worked with event-driven microservices?
               </label>
               <select 
                 v-model="answers.q3.answer" 
-                class="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" 
                 required
               >
                 <option value="yes">Yes</option>
@@ -59,7 +59,7 @@
           <div class="pt-4">
             <button 
               type="submit" 
-              class="w-full bg-pink-600 text-white px-6 py-3 rounded-md hover:bg-pink-500 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 transition duration-150 shadow-sm font-bold"
+              class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500 transition duration-150 shadow-sm"
             >
               Submit Assessment
             </button>
