@@ -22,7 +22,7 @@
                 Question 1: What is your favorite programming language?
               </label>
               <input 
-                v-model="answers.q1" 
+                v-model="answers.q1.answer" 
                 type="text" 
                 class="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500" 
                 required
@@ -34,7 +34,7 @@
                 Question 2: How many years of experience do you have?
               </label>
               <input 
-                v-model="answers.q2" 
+                v-model="answers.q2.answer" 
                 type="number" 
                 class="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500" 
                 required
@@ -46,7 +46,7 @@
                 Question 3: Have you ever worked with event-driven microservices?
               </label>
               <select 
-                v-model="answers.q3" 
+                v-model="answers.q3.answer" 
                 class="w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:ring-purple-500 focus:border-purple-500" 
                 required
               >
@@ -80,10 +80,27 @@ const router = useRouter()
 const candidateId = route.query.candidateId
 const isLoaded = ref(false)
 const isSubmitted = ref(false)
+// Define the questions
+const questions = {
+  q1: "What is your favorite programming language?",
+  q2: "How many years of experience do you have?",
+  q3: "Have you ever worked with event-driven microservices?"
+}
+
+// Initialize answers with both questions and empty answers
 const answers = ref({
-  q1: '',
-  q2: '',
-  q3: ''
+  q1: {
+    question: questions.q1,
+    answer: ''
+  },
+  q2: {
+    question: questions.q2,
+    answer: ''
+  },
+  q3: {
+    question: questions.q3,
+    answer: ''
+  }
 })
 
 onMounted(async () => {

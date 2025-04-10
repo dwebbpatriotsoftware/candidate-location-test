@@ -229,18 +229,18 @@
             
             <div class="space-y-4">
               <div>
-                <p class="text-sm font-medium text-gray-500">Question 1</p>
-                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q1 || 'No response' }}</p>
+                <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q1?.question || 'Question 1' }}</p>
+                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q1?.answer || 'No response' }}</p>
               </div>
               
               <div>
-                <p class="text-sm font-medium text-gray-500">Question 2</p>
-                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q2 || 'No response' }}</p>
+                <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q2?.question || 'Question 2' }}</p>
+                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q2?.answer || 'No response' }}</p>
               </div>
               
               <div>
-                <p class="text-sm font-medium text-gray-500">Question 3</p>
-                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q3 || 'No response' }}</p>
+                <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q3?.question || 'Question 3' }}</p>
+                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q3?.answer || 'No response' }}</p>
               </div>
             </div>
           </div>
