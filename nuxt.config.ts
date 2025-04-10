@@ -4,6 +4,9 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: ['@nuxtjs/tailwindcss'],
   runtimeConfig: {
+    // Server-side environment variables (not exposed to the client)
+    authUsername: process.env.AUTH_USERNAME,
+    authPassword: process.env.AUTH_PASSWORD,
     public: {
       supabaseUrl: process.env.SUPABASE_URL || 'YOUR_SUPABASE_URL',
       supabaseKey: process.env.SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY'

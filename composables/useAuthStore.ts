@@ -3,12 +3,22 @@ import { ref } from 'vue'
 export const useAuthStore = () => {
   const isAuthenticated = useState('isAuthenticated', () => false)
 
-  const login = (username: string, password: string): boolean => {
-    if (username === 'admin_stuff' && password === 'you will never guess my password') {
-      isAuthenticated.value = true
-      return true
+  const login = async (username: string, password: string): Promise<boolean> => {
+    try {
+      const response = await $fetch('/api/auth/login', {
+        method: 'POST',
+        body: { username, password }
+      })
+      
+      if (response.success) {
+        isAuthenticated.value = true
+        return true
+      }
+      return false
+    } catch (error) {
+      console.error('Login error:', error)
+      return false
     }
-    return false
   }
 
   const logout = () => {

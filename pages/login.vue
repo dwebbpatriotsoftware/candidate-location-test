@@ -43,8 +43,8 @@ const username = ref('')
 const password = ref('')
 const error = ref('')
 
-const handleLogin = () => {
-  if (login(username.value, password.value)) {
+const handleLogin = async () => {
+  if (await login(username.value, password.value)) {
     try {
       // Use a more explicit navigation approach
       const currentPath = window.location.pathname;
