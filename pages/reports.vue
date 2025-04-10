@@ -69,13 +69,13 @@
                 IP Address
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                TIME ZONE
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 VPN
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 IP
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Timezone
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Alignment
@@ -138,6 +138,10 @@
                 </a>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                  :class="isApprovedTimezone(candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
+                {{ candidate.candidate_timezone }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                   :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
                 <select 
                   v-model="candidateVpnStatus[candidate.candidate_id]" 
@@ -156,10 +160,6 @@
                   <option value="US">US</option>
                   <option value="Not US">Not US</option>
                 </select>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  :class="isApprovedTimezone(candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
-                {{ candidate.candidate_timezone }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                   :class="{
