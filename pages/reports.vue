@@ -240,7 +240,7 @@
         <div class="p-6">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-medium text-gray-900">
-              Candidate Responses
+              More Information
             </h3>
             <button 
               @click="closeQuestionsModal" 
@@ -267,11 +267,6 @@
               <div>
                 <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q2?.question || 'Question 2' }}</p>
                 <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q2?.answer || 'No response' }}</p>
-              </div>
-              
-              <div>
-                <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q3?.question || 'Question 3' }}</p>
-                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q3?.answer || 'No response' }}</p>
               </div>
             </div>
           </div>
