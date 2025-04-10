@@ -81,13 +81,7 @@
                 Alignment
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Question 1
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Question 2
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Question 3
+                Questions
               </th>
               <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -188,13 +182,12 @@
                 </select>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ candidate.candidate_answers?.q1 || '-' }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ candidate.candidate_answers?.q2 || '-' }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ candidate.candidate_answers?.q3 || '-' }}
+                <button 
+                  @click="openQuestionsModal(candidate)"
+                  class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-2 py-1 rounded text-xs font-medium transition duration-150"
+                >
+                  View Responses
+                </button>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button 
@@ -207,6 +200,60 @@
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+    
+    <!-- Questions Modal -->
+    <div v-if="showQuestionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-medium text-gray-900">
+              Candidate Responses
+            </h3>
+            <button 
+              @click="closeQuestionsModal" 
+              class="text-gray-400 hover:text-gray-500 focus:outline-none"
+            >
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div v-if="currentCandidateQuestions" class="space-y-4">
+            <div class="border-b pb-3">
+              <p class="text-sm font-medium text-gray-500">Candidate ID</p>
+              <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_id }}</p>
+            </div>
+            
+            <div class="space-y-4">
+              <div>
+                <p class="text-sm font-medium text-gray-500">Question 1</p>
+                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q1 || 'No response' }}</p>
+              </div>
+              
+              <div>
+                <p class="text-sm font-medium text-gray-500">Question 2</p>
+                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q2 || 'No response' }}</p>
+              </div>
+              
+              <div>
+                <p class="text-sm font-medium text-gray-500">Question 3</p>
+                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q3 || 'No response' }}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-6">
+            <button 
+              @click="closeQuestionsModal" 
+              class="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-500 transition duration-150"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -227,6 +274,20 @@ const isRefreshing = ref(false)
 const candidateVpnStatus = ref({})
 const candidateIpLocation = ref({})
 const candidateAlignment = ref({})
+
+// Modal state
+const showQuestionsModal = ref(false)
+const currentCandidateQuestions = ref(null)
+
+// Modal functions
+const openQuestionsModal = (candidate) => {
+  currentCandidateQuestions.value = candidate
+  showQuestionsModal.value = true
+}
+
+const closeQuestionsModal = () => {
+  showQuestionsModal.value = false
+}
 
 // Fetch candidates from Supabase
 onMounted(async () => {
