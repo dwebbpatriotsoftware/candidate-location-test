@@ -116,7 +116,10 @@ onMounted(async () => {
 
 const submitAssessment = async () => {
   try {
-    // Show confirmation instead of redirecting
+    // Save the answers to Supabase
+    await candidateService.updateCandidateAnswers(candidateId, answers.value)
+    
+    // Show confirmation
     isSubmitted.value = true
   } catch (error) {
     console.error('Error submitting assessment:', error)

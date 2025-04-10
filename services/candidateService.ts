@@ -1,6 +1,26 @@
 import { useSupabase } from '../utils/supabase'
 
 export const candidateService = {
+  async updateCandidateAnswers(candidateId: string, answers: any) {
+    const supabase = useSupabase()
+    
+    const { data, error } = await supabase
+      .from('candidate_info')
+      .update({
+        candidate_answers: answers
+      })
+      .eq('candidate_id', candidateId)
+      .select()
+      .single()
+    
+    if (error) {
+      console.error('Error updating candidate answers:', error)
+      throw error
+    }
+    
+    return data
+  },
+  
   async deleteCandidate(candidateId: string) {
     const supabase = useSupabase()
     const { error } = await supabase
