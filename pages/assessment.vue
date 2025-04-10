@@ -12,8 +12,8 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
           </div>
-          <h2 class="text-xl font-semibold text-purple-900">Assessment Completed</h2>
-          <p class="text-gray-700">Thank you for completing the assessment.</p>
+          <h2 class="text-xl font-semibold text-purple-900">Completed</h2>
+          <p class="text-gray-700">Thank you for acknowledging.</p>
         </div>
         <form v-if="isLoaded && !isSubmitted" @submit.prevent="submitAssessment" class="space-y-8">
           <div class="space-y-6">
