@@ -3,73 +3,10 @@
 ## Eligibility Determination Workflow
 
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Risk Matrix</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            max-width: 800px;
-            margin: 20px 0;
-            font-family: Arial, sans-serif;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: center;
-        }
-        th {
-            background-color:#600db1;
-            font-weight: bold;
-        }
-        .exit {
-            background-color:rgb(243, 152, 159);
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .caution {
-            background-color:rgb(245, 224, 155);
-            color: #856404;
-            border: 1px solid #ffeeba;
-        }
-        .proceed {
-            background-color:rgb(179, 233, 192);
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .header-cell {
-            background-color: #f5f5f5;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <h3>Risk Matrix</h3>
-    <table>
-        <tr>
-            <th></th>
-            <th>VPN</th>
-            <th>!VPN && IP not US</th>
-            <th>!VPN && IP is US</th>
-        </tr>
-        <tr>
-            <th>Time Zone != US</th>
-            <td class="exit">Exit</td>
-            <td class="exit">Exit</td>
-            <td class="caution">Caution</td>
-        </tr>
-        <tr>
-            <th>Time Zone == US</th>
-            <td class="caution">Caution</td>
-            <td class="caution">Caution</td>
-            <td class="proceed">Proceed</td>
-        </tr>
-    </table>
-</body>
-</html>
+| | VPN | !VPN && IP not US | !VPN && IP is US |
+|------------------|-----|-------------------|------------------|
+| Time Zone != US | <span style="color:red">Exit</span> | <span style="color:red">Exit</span> | <span style="color:orange">Caution</span> |
+| Time Zone == US | <span style="color:orange">Caution</span> | <span style="color:orange">Caution</span> | <span style="color:green">Proceed</span> |
 
 ### Decision Flow Diagram
 
