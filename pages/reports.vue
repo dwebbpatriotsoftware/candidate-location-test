@@ -240,6 +240,9 @@ const copyUrl = () => {
     setTimeout(() => {
       copyStatus.value = 'Copy URL'
     }, 2000)
+
+    // Clear the customCandidateId field
+    customCandidateId.value = ''
   }
 }
 
