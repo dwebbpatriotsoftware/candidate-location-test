@@ -182,19 +182,55 @@
                 </select>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <button 
-                  @click="openQuestionsModal(candidate)"
-                  class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 px-2 py-1 rounded text-xs font-medium transition duration-150"
-                >
-                  View Responses
-                </button>
+                <div class="relative group">
+                  <button 
+                    @click="openQuestionsModal(candidate)"
+                    class="text-indigo-600 hover:text-indigo-500 focus:outline-none"
+                    aria-label="View candidate responses"
+                  >
+                    <!-- External link icon SVG -->
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      class="h-5 w-5" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        stroke-width="2" 
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
+                      />
+                    </svg>
+                  </button>
+                  <!-- Tooltip -->
+                  <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                    View Assessment Responses
+                  </span>
+                </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button 
                   @click="deleteCandidate(candidate.candidate_id)" 
-                  class="text-red-600 hover:text-red-900"
+                  class="text-red-600 hover:text-red-900 focus:outline-none"
+                  aria-label="Delete candidate"
                 >
-                  Delete
+                  <!-- Trashcan icon SVG -->
+                  <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    class="h-5 w-5" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path 
+                      stroke-linecap="round" 
+                      stroke-linejoin="round" 
+                      stroke-width="2" 
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
+                    />
+                  </svg>
                 </button>
               </td>
             </tr>
