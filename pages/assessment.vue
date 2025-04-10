@@ -19,7 +19,7 @@
           <div class="space-y-6">
             <div>
               <p class="block text-sm font-bold text-purple-900 mb-2">
-                This interview requires you to have your camera enabled for the entirety of the session. 
+                Patriot Software interviews require you to have your camera enabled for the entirety of the session. 
                 We also require that you do not use any virtual or blurred backgrounds. 
                 This is to facilitate clear communication and a more personal interaction during the interview process.
               </p>
