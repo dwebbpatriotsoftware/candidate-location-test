@@ -1,8 +1,7 @@
 <template>
   <div class="max-w-2xl mx-auto">
     <div class="mb-8 text-center">
-      <h1 class="text-3xl font-bold text-purple-800 mb-2">Careers</h1>
-      <p class="text-gray-700">Making accounting and payroll fast, simple, and affordable for millions of American businesses and their accountants.</p>
+      <h1 class="text-3xl text-purple-800 mb-2">Making accounting and payroll fast, simple, and affordable for millions of American businesses and their accountants.</h1>
     </div>
     
     <div class="bg-purple-50 rounded-lg shadow-sm p-8">  
