@@ -66,9 +66,8 @@
             <thead class="bg-gray-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alignment</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN?</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US IP?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -126,30 +125,13 @@
                   </select>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="candidateIpLocation[candidate.candidate_id] === 'US' ? 'bg-green-100' : 'bg-red-100'">
+                    :class="candidateIpLocation[candidate.candidate_id] === 'Yes' ? 'bg-green-100' : 'bg-red-100'">
                   <select 
                     v-model="candidateIpLocation[candidate.candidate_id]" 
                     class="bg-transparent border-0 focus:ring-0 focus:outline-none"
                   >
-                    <option value="US">US</option>
-                    <option value="Not US">Not US</option>
-                  </select>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="{
-                      'bg-green-100': candidateAlignment[candidate.candidate_id] === 'All Aligned',
-                      'bg-yellow-100': ['TZ/App align', 'IP/App align', 'TZ/IP align'].includes(candidateAlignment[candidate.candidate_id]),
-                      'bg-red-100': candidateAlignment[candidate.candidate_id] === 'No Alignment'
-                    }">
-                  <select 
-                    v-model="candidateAlignment[candidate.candidate_id]" 
-                    class="bg-transparent border-0 focus:ring-0 focus:outline-none"
-                  >
-                    <option value="All Aligned">All Aligned</option>
-                    <option value="TZ/App align">TZ/App align</option>
-                    <option value="IP/App align">IP/App align</option>
-                    <option value="TZ/IP align">TZ/IP align</option>
-                    <option value="No Alignment">No Alignment</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
                   </select>
                 </td>
                 <td class="px-6 py-4 text-sm font-medium text-left">
@@ -246,9 +228,8 @@
             <thead class="bg-gray-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alignment</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN?</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US IP?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -306,30 +287,13 @@
                   </select>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="candidateIpLocation[candidate.candidate_id] === 'US' ? 'bg-green-100' : 'bg-red-100'">
+                    :class="candidateIpLocation[candidate.candidate_id] === 'Yes' ? 'bg-green-100' : 'bg-red-100'">
                   <select 
                     v-model="candidateIpLocation[candidate.candidate_id]" 
                     class="bg-transparent border-0 focus:ring-0 focus:outline-none"
                   >
-                    <option value="US">US</option>
-                    <option value="Not US">Not US</option>
-                  </select>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="{
-                      'bg-green-100': candidateAlignment[candidate.candidate_id] === 'All Aligned',
-                      'bg-yellow-100': ['TZ/App align', 'IP/App align', 'TZ/IP align'].includes(candidateAlignment[candidate.candidate_id]),
-                      'bg-red-100': candidateAlignment[candidate.candidate_id] === 'No Alignment'
-                    }">
-                  <select 
-                    v-model="candidateAlignment[candidate.candidate_id]" 
-                    class="bg-transparent border-0 focus:ring-0 focus:outline-none"
-                  >
-                    <option value="All Aligned">All Aligned</option>
-                    <option value="TZ/App align">TZ/App align</option>
-                    <option value="IP/App align">IP/App align</option>
-                    <option value="TZ/IP align">TZ/IP align</option>
-                    <option value="No Alignment">No Alignment</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
                   </select>
                 </td>
                 <td class="px-6 py-4 text-sm font-medium text-left">
@@ -503,10 +467,9 @@ const allCandidates = ref([])
 const newCandidates = computed(() => allCandidates.value.filter(c => c.is_new === true))
 const assessedCandidates = computed(() => allCandidates.value.filter(c => c.is_new === false || c.is_new === undefined))
 const isRefreshing = ref(false)
-// Track VPN, IP location, and alignment status for each candidate
+// Track VPN and IP location status for each candidate
 const candidateVpnStatus = ref({})
 const candidateIpLocation = ref({})
-const candidateAlignment = ref({})
 
 // Modal state
 const showQuestionsModal = ref(false)
@@ -529,8 +492,7 @@ onMounted(async () => {
     // Set default values for all candidates
     allCandidates.value.forEach(candidate => {
       candidateVpnStatus.value[candidate.candidate_id] = 'No' // Default to No
-      candidateIpLocation.value[candidate.candidate_id] = 'US' // Default to US
-      candidateAlignment.value[candidate.candidate_id] = 'All Aligned' // Default to All Aligned
+      candidateIpLocation.value[candidate.candidate_id] = 'Yes' // Default to Yes
     })
   } catch (error) {
     console.error('Error fetching candidates:', error)
@@ -548,10 +510,7 @@ const refreshCandidates = async () => {
         candidateVpnStatus.value[candidate.candidate_id] = 'No'
       }
       if (!candidateIpLocation.value[candidate.candidate_id]) {
-        candidateIpLocation.value[candidate.candidate_id] = 'US'
-      }
-      if (!candidateAlignment.value[candidate.candidate_id]) {
-        candidateAlignment.value[candidate.candidate_id] = 'All Aligned'
+        candidateIpLocation.value[candidate.candidate_id] = 'Yes'
       }
     })
   } catch (error) {
