@@ -103,17 +103,8 @@ onMounted(async () => {
 })
 
 const submitAssessment = async () => {
-  //try {
-    // update answer 1
-    //answers.value.q1.answer = 'Yes'
-    //answers.value.q2.answer = getBrowserInfo()
-    //await candidateService.updateCandidateAnswers(candidateId, answers.value)
-    
     // Show confirmation
     isSubmitted.value = true
-  // } catch (error) {
-  //   console.error('Error submitting assessment:', error)
-  // }
 }
 
 
