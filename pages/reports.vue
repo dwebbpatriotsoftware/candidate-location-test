@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-6">
-      <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center">
       <h1 class="text-3xl font-bold text-gray-900">Assessment Reports</h1>
       <div class="flex items-center">
         <button 
@@ -57,135 +57,150 @@
       </div>
     </div>
     
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Candidate ID
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                IP Address
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                TIME ZONE
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                VPN
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                IP
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Alignment
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
+    <!-- To Assess Table -->
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-3">To Assess</h2>
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TIME ZONE</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alignment</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
             <tr 
-              v-for="candidate in candidates" 
+              v-for="candidate in newCandidates" 
               :key="candidate.candidate_id" 
               class="hover:bg-gray-50"
             > 
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
-                <div class="relative mr-2">
-                  <button 
-                    @click="copyId(candidate.candidate_id, candidate.candidate_id)" 
-                    class="focus:outline-none"
-                    :aria-label="`Copy ${candidate.candidate_id}`"
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
+                  <div class="relative mr-2">
+                    <button 
+                      @click="copyId(candidate.candidate_id, candidate.candidate_id)" 
+                      class="focus:outline-none"
+                      :aria-label="`Copy ${candidate.candidate_id}`"
+                    >
+                      <!-- Copy icon SVG -->
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        :class="[
+                          'h-5 w-5 transition-colors duration-200',
+                          copiedIds[candidate.candidate_id] ? 'text-green-500' : 'text-gray-400 hover:text-gray-600'
+                        ]"
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path 
+                          stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                        />
+                      </svg>
+                      
+                      <!-- Copied tooltip -->
+                      <span 
+                        v-if="copiedIds[candidate.candidate_id]" 
+                        class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-green-500 text-white text-xs rounded shadow-lg"
+                      >
+                        Copied!
+                      </span>
+                    </button>
+                  </div>
+                  {{ candidate.candidate_id }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <a 
+                    :href="`https://www.ipqualityscore.com/vpn-ip-address-check/lookup/${candidate.candidate_ip}`" 
+                    target="_blank" 
+                    class="text-blue-600 hover:text-blue-800 hover:underline"
                   >
-                    <!-- Copy icon SVG -->
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      :class="[
-                        'h-5 w-5 transition-colors duration-200',
-                        copiedIds[candidate.candidate_id] ? 'text-green-500' : 'text-gray-400 hover:text-gray-600'
-                      ]"
-                      fill="none" 
-                      viewBox="0 0 24 24" 
-                      stroke="currentColor"
+                    {{ candidate.candidate_ip }}
+                  </a>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="isApprovedTimezone(candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
+                  {{ candidate.candidate_timezone }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
+                  <select 
+                    v-model="candidateVpnStatus[candidate.candidate_id]" 
+                    class="bg-transparent border-0 focus:ring-0 focus:outline-none"
+                  >
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="candidateIpLocation[candidate.candidate_id] === 'US' ? 'bg-green-100' : 'bg-red-100'">
+                  <select 
+                    v-model="candidateIpLocation[candidate.candidate_id]" 
+                    class="bg-transparent border-0 focus:ring-0 focus:outline-none"
+                  >
+                    <option value="US">US</option>
+                    <option value="Not US">Not US</option>
+                  </select>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="{
+                      'bg-green-100': candidateAlignment[candidate.candidate_id] === 'All Aligned',
+                      'bg-yellow-100': ['TZ/App align', 'IP/App align', 'TZ/IP align'].includes(candidateAlignment[candidate.candidate_id]),
+                      'bg-red-100': candidateAlignment[candidate.candidate_id] === 'No Alignment'
+                    }">
+                  <select 
+                    v-model="candidateAlignment[candidate.candidate_id]" 
+                    class="bg-transparent border-0 focus:ring-0 focus:outline-none"
+                  >
+                    <option value="All Aligned">All Aligned</option>
+                    <option value="TZ/App align">TZ/App align</option>
+                    <option value="IP/App align">IP/App align</option>
+                    <option value="TZ/IP align">TZ/IP align</option>
+                    <option value="No Alignment">No Alignment</option>
+                  </select>
+                </td>
+                <td class="px-6 py-4 text-sm font-medium text-left">
+                  <div class="relative group inline-block mr-4">
+                    <button 
+                      @click="openQuestionsModal(candidate)"
+                      class="text-indigo-600 hover:text-indigo-500 focus:outline-none"
+                      aria-label="View candidate responses"
                     >
-                      <path 
-                        stroke-linecap="round" 
-                        stroke-linejoin="round" 
-                        stroke-width="2" 
-                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                      />
-                    </svg>
-                    
-                    <!-- Copied tooltip -->
-                    <span 
-                      v-if="copiedIds[candidate.candidate_id]" 
-                      class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-green-500 text-white text-xs rounded shadow-lg"
-                    >
-                      Copied!
+                      <!-- External link icon SVG -->
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        class="h-5 w-5" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path 
+                          stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
+                        />
+                      </svg>
+                    </button>
+                    <!-- Tooltip -->
+                    <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                      View Assessment Responses
                     </span>
-                  </button>
-                </div>
-                {{ candidate.candidate_id }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <a 
-                  :href="`https://www.ipqualityscore.com/vpn-ip-address-check/lookup/${candidate.candidate_ip}`" 
-                  target="_blank" 
-                  class="text-blue-600 hover:text-blue-800 hover:underline"
-                >
-                  {{ candidate.candidate_ip }}
-                </a>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  :class="isApprovedTimezone(candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
-                {{ candidate.candidate_timezone }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
-                <select 
-                  v-model="candidateVpnStatus[candidate.candidate_id]" 
-                  class="bg-transparent border-0 focus:ring-0 focus:outline-none"
-                >
-                  <option value="Yes">Yes</option>
-                  <option value="No">No</option>
-                </select>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  :class="candidateIpLocation[candidate.candidate_id] === 'US' ? 'bg-green-100' : 'bg-red-100'">
-                <select 
-                  v-model="candidateIpLocation[candidate.candidate_id]" 
-                  class="bg-transparent border-0 focus:ring-0 focus:outline-none"
-                >
-                  <option value="US">US</option>
-                  <option value="Not US">Not US</option>
-                </select>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  :class="{
-                    'bg-green-100': candidateAlignment[candidate.candidate_id] === 'All Aligned',
-                    'bg-yellow-100': ['TZ/App align', 'IP/App align', 'TZ/IP align'].includes(candidateAlignment[candidate.candidate_id]),
-                    'bg-red-100': candidateAlignment[candidate.candidate_id] === 'No Alignment'
-                  }">
-                <select 
-                  v-model="candidateAlignment[candidate.candidate_id]" 
-                  class="bg-transparent border-0 focus:ring-0 focus:outline-none"
-                >
-                  <option value="All Aligned">All Aligned</option>
-                  <option value="TZ/App align">TZ/App align</option>
-                  <option value="IP/App align">IP/App align</option>
-                  <option value="TZ/IP align">TZ/IP align</option>
-                  <option value="No Alignment">No Alignment</option>
-                </select>
-              </td>
-              <td class="px-6 py-4 text-sm font-medium text-left">
-                <div class="relative group inline-block mr-4">
+                  </div>
                   <button 
-                    @click="openQuestionsModal(candidate)"
-                    class="text-indigo-600 hover:text-indigo-500 focus:outline-none"
-                    aria-label="View candidate responses"
+                    @click="deleteCandidate(candidate.candidate_id)" 
+                    class="text-red-600 hover:text-red-900 focus:outline-none"
+                    aria-label="Delete candidate"
                   >
-                    <!-- External link icon SVG -->
+                    <!-- Trashcan icon SVG -->
                     <svg 
                       xmlns="http://www.w3.org/2000/svg" 
                       class="h-5 w-5" 
@@ -197,40 +212,182 @@
                         stroke-linecap="round" 
                         stroke-linejoin="round" 
                         stroke-width="2" 
-                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
                       />
                     </svg>
                   </button>
-                  <!-- Tooltip -->
-                  <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                    View Assessment Responses
-                  </span>
-                </div>
-                <button 
-                  @click="deleteCandidate(candidate.candidate_id)" 
-                  class="text-red-600 hover:text-red-900 focus:outline-none"
-                  aria-label="Delete candidate"
-                >
-                  <!-- Trashcan icon SVG -->
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    class="h-5 w-5" 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Assessed Table -->
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-3">Assessed</h2>
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TIME ZONE</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alignment</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr 
+                v-for="candidate in assessedCandidates" 
+                :key="candidate.candidate_id" 
+                class="hover:bg-gray-50"
+              > 
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
+                  <div class="relative mr-2">
+                    <button 
+                      @click="copyId(candidate.candidate_id, candidate.candidate_id)" 
+                      class="focus:outline-none"
+                      :aria-label="`Copy ${candidate.candidate_id}`"
+                    >
+                      <!-- Copy icon SVG -->
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        :class="[
+                          'h-5 w-5 transition-colors duration-200',
+                          copiedIds[candidate.candidate_id] ? 'text-green-500' : 'text-gray-400 hover:text-gray-600'
+                        ]"
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path 
+                          stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                        />
+                      </svg>
+                      
+                      <!-- Copied tooltip -->
+                      <span 
+                        v-if="copiedIds[candidate.candidate_id]" 
+                        class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-green-500 text-white text-xs rounded shadow-lg"
+                      >
+                        Copied!
+                      </span>
+                    </button>
+                  </div>
+                  {{ candidate.candidate_id }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <a 
+                    :href="`https://www.ipqualityscore.com/vpn-ip-address-check/lookup/${candidate.candidate_ip}`" 
+                    target="_blank" 
+                    class="text-blue-600 hover:text-blue-800 hover:underline"
                   >
-                    <path 
-                      stroke-linecap="round" 
-                      stroke-linejoin="round" 
-                      stroke-width="2" 
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
-                    />
-                  </svg>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                    {{ candidate.candidate_ip }}
+                  </a>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="isApprovedTimezone(candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
+                  {{ candidate.candidate_timezone }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
+                  <select 
+                    v-model="candidateVpnStatus[candidate.candidate_id]" 
+                    class="bg-transparent border-0 focus:ring-0 focus:outline-none"
+                  >
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="candidateIpLocation[candidate.candidate_id] === 'US' ? 'bg-green-100' : 'bg-red-100'">
+                  <select 
+                    v-model="candidateIpLocation[candidate.candidate_id]" 
+                    class="bg-transparent border-0 focus:ring-0 focus:outline-none"
+                  >
+                    <option value="US">US</option>
+                    <option value="Not US">Not US</option>
+                  </select>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="{
+                      'bg-green-100': candidateAlignment[candidate.candidate_id] === 'All Aligned',
+                      'bg-yellow-100': ['TZ/App align', 'IP/App align', 'TZ/IP align'].includes(candidateAlignment[candidate.candidate_id]),
+                      'bg-red-100': candidateAlignment[candidate.candidate_id] === 'No Alignment'
+                    }">
+                  <select 
+                    v-model="candidateAlignment[candidate.candidate_id]" 
+                    class="bg-transparent border-0 focus:ring-0 focus:outline-none"
+                  >
+                    <option value="All Aligned">All Aligned</option>
+                    <option value="TZ/App align">TZ/App align</option>
+                    <option value="IP/App align">IP/App align</option>
+                    <option value="TZ/IP align">TZ/IP align</option>
+                    <option value="No Alignment">No Alignment</option>
+                  </select>
+                </td>
+                <td class="px-6 py-4 text-sm font-medium text-left">
+                  <div class="relative group inline-block mr-4">
+                    <button 
+                      @click="openQuestionsModal(candidate)"
+                      class="text-indigo-600 hover:text-indigo-500 focus:outline-none"
+                      aria-label="View candidate responses"
+                    >
+                      <!-- External link icon SVG -->
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        class="h-5 w-5" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path 
+                          stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
+                        />
+                      </svg>
+                    </button>
+                    <!-- Tooltip -->
+                    <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                      View Assessment Responses
+                    </span>
+                  </div>
+                  <button 
+                    @click="deleteCandidate(candidate.candidate_id)" 
+                    class="text-red-600 hover:text-red-900 focus:outline-none"
+                    aria-label="Delete candidate"
+                  >
+                    <!-- Trashcan icon SVG -->
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      class="h-5 w-5" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        stroke-width="2" 
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
+                      />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
     
@@ -286,7 +443,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { candidateService } from '../services/candidateService'
 
 definePageMeta({
@@ -294,7 +451,9 @@ definePageMeta({
 })
 
 const router = useRouter()
-const candidates = ref([])
+const allCandidates = ref([])
+const newCandidates = computed(() => allCandidates.value.filter(c => c.is_new === true))
+const assessedCandidates = computed(() => allCandidates.value.filter(c => c.is_new === false || c.is_new === undefined))
 const isRefreshing = ref(false)
 // Track VPN, IP location, and alignment status for each candidate
 const candidateVpnStatus = ref({})
@@ -318,9 +477,9 @@ const closeQuestionsModal = () => {
 // Fetch candidates from Supabase
 onMounted(async () => {
   try {
-    candidates.value = await candidateService.getCandidates()
+    allCandidates.value = await candidateService.getCandidates()
     // Set default values for all candidates
-    candidates.value.forEach(candidate => {
+    allCandidates.value.forEach(candidate => {
       candidateVpnStatus.value[candidate.candidate_id] = 'No' // Default to No
       candidateIpLocation.value[candidate.candidate_id] = 'US' // Default to US
       candidateAlignment.value[candidate.candidate_id] = 'All Aligned' // Default to All Aligned
@@ -334,9 +493,9 @@ onMounted(async () => {
 const refreshCandidates = async () => {
   isRefreshing.value = true
   try {
-    candidates.value = await candidateService.getCandidates()
+    allCandidates.value = await candidateService.getCandidates()
     // Set default values for any new candidates
-    candidates.value.forEach(candidate => {
+    allCandidates.value.forEach(candidate => {
       if (!candidateVpnStatus.value[candidate.candidate_id]) {
         candidateVpnStatus.value[candidate.candidate_id] = 'No'
       }
@@ -436,7 +595,7 @@ const deleteCandidate = async (id) => {
   try {
     await candidateService.deleteCandidate(id)
     // Remove the deleted candidate from the local array
-    candidates.value = candidates.value.filter(c => c.candidate_id !== id)
+    allCandidates.value = allCandidates.value.filter(c => c.candidate_id !== id)
   } catch (error) {
     console.error('Error deleting candidate:', error)
     // Optionally add error handling UI feedback here
