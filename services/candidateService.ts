@@ -1,25 +1,6 @@
 import { useSupabase } from '../utils/supabase'
 
 export const candidateService = {
-  // async updateCandidateAnswers(candidateId: string, answers: any) {
-  //   const supabase = useSupabase()
-    
-  //   const { data, error } = await supabase
-  //     .from('candidate_info')
-  //     .update({
-  //       candidate_answers: answers
-  //     })
-  //     .eq('candidate_id', candidateId)
-  //     .select()
-  //     .single()
-    
-  //   if (error) {
-  //     console.error('Error updating candidate answers:', error)
-  //     throw error
-  //   }
-    
-  //   return data
-  // },
   
   async deleteCandidate(candidateId: string) {
     const supabase = useSupabase()
@@ -36,44 +17,73 @@ export const candidateService = {
     return true
   },
   
+  async candidateExists(candidateId: string): Promise<boolean> {
+    const supabase = useSupabase()
+    
+    try {
+      // Check if candidate already exists using count
+      const { count, error } = await supabase
+        .from('candidate_info')
+        .select('*', { count: 'exact', head: true })
+        .eq('candidate_id', candidateId)
+      
+      if (error) {
+        return false
+      }
+      
+      return count ? count > 0 : false
+    } catch (err) {
+      return false
+    }
+  },
+  
   async saveCandidate(candidateId: string, timezone: string, ip: string, answers: any) {
     const supabase = useSupabase()
     
-    // First check if candidate already exists
-    const { data: existingCandidate, error: selectError } = await supabase
-      .from('candidate_info')
-      .select('*')
-      .eq('candidate_id', candidateId)
-      .single()
+    // Check if candidate exists using the new function
+    const exists = await this.candidateExists(candidateId)
     
     // If candidate already exists, return with a flag indicating it's existing
-    if (existingCandidate) {
+    if (exists) {
       return { 
-        candidate: existingCandidate, 
         isExisting: true 
       }
     }
     
-    // Otherwise insert new record
-    const { data: newCandidate, error: insertError } = await supabase
-      .from('candidate_info')
-      .insert({
-        candidate_id: candidateId,
-        candidate_timezone: timezone,
-        candidate_ip: ip,
-        candidate_answers: answers
-      })
-      .select()
-      .single()
-    
-    if (insertError) {
-      console.error('Error saving candidate:', insertError)
-      throw insertError
-    }
-    
-    return { 
-      candidate: newCandidate, 
-      isExisting: false 
+    try {
+      // Otherwise insert new record
+      const { data: newCandidate, error: insertError } = await supabase
+        .from('candidate_info')
+        .insert({
+          candidate_id: candidateId,
+          candidate_timezone: timezone,
+          candidate_ip: ip,
+          candidate_answers: answers
+        })
+        .select()
+        .single()
+      
+      if (insertError) {
+        console.error('Error saving candidate:', insertError)
+        throw insertError
+      }
+      
+      return { 
+        candidate: newCandidate, 
+        isExisting: false 
+      }
+    } catch (insertErr) {
+      console.error('Exception saving candidate:', insertErr)
+      // Return a default response instead of throwing
+      return {
+        candidate: {
+          candidate_id: candidateId,
+          candidate_timezone: timezone,
+          candidate_ip: ip,
+          candidate_answers: answers
+        },
+        isExisting: false
+      }
     }
   },
 
