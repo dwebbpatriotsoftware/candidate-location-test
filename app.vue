@@ -48,9 +48,9 @@ const authLinkDestination = computed(() => {
 })
 
 // Handle auth link click
-const handleAuthClick = () => {
+const handleAuthClick = async () => {
   if (isAuthenticated.value) {
-    logout()
+    await logout()
     // Redirect to home page after logout
     router.push('/')
   }
