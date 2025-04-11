@@ -168,6 +168,34 @@
                   </select>
                 </td>
                 <td class="px-6 py-4 text-sm font-medium text-left">
+                  <!-- Mark as assessed button -->
+                  <div class="relative group inline-block mr-2">
+                    <button 
+                      @click="markAsAssessed(candidate)"
+                      class="text-green-600 hover:text-green-500 focus:outline-none"
+                      aria-label="Mark as assessed"
+                    >
+                      <!-- Checkmark icon SVG -->
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        class="h-5 w-5" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path 
+                          stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          d="M5 13l4 4L19 7" 
+                        />
+                      </svg>
+                    </button>
+                    <!-- Tooltip -->
+                    <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                      Mark as Assessed
+                    </span>
+                  </div>
                   <div class="relative group inline-block mr-4">
                     <button 
                       @click="openQuestionsModal(candidate)"
@@ -335,6 +363,34 @@
                   </select>
                 </td>
                 <td class="px-6 py-4 text-sm font-medium text-left">
+                  <!-- Mark as new button -->
+                  <div class="relative group inline-block mr-2">
+                    <button 
+                      @click="markAsNew(candidate)"
+                      class="text-red-600 hover:text-red-500 focus:outline-none"
+                      aria-label="Mark as new"
+                    >
+                      <!-- X icon SVG -->
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        class="h-5 w-5" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path 
+                          stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          d="M6 18L18 6M6 6l12 12" 
+                        />
+                      </svg>
+                    </button>
+                    <!-- Tooltip -->
+                    <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                      Mark as New
+                    </span>
+                  </div>
                   <div class="relative group inline-block mr-4">
                     <button 
                       @click="openQuestionsModal(candidate)"
@@ -588,6 +644,36 @@ const copyId = (id, trackingKey) => {
       [trackingKey]: false
     }
   }, 2000)
+}
+
+// Mark candidate as assessed function
+const markAsAssessed = async (candidate) => {
+  try {
+    await candidateService.markCandidateAsAssessed(candidate.candidate_id)
+    // Update the local state to reflect the change
+    const index = allCandidates.value.findIndex(c => c.candidate_id === candidate.candidate_id)
+    if (index !== -1) {
+      allCandidates.value[index].is_new = false
+    }
+  } catch (error) {
+    console.error('Error marking candidate as assessed:', error)
+    // Optionally add error handling UI feedback here
+  }
+}
+
+// Mark candidate as new function
+const markAsNew = async (candidate) => {
+  try {
+    await candidateService.markCandidateAsNew(candidate.candidate_id)
+    // Update the local state to reflect the change
+    const index = allCandidates.value.findIndex(c => c.candidate_id === candidate.candidate_id)
+    if (index !== -1) {
+      allCandidates.value[index].is_new = true
+    }
+  } catch (error) {
+    console.error('Error marking candidate as new:', error)
+    // Optionally add error handling UI feedback here
+  }
 }
 
 // Delete candidate function

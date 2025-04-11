@@ -99,5 +99,37 @@ export const candidateService = {
     }
     
     return data || []
+  },
+  
+  async markCandidateAsAssessed(candidateId: string) {
+    const supabase = useSupabase()
+    const { data, error } = await supabase
+      .from('candidate_info')
+      .update({ is_new: false })
+      .eq('candidate_id', candidateId)
+      .select()
+    
+    if (error) {
+      console.error('Error marking candidate as assessed:', error)
+      throw error
+    }
+    
+    return data || []
+  },
+  
+  async markCandidateAsNew(candidateId: string) {
+    const supabase = useSupabase()
+    const { data, error } = await supabase
+      .from('candidate_info')
+      .update({ is_new: true })
+      .eq('candidate_id', candidateId)
+      .select()
+    
+    if (error) {
+      console.error('Error marking candidate as new:', error)
+      throw error
+    }
+    
+    return data || []
   }
 }
