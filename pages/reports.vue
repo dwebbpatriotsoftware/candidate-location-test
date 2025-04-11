@@ -472,6 +472,28 @@
             </div>
             
             <div class="space-y-4">
+              <!-- IP Address -->
+              <div>
+                <p class="text-sm font-medium text-gray-500">IP Address</p>
+                <p class="text-base text-gray-900">
+                  <a 
+                    v-if="currentCandidateQuestions.candidate_answers?.ip || currentCandidateQuestions.candidate_ip"
+                    :href="`https://www.ipqualityscore.com/vpn-ip-address-check/lookup/${currentCandidateQuestions.candidate_answers?.ip || currentCandidateQuestions.candidate_ip}`" 
+                    target="_blank" 
+                    class="text-blue-600 hover:text-blue-800 hover:underline"
+                  >
+                    {{ currentCandidateQuestions.candidate_answers?.ip || currentCandidateQuestions.candidate_ip }}
+                  </a>
+                  <span v-else>Not available</span>
+                </p>
+              </div>
+              
+              <!-- Time Zone -->
+              <div>
+                <p class="text-sm font-medium text-gray-500">Time Zone</p>
+                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.timezone || currentCandidateQuestions.candidate_timezone || 'Not available' }}</p>
+              </div>
+              
               <div>
                 <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q1?.question || 'Question 1' }}</p>
                 <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q1?.answer || 'No response' }}</p>

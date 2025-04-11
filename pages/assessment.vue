@@ -87,9 +87,13 @@ onMounted(async () => {
     //Get browser info
     answers.value.q1.answer = 'Yes'
     answers.value.q2.answer = getBrowserInfo()
+    
+    // Add IP and timezone to answers object
+    answers.value.ip = ipData.ip
+    answers.value.timezone = timezone
 
     // Store candidate info in Supabase
-    const result = await candidateService.saveCandidate(candidateId, timezone, ipData.ip, answers.value)
+    const result = await candidateService.saveCandidate(candidateId, answers.value)
     
     // If candidate already exists, show the completion message
     if (result.isExisting) {

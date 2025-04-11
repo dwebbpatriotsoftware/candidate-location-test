@@ -37,7 +37,7 @@ export const candidateService = {
     }
   },
   
-  async saveCandidate(candidateId: string, timezone: string, ip: string, answers: any) {
+  async saveCandidate(candidateId: string, answers: any) {
     const supabase = useSupabase()
     
     // Check if candidate exists using the new function
@@ -56,8 +56,6 @@ export const candidateService = {
         .from('candidate_info')
         .insert({
           candidate_id: candidateId,
-          candidate_timezone: timezone,
-          candidate_ip: ip,
           candidate_answers: answers
         })
         .select()
