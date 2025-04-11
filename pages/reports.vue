@@ -66,8 +66,6 @@
             <thead class="bg-gray-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TIME ZONE</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alignment</th>
@@ -116,19 +114,6 @@
                     </button>
                   </div>
                   {{ candidate.candidate_id }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <a 
-                    :href="`https://www.ipqualityscore.com/vpn-ip-address-check/lookup/${candidate.candidate_ip}`" 
-                    target="_blank" 
-                    class="text-blue-600 hover:text-blue-800 hover:underline"
-                  >
-                    {{ candidate.candidate_ip }}
-                  </a>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="isApprovedTimezone(candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
-                  {{ candidate.candidate_timezone }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
@@ -261,8 +246,6 @@
             <thead class="bg-gray-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TIME ZONE</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alignment</th>
@@ -311,19 +294,6 @@
                     </button>
                   </div>
                   {{ candidate.candidate_id }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <a 
-                    :href="`https://www.ipqualityscore.com/vpn-ip-address-check/lookup/${candidate.candidate_ip}`" 
-                    target="_blank" 
-                    class="text-blue-600 hover:text-blue-800 hover:underline"
-                  >
-                    {{ candidate.candidate_ip }}
-                  </a>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="isApprovedTimezone(candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
-                  {{ candidate.candidate_timezone }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
