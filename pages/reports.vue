@@ -122,10 +122,39 @@
                       'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
                       'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
                     }">
-                  <div class="flex flex-col">
-                    <div>{{ candidate.candidate_assessment?.value || 'Not assessed' }}</div>
-                    <div v-if="candidate.candidate_assessment?.reason" class="text-xs text-gray-500">
-                      {{ candidate.candidate_assessment.reason }}
+                  <div class="flex items-center">
+                    <div class="relative group inline-block mr-2">
+                      <button 
+                        @click="openQuestionsModal(candidate)"
+                        class="text-gray-500 hover:text-gray-700 focus:outline-none"
+                        aria-label="View candidate responses"
+                      >
+                        <!-- Information icon SVG -->
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          class="h-5 w-5" 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor"
+                        >
+                          <path 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            stroke-width="2" 
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                          />
+                        </svg>
+                      </button>
+                      <!-- Tooltip -->
+                      <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                        View Assessment Responses
+                      </span>
+                    </div>
+                    <div class="flex flex-col">
+                      <div>{{ candidate.candidate_assessment?.value || 'Not assessed' }}</div>
+                      <div v-if="candidate.candidate_assessment?.reason" class="text-xs text-gray-500">
+                        {{ candidate.candidate_assessment.reason }}
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -180,33 +209,6 @@
                     <!-- Tooltip -->
                     <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
                       Mark as Assessed
-                    </span>
-                  </div>
-                  <div class="relative group inline-block mr-4">
-                    <button 
-                      @click="openQuestionsModal(candidate)"
-                      class="text-indigo-600 hover:text-indigo-500 focus:outline-none"
-                      aria-label="View candidate responses"
-                    >
-                      <!-- External link icon SVG -->
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        class="h-5 w-5" 
-                        fill="none" 
-                        viewBox="0 0 24 24" 
-                        stroke="currentColor"
-                      >
-                        <path 
-                          stroke-linecap="round" 
-                          stroke-linejoin="round" 
-                          stroke-width="2" 
-                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
-                        />
-                      </svg>
-                    </button>
-                    <!-- Tooltip -->
-                    <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                      View Assessment Responses
                     </span>
                   </div>
                   <button 
@@ -302,10 +304,39 @@
                       'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
                       'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
                     }">
-                  <div class="flex flex-col">
-                    <div>{{ candidate.candidate_assessment?.value || 'Not assessed' }}</div>
-                    <div v-if="candidate.candidate_assessment?.reason" class="text-xs text-gray-500">
-                      {{ candidate.candidate_assessment.reason }}
+                  <div class="flex items-center">
+                    <div class="relative group inline-block mr-2">
+                      <button 
+                        @click="openQuestionsModal(candidate)"
+                        class="text-gray-500 hover:text-gray-700 focus:outline-none"
+                        aria-label="View candidate responses"
+                      >
+                        <!-- Information icon SVG -->
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          class="h-5 w-5" 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor"
+                        >
+                          <path 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            stroke-width="2" 
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                          />
+                        </svg>
+                      </button>
+                      <!-- Tooltip -->
+                      <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                        View Assessment Responses
+                      </span>
+                    </div>
+                    <div class="flex flex-col">
+                      <div>{{ candidate.candidate_assessment?.value || 'Not assessed' }}</div>
+                      <div v-if="candidate.candidate_assessment?.reason" class="text-xs text-gray-500">
+                        {{ candidate.candidate_assessment.reason }}
+                      </div>
                     </div>
                   </div>
                 </td>
@@ -356,33 +387,6 @@
                     <!-- Tooltip -->
                     <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
                       Mark as New
-                    </span>
-                  </div>
-                  <div class="relative group inline-block mr-4">
-                    <button 
-                      @click="openQuestionsModal(candidate)"
-                      class="text-indigo-600 hover:text-indigo-500 focus:outline-none"
-                      aria-label="View candidate responses"
-                    >
-                      <!-- External link icon SVG -->
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        class="h-5 w-5" 
-                        fill="none" 
-                        viewBox="0 0 24 24" 
-                        stroke="currentColor"
-                      >
-                        <path 
-                          stroke-linecap="round" 
-                          stroke-linejoin="round" 
-                          stroke-width="2" 
-                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
-                        />
-                      </svg>
-                    </button>
-                    <!-- Tooltip -->
-                    <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                      View Assessment Responses
                     </span>
                   </div>
                   <button 
