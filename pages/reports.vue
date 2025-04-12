@@ -212,6 +212,10 @@
                       <option value="No">No</option>
                     </select>
                   </div>
+                  <!-- IP Location sub-text -->
+                  <div class="text-xs text-gray-500">
+                    ({{ candidate.candidate_assessment?.data?.ip_country_city || 'Unknown location' }})
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
@@ -571,6 +575,14 @@
                   </p>
                 </div>
                 
+                <!-- IP Location -->
+                <div class="mb-2">
+                  <p class="text-sm font-medium text-gray-500">IP Location</p>
+                  <p class="text-base text-gray-900 px-2 py-1 rounded bg-gray-100">
+                    {{ currentCandidateQuestions.candidate_assessment?.data?.ip_country_city || 'Unknown location' }}
+                  </p>
+                </div>
+                
                 <!-- Assessment Value -->
                 <div class="mb-2">
                   <p class="text-sm font-medium text-gray-500">Assessment</p>
@@ -664,11 +676,27 @@ const saveLocation = async () => {
       const index = allCandidates.value.findIndex(c => c.candidate_id === candidateId)
       
       if (index !== -1) {
-        // Update the local state
-        allCandidates.value[index].candidate_location = locationInput.value
+        const candidate = allCandidates.value[index]
         
-        // TODO: If needed, add a function to candidateService to save the location to the database
-        // await candidateService.updateCandidateLocation(candidateId, locationInput.value)
+        // Get current assessment data
+        const isVpn = candidateVpnStatus.value[candidateId] === 'Yes'
+        const isUsIp = candidateIpLocation.value[candidateId] === 'Yes'
+        const isUsTimezone = isApprovedTimezone(
+          candidate.candidate_answers?.timezone || candidate.candidate_timezone
+        )
+        
+        // Update the assessment with the new location
+        const updatedData = await candidateService.updateCandidateAssessment(candidateId, {
+          is_vpn: isVpn,
+          is_us_ip: isUsIp,
+          is_us_timezone: isUsTimezone,
+          ip_country_city: locationInput.value
+        })
+        
+        // Update the local candidate object with the new assessment value
+        if (updatedData && updatedData.length > 0) {
+          allCandidates.value[index].candidate_assessment = updatedData[0].candidate_assessment
+        }
       }
       
       // Close the modal

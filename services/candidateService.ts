@@ -5,7 +5,8 @@ export const candidateService = {
   async updateCandidateAssessment(candidateId: string, assessmentData: {
     is_vpn: boolean,
     is_us_ip: boolean,
-    is_us_timezone: boolean
+    is_us_timezone: boolean,
+    ip_country_city?: string
   }) {
     const supabase = useSupabase()
     
@@ -34,7 +35,8 @@ export const candidateService = {
       data: {
         is_vpn: assessmentData.is_vpn,
         is_us_ip: assessmentData.is_us_ip,
-        is_us_timezone: assessmentData.is_us_timezone
+        is_us_timezone: assessmentData.is_us_timezone,
+        ...(assessmentData.ip_country_city ? { ip_country_city: assessmentData.ip_country_city } : {})
       },
       value: value,
       reason: reason
