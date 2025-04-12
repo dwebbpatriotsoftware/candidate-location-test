@@ -69,6 +69,7 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assessment</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US IP?</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP/TIME ZONE?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US TIME ZONE?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -147,12 +148,12 @@
                       </button>
                       <!-- Tooltip -->
                       <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                        View Assessment Responses
+                        View Candidate Data
                       </span>
                     </div>
                     <div class="flex flex-col">
                       <div>{{ candidate.candidate_assessment?.value || 'Not assessed' }}</div>
-                      <div v-if="candidate.candidate_assessment?.reason" class="text-xs text-gray-500">
+                      <div v-if="candidate.candidate_assessment?.reason" class="text-xs text-gray-500 white-space: pre-wrap">
                         {{ candidate.candidate_assessment.reason }}
                       </div>
                     </div>
@@ -216,6 +217,16 @@
                   <div class="text-xs text-gray-500">
                     ({{ candidate.candidate_assessment?.data?.ip_country_city || 'Unknown location' }})
                   </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="candidateIpTimeZoneAlign[candidate.candidate_id] === 'Yes' ? 'bg-green-100' : 'bg-yellow-100'">
+                  <select 
+                    v-model="candidateIpTimeZoneAlign[candidate.candidate_id]" 
+                    class="bg-transparent border-0 focus:ring-0 focus:outline-none"
+                  >
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
@@ -536,12 +547,12 @@
               
               <div>
                 <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q1?.question || 'Question 1' }}</p>
-                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q1?.answer || 'No response' }}</p>
+                <p class="text-base text-gray-900 whitespace-pre-line">{{ currentCandidateQuestions.candidate_answers?.q1?.answer || 'No response' }}</p>
               </div>
               
               <div>
                 <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q2?.question || 'Question 2' }}</p>
-                <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q2?.answer || 'No response' }}</p>
+                <p class="text-base text-gray-900 whitespace-pre-line">{{ currentCandidateQuestions.candidate_answers?.q2?.answer || 'No response' }}</p>
               </div>
               
               <!-- Assessment Values Section -->
@@ -583,6 +594,15 @@
                   </p>
                 </div>
                 
+                <!-- IP/TIME ZONE Alignment -->
+                <div class="mb-2">
+                  <p class="text-sm font-medium text-gray-500">IP/TIME ZONE?</p>
+                  <p class="text-base text-gray-900"
+                     :class="currentCandidateQuestions.candidate_assessment?.data?.ip_timezone_align ? 'bg-green-100 px-2 py-1 rounded' : 'bg-yellow-100 px-2 py-1 rounded'">
+                    {{ currentCandidateQuestions.candidate_assessment?.data?.ip_timezone_align ? 'Yes' : 'No' }}
+                  </p>
+                </div>
+                
                 <!-- Assessment Value -->
                 <div class="mb-2">
                   <p class="text-sm font-medium text-gray-500">Assessment</p>
@@ -599,7 +619,7 @@
                 <!-- Assessment Reason -->
                 <div v-if="currentCandidateQuestions.candidate_assessment?.reason">
                   <p class="text-sm font-medium text-gray-500">Reason</p>
-                  <p class="text-base text-gray-900">
+                  <p class="text-base text-gray-900 white-space: pre-wrap">
                     {{ currentCandidateQuestions.candidate_assessment?.reason }}
                   </p>
                 </div>
@@ -634,9 +654,10 @@ const allCandidates = ref([])
 const newCandidates = computed(() => allCandidates.value.filter(c => c.is_new === true))
 const assessedCandidates = computed(() => allCandidates.value.filter(c => c.is_new === false || c.is_new === undefined))
 const isRefreshing = ref(false)
-// Track VPN and IP location status for each candidate
+// Track VPN, IP location, and IP/Time Zone alignment status for each candidate
 const candidateVpnStatus = ref({})
 const candidateIpLocation = ref({})
+const candidateIpTimeZoneAlign = ref({})
 
 // Modal state
 const showQuestionsModal = ref(false)
@@ -684,12 +705,14 @@ const saveLocation = async () => {
         const isUsTimezone = isApprovedTimezone(
           candidate.candidate_answers?.timezone || candidate.candidate_timezone
         )
+        const ipTimezoneAlign = candidateIpTimeZoneAlign.value[candidateId] === 'Yes'
         
         // Update the assessment with the new location
         const updatedData = await candidateService.updateCandidateAssessment(candidateId, {
           is_vpn: isVpn,
           is_us_ip: isUsIp,
           is_us_timezone: isUsTimezone,
+          ip_timezone_align: ipTimezoneAlign,
           ip_country_city: locationInput.value
         })
         
@@ -719,12 +742,16 @@ const updateCandidateAssessment = async (candidateId) => {
     const isUsTimezone = isApprovedTimezone(
       candidate.candidate_answers?.timezone || candidate.candidate_timezone
     )
+    const ipTimezoneAlign = candidateIpTimeZoneAlign.value[candidateId] === 'Yes'
+    const ipCountryCity = candidate.candidate_assessment?.data?.ip_country_city
     
     // Call the service function to update the assessment
     const updatedData = await candidateService.updateCandidateAssessment(candidateId, {
       is_vpn: isVpn,
       is_us_ip: isUsIp,
-      is_us_timezone: isUsTimezone
+      is_us_timezone: isUsTimezone,
+      ip_timezone_align: ipTimezoneAlign,
+      ip_country_city: ipCountryCity // Use existing location or null
     })
     
     // Update the local candidate object with the new assessment value
@@ -777,8 +804,18 @@ const setupIndividualWatchers = () => {
       }
     )
     
+    // Watch IP/Time Zone alignment for this specific candidate
+    const unwatchIpTimeZone = watch(
+      () => candidateIpTimeZoneAlign.value[id],
+      async (newValue, oldValue) => {
+        if (newValue !== oldValue) {
+          await updateCandidateAssessment(id)
+        }
+      }
+    )
+    
     // Store unwatch functions to clean up later
-    unwatchFunctions.value.push(unwatchVpn, unwatchIp)
+    unwatchFunctions.value.push(unwatchVpn, unwatchIp, unwatchIpTimeZone)
   })
 }
 
@@ -792,10 +829,12 @@ onMounted(async () => {
       if (candidate.candidate_assessment?.data) {
         candidateVpnStatus.value[candidate.candidate_id] = candidate.candidate_assessment.data.is_vpn ? 'Yes' : 'No'
         candidateIpLocation.value[candidate.candidate_id] = candidate.candidate_assessment.data.is_us_ip ? 'Yes' : 'No'
+        candidateIpTimeZoneAlign.value[candidate.candidate_id] = candidate.candidate_assessment.data.ip_timezone_align ? 'Yes' : 'No'
       } else {
         // Default values if no assessment data - only set local state, don't update DB
         candidateVpnStatus.value[candidate.candidate_id] = 'No' // Default to No
         candidateIpLocation.value[candidate.candidate_id] = 'Yes' // Default to Yes
+        candidateIpTimeZoneAlign.value[candidate.candidate_id] = 'Yes' // Default to Yes
         
         // Don't automatically update the database on page load
         // updateCandidateAssessment(candidate.candidate_id)
@@ -820,6 +859,7 @@ const refreshCandidates = async () => {
       if (candidate.candidate_assessment?.data) {
         candidateVpnStatus.value[candidate.candidate_id] = candidate.candidate_assessment.data.is_vpn ? 'Yes' : 'No'
         candidateIpLocation.value[candidate.candidate_id] = candidate.candidate_assessment.data.is_us_ip ? 'Yes' : 'No'
+        candidateIpTimeZoneAlign.value[candidate.candidate_id] = candidate.candidate_assessment.data.ip_timezone_align ? 'Yes' : 'No'
       } else {
         // Default values if no assessment data - only set local state, don't update DB
         if (!candidateVpnStatus.value[candidate.candidate_id]) {
@@ -827,6 +867,9 @@ const refreshCandidates = async () => {
         }
         if (!candidateIpLocation.value[candidate.candidate_id]) {
           candidateIpLocation.value[candidate.candidate_id] = 'Yes'
+        }
+        if (!candidateIpTimeZoneAlign.value[candidate.candidate_id]) {
+          candidateIpTimeZoneAlign.value[candidate.candidate_id] = 'Yes'
         }
         
         // Don't automatically update the database on refresh

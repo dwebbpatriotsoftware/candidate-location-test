@@ -6,6 +6,7 @@ export const candidateService = {
     is_vpn: boolean,
     is_us_ip: boolean,
     is_us_timezone: boolean,
+    ip_timezone_align?: boolean,
     ip_country_city?: string
   }) {
     const supabase = useSupabase()
@@ -20,14 +21,21 @@ export const candidateService = {
     else if (!assessmentData.is_vpn && assessmentData.is_us_ip && assessmentData.is_us_timezone) {
       value = "Proceed"
       reason = "Candidate appears to be in the US"
+
+      // if (!assessmentData.ip_timezone_align) {
+      //   value = "Proceed"
+      //   reason += "\nCandidate's IP address does not match the timezone"
+      // }
     } 
-    else if (assessmentData.is_vpn){
-      value = "Caution",
-      reason = "Candidate is using a VPN"
-    } 
-    else{
-      value = "Caution",
-      reason = "Candidate may be using a VPN or is not in the US"
+    else{//Caution cases
+      value = "Caution"
+
+      if (assessmentData.is_vpn){
+        reason = "Candidate is using a VPN"
+      } 
+      else{
+        reason = "Candidate may be using a VPN or is not in the US"
+      }
     }
     
     // Create the assessment object with the specified structure
@@ -36,7 +44,8 @@ export const candidateService = {
         is_vpn: assessmentData.is_vpn,
         is_us_ip: assessmentData.is_us_ip,
         is_us_timezone: assessmentData.is_us_timezone,
-        ...(assessmentData.ip_country_city ? { ip_country_city: assessmentData.ip_country_city } : {})
+        ip_timezone_align: assessmentData.ip_timezone_align || false,
+        ip_country_city: assessmentData.ip_country_city 
       },
       value: value,
       reason: reason
