@@ -66,6 +66,7 @@
             <thead class="bg-gray-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assessment</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US IP?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US TIME ZONE?</th>
@@ -114,6 +115,14 @@
                     </button>
                   </div>
                   {{ candidate.candidate_id }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                    :class="{
+                      'bg-red-100': candidate.candidate_assessment?.value === 'Exit',
+                      'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
+                      'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
+                    }">
+                  {{ candidate.candidate_assessment?.value || 'Not assessed' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
@@ -233,6 +242,7 @@
             <thead class="bg-gray-50">
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assessment</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US IP?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -280,6 +290,14 @@
                     </button>
                   </div>
                   {{ candidate.candidate_id }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                    :class="{
+                      'bg-red-100': candidate.candidate_assessment?.value === 'Exit',
+                      'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
+                      'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
+                    }">
+                  {{ candidate.candidate_assessment?.value || 'Not assessed' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
@@ -504,11 +522,20 @@ const updateCandidateAssessment = async (candidateId) => {
     )
     
     // Call the service function to update the assessment
-    await candidateService.updateCandidateAssessment(candidateId, {
+    const updatedData = await candidateService.updateCandidateAssessment(candidateId, {
       is_vpn: isVpn,
       is_us_ip: isUsIp,
       is_us_timezone: isUsTimezone
     })
+    
+    // Update the local candidate object with the new assessment value
+    if (updatedData && updatedData.length > 0) {
+      const candidateIndex = allCandidates.value.findIndex(c => c.candidate_id === candidateId)
+      if (candidateIndex !== -1) {
+        // Update the candidate_assessment property in the local state
+        allCandidates.value[candidateIndex].candidate_assessment = updatedData[0].candidate_assessment
+      }
+    }
     
     console.log(`Updated assessment for candidate ${candidateId}`)
   } catch (error) {
@@ -516,34 +543,45 @@ const updateCandidateAssessment = async (candidateId) => {
   }
 }
 
-// Add watchers for VPN and IP location status changes
-watch(
-  () => Object.entries(candidateVpnStatus.value),
-  async (newValues) => {
-    for (const [candidateId, status] of newValues) {
-      // Only update if the candidate exists in our list
-      const candidate = allCandidates.value.find(c => c.candidate_id === candidateId)
-      if (candidate) {
-        await updateCandidateAssessment(candidateId)
-      }
-    }
-  },
-  { deep: true }
-)
+// Store unwatch functions to clean up watchers
+const unwatchFunctions = ref([])
 
-watch(
-  () => Object.entries(candidateIpLocation.value),
-  async (newValues) => {
-    for (const [candidateId, status] of newValues) {
-      // Only update if the candidate exists in our list
-      const candidate = allCandidates.value.find(c => c.candidate_id === candidateId)
-      if (candidate) {
-        await updateCandidateAssessment(candidateId)
+// Setup individual watchers for each candidate
+const setupIndividualWatchers = () => {
+  // Clear any existing watchers
+  if (unwatchFunctions.value.length > 0) {
+    unwatchFunctions.value.forEach(unwatch => unwatch())
+    unwatchFunctions.value = []
+  }
+  
+  // Set up individual watchers for each candidate
+  allCandidates.value.forEach(candidate => {
+    const id = candidate.candidate_id
+    
+    // Watch VPN status for this specific candidate
+    const unwatchVpn = watch(
+      () => candidateVpnStatus.value[id],
+      async (newValue, oldValue) => {
+        if (newValue !== oldValue) {
+          await updateCandidateAssessment(id)
+        }
       }
-    }
-  },
-  { deep: true }
-)
+    )
+    
+    // Watch IP location for this specific candidate
+    const unwatchIp = watch(
+      () => candidateIpLocation.value[id],
+      async (newValue, oldValue) => {
+        if (newValue !== oldValue) {
+          await updateCandidateAssessment(id)
+        }
+      }
+    )
+    
+    // Store unwatch functions to clean up later
+    unwatchFunctions.value.push(unwatchVpn, unwatchIp)
+  })
+}
 
 // Fetch candidates from Supabase
 onMounted(async () => {
@@ -557,13 +595,16 @@ onMounted(async () => {
         candidateIpLocation.value[candidate.candidate_id] = candidate.assessment.data.is_us_ip ? 'Yes' : 'No'
       } else {
         // Default values if no assessment data
-        candidateVpnStatus.value[candidate.candidate_id] = 'No' // Default to Yes
+        candidateVpnStatus.value[candidate.candidate_id] = 'No' // Default to No
         candidateIpLocation.value[candidate.candidate_id] = 'Yes' // Default to Yes
         
         // Create initial assessment for this candidate
         updateCandidateAssessment(candidate.candidate_id)
       }
     })
+    
+    // Set up individual watchers after candidates are loaded
+    setupIndividualWatchers()
   } catch (error) {
     console.error('Error fetching candidates:', error)
   }
@@ -593,6 +634,9 @@ const refreshCandidates = async () => {
         updateCandidateAssessment(candidate.candidate_id)
       }
     })
+    
+    // Reset watchers after refreshing candidates
+    setupIndividualWatchers()
   } catch (error) {
     console.error('Error refreshing candidates:', error)
   } finally {
