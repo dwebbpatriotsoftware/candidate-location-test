@@ -181,6 +181,9 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
                   {{ isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'Yes' : 'No' }}
+                  <div class="text-xs text-gray-500">
+                    ({{ candidate.candidate_answers?.timezone || candidate.candidate_timezone || 'Unknown timezone' }})
+                  </div>
                 </td>
                 <td class="px-6 py-4 text-sm font-medium text-left">
                   <!-- Mark as assessed button -->
@@ -250,8 +253,6 @@
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assessment</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN?</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US IP?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -339,26 +340,6 @@
                       </div>
                     </div>
                   </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
-                  <select 
-                    v-model="candidateVpnStatus[candidate.candidate_id]" 
-                    class="bg-transparent border-0 focus:ring-0 focus:outline-none"
-                  >
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                  </select>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="candidateIpLocation[candidate.candidate_id] === 'Yes' ? 'bg-green-100' : 'bg-red-100'">
-                  <select 
-                    v-model="candidateIpLocation[candidate.candidate_id]" 
-                    class="bg-transparent border-0 focus:ring-0 focus:outline-none"
-                  >
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                  </select>
                 </td>
                 <td class="px-6 py-4 text-sm font-medium text-left">
                   <!-- Mark as new button -->
@@ -473,6 +454,59 @@
               <div>
                 <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q2?.question || 'Question 2' }}</p>
                 <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.q2?.answer || 'No response' }}</p>
+              </div>
+              
+              <!-- Assessment Values Section -->
+              <div class="border-t pt-3 mt-4">
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Assessment</h4>
+                
+                <!-- VPN Status -->
+                <div class="mb-2">
+                  <p class="text-sm font-medium text-gray-500">VPN?</p>
+                  <p class="text-base text-gray-900"
+                     :class="currentCandidateQuestions.candidate_assessment?.data?.is_vpn ? 'bg-yellow-100 px-2 py-1 rounded' : 'bg-green-100 px-2 py-1 rounded'">
+                    {{ currentCandidateQuestions.candidate_assessment?.data?.is_vpn ? 'Yes' : 'No' }}
+                  </p>
+                </div>
+                
+                <!-- US IP Status -->
+                <div class="mb-2">
+                  <p class="text-sm font-medium text-gray-500">US IP?</p>
+                  <p class="text-base text-gray-900"
+                     :class="currentCandidateQuestions.candidate_assessment?.data?.is_us_ip ? 'bg-green-100 px-2 py-1 rounded' : 'bg-red-100 px-2 py-1 rounded'">
+                    {{ currentCandidateQuestions.candidate_assessment?.data?.is_us_ip ? 'Yes' : 'No' }}
+                  </p>
+                </div>
+                
+                <!-- US Time Zone Status -->
+                <div class="mb-2">
+                  <p class="text-sm font-medium text-gray-500">US Time Zone?</p>
+                  <p class="text-base text-gray-900"
+                     :class="currentCandidateQuestions.candidate_assessment?.data?.is_us_timezone ? 'bg-green-100 px-2 py-1 rounded' : 'bg-red-100 px-2 py-1 rounded'">
+                    {{ currentCandidateQuestions.candidate_assessment?.data?.is_us_timezone ? 'Yes' : 'No' }}
+                  </p>
+                </div>
+                
+                <!-- Assessment Value -->
+                <div class="mb-2">
+                  <p class="text-sm font-medium text-gray-500">Assessment</p>
+                  <p class="text-base text-gray-900"
+                     :class="{
+                       'text-red-600': currentCandidateQuestions.candidate_assessment?.value === 'Exit',
+                       'text-yellow-600': currentCandidateQuestions.candidate_assessment?.value === 'Caution',
+                       'text-green-600': currentCandidateQuestions.candidate_assessment?.value === 'Proceed'
+                     }">
+                    {{ currentCandidateQuestions.candidate_assessment?.value || 'Not assessed' }}
+                  </p>
+                </div>
+                
+                <!-- Assessment Reason -->
+                <div v-if="currentCandidateQuestions.candidate_assessment?.reason">
+                  <p class="text-sm font-medium text-gray-500">Reason</p>
+                  <p class="text-base text-gray-900">
+                    {{ currentCandidateQuestions.candidate_assessment?.reason }}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -604,16 +638,16 @@ onMounted(async () => {
     // Set default values for all candidates
     allCandidates.value.forEach(candidate => {
       // Check if assessment data already exists
-      if (candidate.assessment?.data) {
-        candidateVpnStatus.value[candidate.candidate_id] = candidate.assessment.data.is_vpn ? 'Yes' : 'No'
-        candidateIpLocation.value[candidate.candidate_id] = candidate.assessment.data.is_us_ip ? 'Yes' : 'No'
+      if (candidate.candidate_assessment?.data) {
+        candidateVpnStatus.value[candidate.candidate_id] = candidate.candidate_assessment.data.is_vpn ? 'Yes' : 'No'
+        candidateIpLocation.value[candidate.candidate_id] = candidate.candidate_assessment.data.is_us_ip ? 'Yes' : 'No'
       } else {
-        // Default values if no assessment data
+        // Default values if no assessment data - only set local state, don't update DB
         candidateVpnStatus.value[candidate.candidate_id] = 'No' // Default to No
         candidateIpLocation.value[candidate.candidate_id] = 'Yes' // Default to Yes
         
-        // Create initial assessment for this candidate
-        updateCandidateAssessment(candidate.candidate_id)
+        // Don't automatically update the database on page load
+        // updateCandidateAssessment(candidate.candidate_id)
       }
     })
     
@@ -632,11 +666,11 @@ const refreshCandidates = async () => {
     // Set default values for any new candidates
     allCandidates.value.forEach(candidate => {
       // Check if assessment data already exists
-      if (candidate.assessment?.data) {
-        candidateVpnStatus.value[candidate.candidate_id] = candidate.assessment.data.is_vpn ? 'Yes' : 'No'
-        candidateIpLocation.value[candidate.candidate_id] = candidate.assessment.data.is_us_ip ? 'Yes' : 'No'
+      if (candidate.candidate_assessment?.data) {
+        candidateVpnStatus.value[candidate.candidate_id] = candidate.candidate_assessment.data.is_vpn ? 'Yes' : 'No'
+        candidateIpLocation.value[candidate.candidate_id] = candidate.candidate_assessment.data.is_us_ip ? 'Yes' : 'No'
       } else {
-        // Default values if no assessment data
+        // Default values if no assessment data - only set local state, don't update DB
         if (!candidateVpnStatus.value[candidate.candidate_id]) {
           candidateVpnStatus.value[candidate.candidate_id] = 'No'
         }
@@ -644,8 +678,8 @@ const refreshCandidates = async () => {
           candidateIpLocation.value[candidate.candidate_id] = 'Yes'
         }
         
-        // Create initial assessment for this candidate
-        updateCandidateAssessment(candidate.candidate_id)
+        // Don't automatically update the database on refresh
+        // updateCandidateAssessment(candidate.candidate_id)
       }
     })
     
