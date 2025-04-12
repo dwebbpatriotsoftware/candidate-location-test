@@ -170,13 +170,48 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="candidateIpLocation[candidate.candidate_id] === 'Yes' ? 'bg-green-100' : 'bg-red-100'">
-                  <select 
-                    v-model="candidateIpLocation[candidate.candidate_id]" 
-                    class="bg-transparent border-0 focus:ring-0 focus:outline-none"
-                  >
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                  </select>
+                  <div class="flex items-center">
+                    <div class="relative group inline-block mr-2">
+                      <button 
+                        @click="openLocationModal(candidate)"
+                        class="text-gray-500 hover:text-gray-700 focus:outline-none"
+                        aria-label="Set IP location"
+                      >
+                        <!-- Location pin icon SVG -->
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          class="h-5 w-5" 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor"
+                        >
+                          <path 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            stroke-width="2" 
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" 
+                          />
+                          <path 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            stroke-width="2" 
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" 
+                          />
+                        </svg>
+                      </button>
+                      <!-- Tooltip -->
+                      <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                        Set IP Location
+                      </span>
+                    </div>
+                    <select 
+                      v-model="candidateIpLocation[candidate.candidate_id]" 
+                      class="bg-transparent border-0 focus:ring-0 focus:outline-none"
+                    >
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
@@ -399,6 +434,55 @@
       </div>
     </div>
     
+    <!-- Location Modal -->
+    <div v-if="showLocationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
+        <div class="p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-medium text-gray-900">
+              IP Location (Country/City)
+            </h3>
+            <button 
+              @click="closeLocationModal" 
+              class="text-gray-400 hover:text-gray-500 focus:outline-none"
+            >
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="space-y-4">
+            <div>
+              <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+              <input
+                id="location"
+                v-model="locationInput"
+                type="text"
+                placeholder="Enter location (e.g. US/Chicago)"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              >
+            </div>
+          </div>
+          
+          <div class="mt-6 flex justify-end space-x-3">
+            <button 
+              @click="closeLocationModal" 
+              class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Cancel
+            </button>
+            <button 
+              @click="saveLocation" 
+              class="px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <!-- Questions Modal -->
     <div v-if="showQuestionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
@@ -545,6 +629,9 @@ const candidateIpLocation = ref({})
 // Modal state
 const showQuestionsModal = ref(false)
 const currentCandidateQuestions = ref(null)
+const showLocationModal = ref(false)
+const currentLocationCandidate = ref(null)
+const locationInput = ref('')
 
 // Modal functions
 const openQuestionsModal = (candidate) => {
@@ -554,6 +641,42 @@ const openQuestionsModal = (candidate) => {
 
 const closeQuestionsModal = () => {
   showQuestionsModal.value = false
+}
+
+// Location modal functions
+const openLocationModal = (candidate) => {
+  currentLocationCandidate.value = candidate
+  // Pre-fill with existing location if available
+  locationInput.value = candidate.candidate_location || ''
+  showLocationModal.value = true
+}
+
+const closeLocationModal = () => {
+  showLocationModal.value = false
+  locationInput.value = ''
+}
+
+const saveLocation = async () => {
+  if (currentLocationCandidate.value) {
+    try {
+      // Update the candidate with the new location
+      const candidateId = currentLocationCandidate.value.candidate_id
+      const index = allCandidates.value.findIndex(c => c.candidate_id === candidateId)
+      
+      if (index !== -1) {
+        // Update the local state
+        allCandidates.value[index].candidate_location = locationInput.value
+        
+        // TODO: If needed, add a function to candidateService to save the location to the database
+        // await candidateService.updateCandidateLocation(candidateId, locationInput.value)
+      }
+      
+      // Close the modal
+      closeLocationModal()
+    } catch (error) {
+      console.error('Error saving location:', error)
+    }
+  }
 }
 
 // Function to update assessment data
