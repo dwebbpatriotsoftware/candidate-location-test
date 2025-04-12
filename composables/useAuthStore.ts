@@ -19,11 +19,8 @@ export const useAuthStore = () => {
     }
   }
 
-  // Call initAuth when the store is first used
-  onMounted(() => {
-    initAuth()
-    
-    // Set up auth state change listener
+  // Set up auth state change listener
+  const setupAuthListener = () => {
     supabase.auth.onAuthStateChange((event: string, session: any) => {
       if (event === 'SIGNED_IN' && session) {
         user.value = session.user
@@ -33,7 +30,7 @@ export const useAuthStore = () => {
         isAuthenticated.value = false
       }
     })
-  })
+  }
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
@@ -79,6 +76,7 @@ export const useAuthStore = () => {
     isAuthenticated,
     login,
     logout,
-    initAuth
+    initAuth,
+    setupAuthListener
   }
 }
