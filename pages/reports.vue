@@ -59,7 +59,7 @@
     
     <!-- To Assess Table -->
     <div class="mb-8">
-      <h2 class="text-xl font-semibold text-gray-800 mb-3">To Assess</h2>
+      <h2 class="text-xl font-semibold text-gray-800 mb-3">New</h2>
       <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
@@ -263,7 +263,7 @@
                     </button>
                     <!-- Tooltip -->
                     <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                      Mark as Assessed
+                      Mark as Reviewed
                     </span>
                   </div>
                   <button 
@@ -297,7 +297,7 @@
     
     <!-- Assessed Table -->
     <div class="mb-8">
-      <h2 class="text-xl font-semibold text-gray-800 mb-3">Assessed</h2>
+      <h2 class="text-xl font-semibold text-gray-800 mb-3">Reviewed</h2>
       <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
@@ -431,7 +431,7 @@
                     <button 
                       @click="markAsNew(candidate)"
                       class="text-red-600 hover:text-red-500 focus:outline-none"
-                      aria-label="Unmark as Assessed"
+                      aria-label="Unmark"
                     >
                       <!-- Checked checkbox icon SVG -->
                       <svg 
@@ -448,7 +448,7 @@
                     </button>
                     <!-- Tooltip -->
                     <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                      Unmark as Assessed
+                      Unmark (Set as New)
                     </span>
                   </div>
                   <button 
