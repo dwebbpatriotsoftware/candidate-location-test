@@ -2,6 +2,59 @@ import { useSupabase } from '../utils/supabase'
 
 export const candidateService = {
   
+  async updateCandidateAssessment(candidateId: string, assessmentData: {
+    is_vpn: boolean,
+    is_us_ip: boolean,
+    is_us_timezone: boolean
+  }) {
+    const supabase = useSupabase()
+    
+    // Determine the value string based on the combination of booleans
+    let value = ""
+    let reason = ""
+    if (!assessmentData.is_us_ip || !assessmentData.is_us_timezone) {
+      value = "Exit",
+      reason = "Candidate is not in the US"
+    }
+    else if (!assessmentData.is_vpn && assessmentData.is_us_ip && assessmentData.is_us_timezone) {
+      value = "Proceed"
+      reason = "Candidate appears to be in the US"
+    } 
+    else if (assessmentData.is_vpn){
+      value = "Caution",
+      reason = "Candidate is using a VPN"
+    } 
+    else{
+      value = "Caution",
+      reason = "Candidate may be using a VPN or is not in the US"
+    }
+    
+    // Create the assessment object with the specified structure
+    const candidate_assessment = {
+      data: {
+        is_vpn: assessmentData.is_vpn,
+        is_us_ip: assessmentData.is_us_ip,
+        is_us_timezone: assessmentData.is_us_timezone
+      },
+      value: value,
+      reason: reason
+    }
+    
+    // Update the candidate record
+    const { data, error } = await supabase
+      .from('candidate_info')
+      .update({ candidate_assessment })
+      .eq('candidate_id', candidateId)
+      .select()
+    
+    if (error) {
+      console.error('Error updating candidate assessment:', error)
+      throw error
+    }
+    
+    return data || []
+  },
+  
   async deleteCandidate(candidateId: string) {
     const supabase = useSupabase()
     const { error } = await supabase
@@ -76,8 +129,8 @@ export const candidateService = {
       return {
         candidate: {
           candidate_id: candidateId,
-          candidate_timezone: timezone,
-          candidate_ip: ip,
+          candidate_timezone: answers.timezone,
+          candidate_ip: answers.ip,
           candidate_answers: answers
         },
         isExisting: false

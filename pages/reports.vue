@@ -460,7 +460,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { candidateService } from '../services/candidateService'
 
 definePageMeta({
@@ -490,14 +490,79 @@ const closeQuestionsModal = () => {
   showQuestionsModal.value = false
 }
 
+// Function to update assessment data
+const updateCandidateAssessment = async (candidateId) => {
+  try {
+    const candidate = allCandidates.value.find(c => c.candidate_id === candidateId)
+    if (!candidate) return
+    
+    // Convert string values to boolean
+    const isVpn = candidateVpnStatus.value[candidateId] === 'Yes'
+    const isUsIp = candidateIpLocation.value[candidateId] === 'Yes'
+    const isUsTimezone = isApprovedTimezone(
+      candidate.candidate_answers?.timezone || candidate.candidate_timezone
+    )
+    
+    // Call the service function to update the assessment
+    await candidateService.updateCandidateAssessment(candidateId, {
+      is_vpn: isVpn,
+      is_us_ip: isUsIp,
+      is_us_timezone: isUsTimezone
+    })
+    
+    console.log(`Updated assessment for candidate ${candidateId}`)
+  } catch (error) {
+    console.error(`Error updating assessment for candidate ${candidateId}:`, error)
+  }
+}
+
+// Add watchers for VPN and IP location status changes
+watch(
+  () => Object.entries(candidateVpnStatus.value),
+  async (newValues) => {
+    for (const [candidateId, status] of newValues) {
+      // Only update if the candidate exists in our list
+      const candidate = allCandidates.value.find(c => c.candidate_id === candidateId)
+      if (candidate) {
+        await updateCandidateAssessment(candidateId)
+      }
+    }
+  },
+  { deep: true }
+)
+
+watch(
+  () => Object.entries(candidateIpLocation.value),
+  async (newValues) => {
+    for (const [candidateId, status] of newValues) {
+      // Only update if the candidate exists in our list
+      const candidate = allCandidates.value.find(c => c.candidate_id === candidateId)
+      if (candidate) {
+        await updateCandidateAssessment(candidateId)
+      }
+    }
+  },
+  { deep: true }
+)
+
 // Fetch candidates from Supabase
 onMounted(async () => {
   try {
     allCandidates.value = await candidateService.getCandidates()
     // Set default values for all candidates
     allCandidates.value.forEach(candidate => {
-      candidateVpnStatus.value[candidate.candidate_id] = 'No' // Default to No
-      candidateIpLocation.value[candidate.candidate_id] = 'Yes' // Default to Yes
+      // Check if assessment data already exists
+      if (candidate.assessment?.data) {
+        candidateVpnStatus.value[candidate.candidate_id] = candidate.assessment.data.is_vpn ? 'Yes' : 'No'
+        candidateIpLocation.value[candidate.candidate_id] = candidate.assessment.data.is_us_ip ? 'Yes' : 'No'
+      } else {
+        // Default values if no assessment data
+        candidateVpnStatus.value[candidate.candidate_id] = 'No' // Default to Yes
+        candidateIpLocation.value[candidate.candidate_id] = 'Yes' // Default to Yes
+        
+        // Create initial assessment for this candidate
+        updateCandidateAssessment(candidate.candidate_id)
+      }
     })
   } catch (error) {
     console.error('Error fetching candidates:', error)
@@ -511,11 +576,21 @@ const refreshCandidates = async () => {
     allCandidates.value = await candidateService.getCandidates()
     // Set default values for any new candidates
     allCandidates.value.forEach(candidate => {
-      if (!candidateVpnStatus.value[candidate.candidate_id]) {
-        candidateVpnStatus.value[candidate.candidate_id] = 'No'
-      }
-      if (!candidateIpLocation.value[candidate.candidate_id]) {
-        candidateIpLocation.value[candidate.candidate_id] = 'Yes'
+      // Check if assessment data already exists
+      if (candidate.assessment?.data) {
+        candidateVpnStatus.value[candidate.candidate_id] = candidate.assessment.data.is_vpn ? 'Yes' : 'No'
+        candidateIpLocation.value[candidate.candidate_id] = candidate.assessment.data.is_us_ip ? 'Yes' : 'No'
+      } else {
+        // Default values if no assessment data
+        if (!candidateVpnStatus.value[candidate.candidate_id]) {
+          candidateVpnStatus.value[candidate.candidate_id] = 'No'
+        }
+        if (!candidateIpLocation.value[candidate.candidate_id]) {
+          candidateIpLocation.value[candidate.candidate_id] = 'Yes'
+        }
+        
+        // Create initial assessment for this candidate
+        updateCandidateAssessment(candidate.candidate_id)
       }
     })
   } catch (error) {
