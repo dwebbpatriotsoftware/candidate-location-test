@@ -305,6 +305,10 @@
               <tr>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assessment</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN?</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US IP?</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US TIME ZONE?</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP/TIME ZONE?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -397,6 +401,29 @@
                       </div>
                     </div>
                   </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="candidate.candidate_assessment?.data?.is_vpn ? 'bg-yellow-100' : 'bg-green-100'">
+                  {{ candidate.candidate_assessment?.data?.is_vpn ? 'Yes' : 'No' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="candidate.candidate_assessment?.data?.is_us_ip ? 'bg-green-100' : 'bg-red-100'">
+                  {{ candidate.candidate_assessment?.data?.is_us_ip ? 'Yes' : 'No' }}
+                  <!-- IP Location sub-text -->
+                  <div class="text-xs text-gray-500">
+                    ({{ candidate.candidate_assessment?.data?.ip_country_city || 'Unknown location' }})
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
+                  {{ isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'Yes' : 'No' }}
+                  <div class="text-xs text-gray-500">
+                    ({{ candidate.candidate_answers?.timezone || candidate.candidate_timezone || 'Unknown timezone' }})
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="candidate.candidate_assessment?.data?.ip_timezone_align ? 'bg-green-100' : 'bg-yellow-100'">
+                  {{ candidate.candidate_assessment?.data?.ip_timezone_align ? 'Yes' : 'No' }}
                 </td>
                 <td class="px-6 py-4 text-sm font-medium text-left bg-gray-50">
                   <!-- Mark as new button -->
