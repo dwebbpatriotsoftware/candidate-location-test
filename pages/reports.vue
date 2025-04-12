@@ -248,20 +248,17 @@
                       class="text-green-600 hover:text-green-500 focus:outline-none"
                       aria-label="Mark as assessed"
                     >
-                      <!-- Checkmark icon SVG -->
+                      <!-- Checked checkbox icon SVG -->
                       <svg 
                         xmlns="http://www.w3.org/2000/svg" 
-                        class="h-5 w-5" 
+                        class="h-5 w-5 text-gray-500" 
                         fill="none" 
                         viewBox="0 0 24 24" 
                         stroke="currentColor"
+                        stroke-width="2"
                       >
-                        <path 
-                          stroke-linecap="round" 
-                          stroke-linejoin="round" 
-                          stroke-width="2" 
-                          d="M5 13l4 4L19 7" 
-                        />
+                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                        <path d="M9 12l2 2 4-4" />
                       </svg>
                     </button>
                     <!-- Tooltip -->
@@ -407,27 +404,24 @@
                     <button 
                       @click="markAsNew(candidate)"
                       class="text-red-600 hover:text-red-500 focus:outline-none"
-                      aria-label="Mark as new"
+                      aria-label="Unmark as Assessed"
                     >
-                      <!-- X icon SVG -->
+                      <!-- Checked checkbox icon SVG -->
                       <svg 
                         xmlns="http://www.w3.org/2000/svg" 
-                        class="h-5 w-5" 
+                        class="h-5 w-5 text-green-500" 
                         fill="none" 
                         viewBox="0 0 24 24" 
                         stroke="currentColor"
+                        stroke-width="2"
                       >
-                        <path 
-                          stroke-linecap="round" 
-                          stroke-linejoin="round" 
-                          stroke-width="2" 
-                          d="M6 18L18 6M6 6l12 12" 
-                        />
+                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                        <path d="M9 12l2 2 4-4" />
                       </svg>
                     </button>
                     <!-- Tooltip -->
                     <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                      Mark as New
+                      Unmark as Assessed
                     </span>
                   </div>
                   <button 
