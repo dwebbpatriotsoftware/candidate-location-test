@@ -122,7 +122,12 @@
                       'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
                       'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
                     }">
-                  {{ candidate.candidate_assessment?.value || 'Not assessed' }}
+                  <div class="flex flex-col">
+                    <div>{{ candidate.candidate_assessment?.value || 'Not assessed' }}</div>
+                    <div v-if="candidate.candidate_assessment?.reason" class="text-xs text-gray-500">
+                      {{ candidate.candidate_assessment.reason }}
+                    </div>
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
@@ -297,7 +302,12 @@
                       'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
                       'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
                     }">
-                  {{ candidate.candidate_assessment?.value || 'Not assessed' }}
+                  <div class="flex flex-col">
+                    <div>{{ candidate.candidate_assessment?.value || 'Not assessed' }}</div>
+                    <div v-if="candidate.candidate_assessment?.reason" class="text-xs text-gray-500">
+                      {{ candidate.candidate_assessment.reason }}
+                    </div>
+                  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
