@@ -69,8 +69,8 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assessment</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US IP?</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP/TIME ZONE?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US TIME ZONE?</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP/TIME ZONE?</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -80,7 +80,12 @@
               :key="candidate.candidate_id" 
               class="hover:bg-gray-50"
             > 
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="{
+                      'bg-red-100': candidate.candidate_assessment?.value === 'Exit',
+                      'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
+                      'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
+                    }">
                   <div class="relative mr-2">
                     <button 
                       @click="copyId(candidate.candidate_id, candidate.candidate_id)" 
@@ -117,7 +122,7 @@
                   </div>
                   {{ candidate.candidate_id }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="{
                       'bg-red-100': candidate.candidate_assessment?.value === 'Exit',
                       'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
@@ -219,6 +224,13 @@
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
+                  {{ isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'Yes' : 'No' }}
+                  <div class="text-xs text-gray-500">
+                    ({{ candidate.candidate_answers?.timezone || candidate.candidate_timezone || 'Unknown timezone' }})
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="candidateIpTimeZoneAlign[candidate.candidate_id] === 'Yes' ? 'bg-green-100' : 'bg-yellow-100'">
                   <select 
                     v-model="candidateIpTimeZoneAlign[candidate.candidate_id]" 
@@ -228,14 +240,7 @@
                     <option value="No">No</option>
                   </select>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
-                  {{ isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'Yes' : 'No' }}
-                  <div class="text-xs text-gray-500">
-                    ({{ candidate.candidate_answers?.timezone || candidate.candidate_timezone || 'Unknown timezone' }})
-                  </div>
-                </td>
-                <td class="px-6 py-4 text-sm font-medium text-left">
+                <td class="px-6 py-4 text-sm font-medium text-left bg-gray-50">
                   <!-- Mark as assessed button -->
                   <div class="relative group inline-block mr-2">
                     <button 
@@ -312,7 +317,12 @@
                 :key="candidate.candidate_id" 
                 class="hover:bg-gray-50"
               > 
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="{
+                      'bg-red-100': candidate.candidate_assessment?.value === 'Exit',
+                      'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
+                      'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
+                    }">
                   <div class="relative mr-2">
                     <button 
                       @click="copyId(candidate.candidate_id, candidate.candidate_id)" 
@@ -349,7 +359,7 @@
                   </div>
                   {{ candidate.candidate_id }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="{
                       'bg-red-100': candidate.candidate_assessment?.value === 'Exit',
                       'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
@@ -391,7 +401,7 @@
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 text-sm font-medium text-left">
+                <td class="px-6 py-4 text-sm font-medium text-left bg-gray-50">
                   <!-- Mark as new button -->
                   <div class="relative group inline-block mr-2">
                     <button 
