@@ -86,12 +86,13 @@
                       'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
                       'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
                     }">
-                  <div class="relative mr-2">
-                    <button 
-                      @click="copyId(candidate.candidate_id, candidate.candidate_id)" 
-                      class="focus:outline-none"
-                      :aria-label="`Copy ${candidate.candidate_id}`"
-                    >
+                  <div class="flex items-center">
+                    <div class="relative">
+                      <button 
+                        @click="copyId(candidate.candidate_id, candidate.candidate_id)" 
+                        class="focus:outline-none mr-2"
+                        :aria-label="`Copy ${candidate.candidate_id}`"
+                      >
                       <!-- Copy icon SVG -->
                       <svg 
                         xmlns="http://www.w3.org/2000/svg" 
@@ -120,7 +121,8 @@
                       </span>
                     </button>
                   </div>
-                  {{ candidate.candidate_id }}
+                  <span>{{ candidate.candidate_id }}</span>
+                </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="{
@@ -240,9 +242,10 @@
                     <option value="No">No</option>
                   </select>
                 </td>
-                <td class="px-6 py-4 text-sm font-medium text-left bg-gray-50">
-                  <!-- Mark as assessed button -->
-                  <div class="relative group inline-block mr-2">
+                <td class="px-6 py-4 text-sm font-medium text-center bg-gray-50">
+                  <div class="flex justify-center items-center">
+                    <!-- Mark as assessed button -->
+                    <div class="relative group inline-block mr-2">
                     <button 
                       @click="markAsAssessed(candidate)"
                       class="text-green-600 hover:text-green-500 focus:outline-none"
@@ -265,12 +268,12 @@
                     <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
                       Mark as Reviewed
                     </span>
-                  </div>
-                  <button 
-                    @click="deleteCandidate(candidate.candidate_id)" 
-                    class="text-red-600 hover:text-red-900 focus:outline-none"
-                    aria-label="Delete candidate"
-                  >
+                    </div>
+                    <button 
+                      @click="deleteCandidate(candidate.candidate_id)" 
+                      class="text-red-600 hover:text-red-900 focus:outline-none"
+                      aria-label="Delete candidate"
+                    >
                     <!-- Trashcan icon SVG -->
                     <svg 
                       xmlns="http://www.w3.org/2000/svg" 
@@ -286,7 +289,8 @@
                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
                       />
                     </svg>
-                  </button>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -324,12 +328,13 @@
                       'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
                       'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
                     }">
-                  <div class="relative mr-2">
-                    <button 
-                      @click="copyId(candidate.candidate_id, candidate.candidate_id)" 
-                      class="focus:outline-none"
-                      :aria-label="`Copy ${candidate.candidate_id}`"
-                    >
+                  <div class="flex items-center">
+                    <div class="relative">
+                      <button 
+                        @click="copyId(candidate.candidate_id, candidate.candidate_id)" 
+                        class="focus:outline-none mr-2"
+                        :aria-label="`Copy ${candidate.candidate_id}`"
+                      >
                       <!-- Copy icon SVG -->
                       <svg 
                         xmlns="http://www.w3.org/2000/svg" 
@@ -358,7 +363,8 @@
                       </span>
                     </button>
                   </div>
-                  {{ candidate.candidate_id }}
+                  <span>{{ candidate.candidate_id }}</span>
+                </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="{
@@ -425,9 +431,10 @@
                     :class="candidate.candidate_assessment?.data?.ip_timezone_align ? 'bg-green-100' : 'bg-yellow-100'">
                   {{ candidate.candidate_assessment?.data?.ip_timezone_align ? 'Yes' : 'No' }}
                 </td>
-                <td class="px-6 py-4 text-sm font-medium text-left bg-gray-50">
-                  <!-- Mark as new button -->
-                  <div class="relative group inline-block mr-2">
+                <td class="px-6 py-4 text-sm font-medium text-center bg-gray-50">
+                  <div class="flex justify-center items-center">
+                    <!-- Mark as new button -->
+                    <div class="relative group inline-block mr-2">
                     <button 
                       @click="markAsNew(candidate)"
                       class="text-red-600 hover:text-red-500 focus:outline-none"
@@ -450,12 +457,12 @@
                     <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
                       Unmark (Set as New)
                     </span>
-                  </div>
-                  <button 
-                    @click="deleteCandidate(candidate.candidate_id)" 
-                    class="text-red-600 hover:text-red-900 focus:outline-none"
-                    aria-label="Delete candidate"
-                  >
+                    </div>
+                    <button 
+                      @click="deleteCandidate(candidate.candidate_id)" 
+                      class="text-red-600 hover:text-red-900 focus:outline-none"
+                      aria-label="Delete candidate"
+                    >
                     <!-- Trashcan icon SVG -->
                     <svg 
                       xmlns="http://www.w3.org/2000/svg" 
@@ -471,7 +478,8 @@
                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
                       />
                     </svg>
-                  </button>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
