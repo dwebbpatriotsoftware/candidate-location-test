@@ -212,18 +212,20 @@
                         Set IP Location
                       </span>
                     </div>
-                    <select 
-                      v-model="candidateIpLocation[candidate.candidate_id]" 
-                      class="bg-transparent border-0 focus:ring-0 focus:outline-none"
-                    >
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </select>
-                  </div>
-                  <!-- IP Location sub-text -->
-                  <div class="text-xs text-gray-500">
-                    ({{ candidate.candidate_assessment?.data?.ip_country_city || 'Unknown location' }})
-                  </div>
+    <div class="flex flex-col">
+      <select 
+        v-model="candidateIpLocation[candidate.candidate_id]" 
+        class="bg-transparent border-0 focus:ring-0 focus:outline-none"
+      >
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+      <!-- IP Location sub-text -->
+      <div class="text-xs text-gray-500">
+        ({{ candidate.candidate_assessment?.data?.ip_country_city || 'Unknown location' }})
+      </div>
+    </div>
+  </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
