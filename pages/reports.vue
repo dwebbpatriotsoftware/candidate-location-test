@@ -131,10 +131,10 @@
                       'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
                     }">
                   <div class="flex items-center">
-                    <div class="relative group inline-block mr-2">
+                    <div class="relative group flex items-center mr-2">
                       <button 
                         @click="openQuestionsModal(candidate)"
-                        class="text-gray-500 hover:text-gray-700 focus:outline-none"
+                        class="text-gray-500 hover:text-gray-700 focus:outline-none flex items-center"
                         aria-label="View candidate responses"
                       >
                         <!-- Information icon SVG -->
@@ -179,10 +179,10 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
                     :class="candidateIpLocation[candidate.candidate_id] === 'Yes' ? 'bg-green-100' : 'bg-red-100'">
                   <div class="flex items-center">
-                    <div class="relative group inline-block mr-2">
+                    <div class="relative group flex items-center mr-2">
                       <button 
                         @click="openLocationModal(candidate)"
-                        class="text-gray-500 hover:text-gray-700 focus:outline-none"
+                        class="text-gray-500 hover:text-gray-700 focus:outline-none flex items-center"
                         aria-label="Set IP location"
                       >
                         <!-- Location pin icon SVG -->
@@ -243,12 +243,12 @@
                   </select>
                 </td>
                 <td class="px-6 py-4 text-sm font-medium text-center bg-gray-50">
-                  <div class="flex justify-center items-center">
+                  <div class="flex justify-center items-center h-full">
                     <!-- Mark as assessed button -->
-                    <div class="relative group inline-block mr-2">
+                    <div class="relative group inline-flex items-center justify-center mr-2">
                     <button 
                       @click="markAsAssessed(candidate)"
-                      class="text-green-600 hover:text-green-500 focus:outline-none"
+                      class="text-green-600 hover:text-green-500 focus:outline-none flex items-center justify-center"
                       aria-label="Mark as assessed"
                     >
                       <!-- Checked checkbox icon SVG -->
@@ -271,7 +271,7 @@
                     </div>
                     <button 
                       @click="deleteCandidate(candidate.candidate_id)" 
-                      class="text-red-600 hover:text-red-900 focus:outline-none"
+                      class="text-red-600 hover:text-red-900 focus:outline-none flex items-center justify-center"
                       aria-label="Delete candidate"
                     >
                     <!-- Trashcan icon SVG -->
@@ -373,10 +373,10 @@
                       'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
                     }">
                   <div class="flex items-center">
-                    <div class="relative group inline-block mr-2">
+                    <div class="relative group flex items-center mr-2">
                       <button 
                         @click="openQuestionsModal(candidate)"
-                        class="text-gray-500 hover:text-gray-700 focus:outline-none"
+                        class="text-gray-500 hover:text-gray-700 focus:outline-none flex items-center"
                         aria-label="View candidate responses"
                       >
                         <!-- Information icon SVG -->
@@ -432,12 +432,12 @@
                   {{ candidate.candidate_assessment?.data?.ip_timezone_align ? 'Yes' : 'No' }}
                 </td>
                 <td class="px-6 py-4 text-sm font-medium text-center bg-gray-50">
-                  <div class="flex justify-center items-center">
+                  <div class="flex justify-center items-center h-full">
                     <!-- Mark as new button -->
-                    <div class="relative group inline-block mr-2">
+                    <div class="relative group inline-flex items-center justify-center mr-2">
                     <button 
                       @click="markAsNew(candidate)"
-                      class="text-red-600 hover:text-red-500 focus:outline-none"
+                      class="text-red-600 hover:text-red-500 focus:outline-none flex items-center justify-center"
                       aria-label="Unmark"
                     >
                       <!-- Checked checkbox icon SVG -->
@@ -460,7 +460,7 @@
                     </div>
                     <button 
                       @click="deleteCandidate(candidate.candidate_id)" 
-                      class="text-red-600 hover:text-red-900 focus:outline-none"
+                      class="text-red-600 hover:text-red-900 focus:outline-none flex items-center justify-center"
                       aria-label="Delete candidate"
                     >
                     <!-- Trashcan icon SVG -->
