@@ -435,6 +435,33 @@
                 </td>
                 <td class="px-6 py-4 text-sm font-medium text-center bg-gray-50">
                   <div class="flex justify-center items-center h-full">
+                    <!-- Mark as scheduled button -->
+                    <div class="relative group inline-flex items-center justify-center mr-2">
+                      <button 
+                        @click="markAsScheduled(candidate)"
+                        class="text-gray-500 hover:text-gray-700 focus:outline-none flex items-center justify-center"
+                        aria-label="Mark as scheduled"
+                      >
+                        <!-- Calendar icon SVG -->
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          class="h-5 w-5" 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                          <line x1="16" y1="2" x2="16" y2="6" />
+                          <line x1="8" y1="2" x2="8" y2="6" />
+                          <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                      </button>
+                      <!-- Tooltip -->
+                      <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                        Mark as Scheduled
+                      </span>
+                    </div>
                     <!-- Mark as new button -->
                     <div class="relative group inline-flex items-center justify-center mr-2">
                     <button 
@@ -459,6 +486,197 @@
                     <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
                       Unmark (Set as New)
                     </span>
+                    </div>
+                    <button 
+                      @click="deleteCandidate(candidate.candidate_id)" 
+                      class="text-red-600 hover:text-red-900 focus:outline-none flex items-center justify-center"
+                      aria-label="Delete candidate"
+                    >
+                    <!-- Trashcan icon SVG -->
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      class="h-5 w-5" 
+                      fill="none" 
+                      viewBox="0 0 24 24" 
+                      stroke="currentColor"
+                    >
+                      <path 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        stroke-width="2" 
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
+                      />
+                    </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Scheduled Table -->
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-3">Scheduled</h2>
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assessment</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN?</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US IP?</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US TIME ZONE?</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP/TIME ZONE?</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr 
+                v-for="candidate in scheduledCandidates" 
+                :key="candidate.candidate_id" 
+                class="hover:bg-gray-50"
+              > 
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="{
+                      'bg-red-100': candidate.candidate_assessment?.value === 'Exit',
+                      'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
+                      'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
+                    }">
+                  <div class="flex items-center">
+                    <div class="relative">
+                      <button 
+                        @click="copyId(candidate.candidate_id, candidate.candidate_id)" 
+                        class="focus:outline-none mr-2"
+                        :aria-label="`Copy ${candidate.candidate_id}`"
+                      >
+                      <!-- Copy icon SVG -->
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        :class="[
+                          'h-5 w-5 transition-colors duration-200',
+                          copiedIds[candidate.candidate_id] ? 'text-green-500' : 'text-gray-400 hover:text-gray-600'
+                        ]"
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path 
+                          stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                        />
+                      </svg>
+                      
+                      <!-- Copied tooltip -->
+                      <span 
+                        v-if="copiedIds[candidate.candidate_id]" 
+                        class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-green-500 text-white text-xs rounded shadow-lg"
+                      >
+                        Copied!
+                      </span>
+                    </button>
+                  </div>
+                  <span>{{ candidate.candidate_id }}</span>
+                </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="{
+                      'bg-red-100': candidate.candidate_assessment?.value === 'Exit',
+                      'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
+                      'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
+                    }">
+                  <div class="flex items-center">
+                    <div class="relative group flex items-center mr-2">
+                      <button 
+                        @click="openQuestionsModal(candidate)"
+                        class="text-gray-500 hover:text-gray-700 focus:outline-none flex items-center"
+                        aria-label="View candidate responses"
+                      >
+                        <!-- Information icon SVG -->
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          class="h-5 w-5" 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor"
+                        >
+                          <path 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            stroke-width="2" 
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" 
+                          />
+                        </svg>
+                      </button>
+                      <!-- Tooltip -->
+                      <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                        View Assessment Responses
+                      </span>
+                    </div>
+                    <div class="flex flex-col">
+                      <div>{{ candidate.candidate_assessment?.value || 'Not assessed' }}</div>
+                      <div v-if="candidate.candidate_assessment?.reason" class="text-xs text-gray-500">
+                        {{ candidate.candidate_assessment.reason }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="candidate.candidate_assessment?.data?.is_vpn ? 'bg-yellow-100' : 'bg-green-100'">
+                  {{ candidate.candidate_assessment?.data?.is_vpn ? 'Yes' : 'No' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="candidate.candidate_assessment?.data?.is_us_ip ? 'bg-green-100' : 'bg-red-100'">
+                  {{ candidate.candidate_assessment?.data?.is_us_ip ? 'Yes' : 'No' }}
+                  <!-- IP Location sub-text -->
+                  <div class="text-xs text-gray-500">
+                    ({{ candidate.candidate_assessment?.data?.ip_country_city || 'Unknown location' }})
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
+                  {{ isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'Yes' : 'No' }}
+                  <div class="text-xs text-gray-500">
+                    ({{ candidate.candidate_answers?.timezone || candidate.candidate_timezone || 'Unknown timezone' }})
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="candidate.candidate_assessment?.data?.ip_timezone_align ? 'bg-green-100' : 'bg-yellow-100'">
+                  {{ candidate.candidate_assessment?.data?.ip_timezone_align ? 'Yes' : 'No' }}
+                </td>
+                <td class="px-6 py-4 text-sm font-medium text-center bg-gray-50">
+                  <div class="flex justify-center items-center h-full">
+                    <!-- Unmark as scheduled button -->
+                    <div class="relative group inline-flex items-center justify-center mr-2">
+                      <button 
+                        @click="markAsUnscheduled(candidate)"
+                        class="text-green-500 hover:text-green-700 focus:outline-none flex items-center justify-center"
+                        aria-label="Unmark as scheduled"
+                      >
+                        <!-- Calendar icon SVG -->
+                        <svg 
+                          xmlns="http://www.w3.org/2000/svg" 
+                          class="h-5 w-5" 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                          <line x1="16" y1="2" x2="16" y2="6" />
+                          <line x1="8" y1="2" x2="8" y2="6" />
+                          <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                      </button>
+                      <!-- Tooltip -->
+                      <span class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                        Unmark as Scheduled
+                      </span>
                     </div>
                     <button 
                       @click="deleteCandidate(candidate.candidate_id)" 
@@ -693,7 +911,8 @@ definePageMeta({
 const router = useRouter()
 const allCandidates = ref([])
 const newCandidates = computed(() => allCandidates.value.filter(c => c.is_new === true))
-const assessedCandidates = computed(() => allCandidates.value.filter(c => c.is_new === false || c.is_new === undefined))
+const assessedCandidates = computed(() => allCandidates.value.filter(c => (c.is_new === false || c.is_new === undefined)  && c.scheduled !== true))
+const scheduledCandidates = computed(() => allCandidates.value.filter(c => c.scheduled === true))
 const isRefreshing = ref(false)
 // Track VPN, IP location, and IP/Time Zone alignment status for each candidate
 const candidateVpnStatus = ref({})
@@ -1042,6 +1261,36 @@ const deleteCandidate = async (id) => {
     allCandidates.value = allCandidates.value.filter(c => c.candidate_id !== id)
   } catch (error) {
     console.error('Error deleting candidate:', error)
+    // Optionally add error handling UI feedback here
+  }
+}
+
+// Mark candidate as scheduled function
+const markAsScheduled = async (candidate) => {
+  try {
+    await candidateService.markCandidateAsScheduled(candidate.candidate_id)
+    // Update the local state to reflect the change
+    const index = allCandidates.value.findIndex(c => c.candidate_id === candidate.candidate_id)
+    if (index !== -1) {
+      allCandidates.value[index].scheduled = true
+    }
+  } catch (error) {
+    console.error('Error marking candidate as scheduled:', error)
+    // Optionally add error handling UI feedback here
+  }
+}
+
+// Unmark candidate as scheduled function
+const markAsUnscheduled = async (candidate) => {
+  try {
+    await candidateService.markCandidateAsUnscheduled(candidate.candidate_id)
+    // Update the local state to reflect the change
+    const index = allCandidates.value.findIndex(c => c.candidate_id === candidate.candidate_id)
+    if (index !== -1) {
+      allCandidates.value[index].scheduled = false
+    }
+  } catch (error) {
+    console.error('Error unmarking candidate as scheduled:', error)
     // Optionally add error handling UI feedback here
   }
 }

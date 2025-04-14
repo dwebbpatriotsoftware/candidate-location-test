@@ -193,5 +193,37 @@ export const candidateService = {
     }
     
     return data || []
+  },
+  
+  async markCandidateAsScheduled(candidateId: string) {
+    const supabase = useSupabase()
+    const { data, error } = await supabase
+      .from('candidate_info')
+      .update({ scheduled: true })
+      .eq('candidate_id', candidateId)
+      .select()
+    
+    if (error) {
+      console.error('Error marking candidate as scheduled:', error)
+      throw error
+    }
+    
+    return data || []
+  },
+  
+  async markCandidateAsUnscheduled(candidateId: string) {
+    const supabase = useSupabase()
+    const { data, error } = await supabase
+      .from('candidate_info')
+      .update({ scheduled: false })
+      .eq('candidate_id', candidateId)
+      .select()
+    
+    if (error) {
+      console.error('Error unmarking candidate as scheduled:', error)
+      throw error
+    }
+    
+    return data || []
   }
 }
