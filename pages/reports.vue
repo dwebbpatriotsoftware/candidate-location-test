@@ -709,7 +709,7 @@
     </div>
     
     <!-- Location Modal -->
-    <div v-if="showLocationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="showLocationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 !mt-0">
       <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
         <div class="p-6">
           <div class="flex justify-between items-center mb-4">
@@ -758,7 +758,7 @@
     </div>
     
     <!-- Questions Modal -->
-    <div v-if="showQuestionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div v-if="showQuestionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 !mt-0">
       <div class="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6">
           <div class="flex justify-between items-center mb-4">
