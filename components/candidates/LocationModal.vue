@@ -117,6 +117,7 @@ const saveLocation = async () => {
         // Get current assessment data
         const isVpn = props.candidateVpnStatus[candidateId] === 'Yes'
         const isUsIp = props.candidateIpLocation[candidateId] === 'Yes'
+        // Use isApprovedTimezone function to determine if the timezone is a US timezone
         const isUsTimezone = props.isApprovedTimezone(
           candidate.candidate_answers?.timezone || candidate.candidate_timezone
         )

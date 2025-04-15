@@ -27,7 +27,8 @@ export function useCandidateActions(
   allCandidates: Ref<Candidate[]>,
   candidateVpnStatus: Ref<Record<string, string>>,
   candidateIpLocation: Ref<Record<string, string>>,
-  candidateIpTimeZoneAlign: Ref<Record<string, string>>
+  candidateIpTimeZoneAlign: Ref<Record<string, string>>,
+  isApprovedTimezone: (timezone?: string) => boolean
 ) {
   // Track copied IDs
   const copiedIds = ref<Record<string, boolean>>({})
@@ -41,7 +42,8 @@ export function useCandidateActions(
       // Convert string values to boolean
       const isVpn = candidateVpnStatus.value[candidateId] === 'Yes'
       const isUsIp = candidateIpLocation.value[candidateId] === 'Yes'
-      const isUsTimezone = candidate.candidate_assessment?.data?.is_us_timezone || false
+      // Use isApprovedTimezone function to determine if the timezone is a US timezone
+      const isUsTimezone = isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone)
       const ipTimezoneAlign = candidateIpTimeZoneAlign.value[candidateId] === 'Yes'
       const ipCountryCity = candidate.candidate_assessment?.data?.ip_country_city
       

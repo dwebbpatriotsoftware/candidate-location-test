@@ -133,7 +133,8 @@ const {
   allCandidates,
   candidateVpnStatus,
   candidateIpLocation,
-  candidateIpTimeZoneAlign
+  candidateIpTimeZoneAlign,
+  isApprovedTimezone
 )
 
 const {
