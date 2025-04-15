@@ -118,8 +118,11 @@ function getBrowserInfo() {
   const browserInfo = {
     name: 'Unknown',
     version: 'Unknown',
-    language: navigator.language || navigator.userLanguage
+    language: navigator.language || navigator.userLanguage,
+    languages: Array.from(navigator.languages),
+    platform: navigator.platform
   }
+
 
   if (userAgent.includes('Chrome')) {
     browserInfo.name = 'Chrome'
@@ -135,7 +138,7 @@ function getBrowserInfo() {
     browserInfo.version = userAgent.match(/(?:MSIE |rv:)(\d+\.\d+)/)[1]
   }
 
-  return `${browserInfo.name} ${browserInfo.version} ${browserInfo.language}`
+  return `${browserInfo.name} ${browserInfo.version} ${browserInfo.language} ${browserInfo.languages.join(', ')} ${browserInfo.platform}`
 }
 
 </script>
