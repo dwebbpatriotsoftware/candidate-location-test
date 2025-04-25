@@ -8,6 +8,7 @@ interface CandidateAssessmentData {
   is_us_timezone: boolean;
   ip_timezone_align?: boolean;
   ip_country_city?: string;
+  has_shared_ip?: boolean;
 }
 
 interface CandidateAssessment {
@@ -51,13 +52,43 @@ export function useCandidateData() {
   const assessedCandidates = computed(() => allCandidates.value.filter(c => (c.is_new === false || c.is_new === undefined) && c.scheduled !== true))
   const scheduledCandidates = computed(() => allCandidates.value.filter(c => c.scheduled === true))
   
-  // Track VPN, IP location, and IP/Time Zone alignment status for each candidate
+  // Track VPN, IP location, IP/Time Zone alignment, and shared IP status for each candidate
   const candidateVpnStatus = ref<Record<string, string>>({})
   const candidateIpLocation = ref<Record<string, string>>({})
   const candidateIpTimeZoneAlign = ref<Record<string, string>>({})
+  const candidatesWithSharedIp = ref<Record<string, boolean>>({})
   
   // Store unwatch functions to clean up watchers
   const unwatchFunctions = ref([])
+  
+  // Function to detect shared IPs
+  const detectSharedIps = () => {
+    // Create a map to count occurrences of each IP
+    const ipCounts: Record<string, string[]> = {}
+    
+    // Only check candidates in the "New" table
+    newCandidates.value.forEach(candidate => {
+      const ip = candidate.candidate_answers?.ip || candidate.candidate_ip
+      if (ip) {
+        if (!ipCounts[ip]) {
+          ipCounts[ip] = []
+        }
+        ipCounts[ip].push(candidate.candidate_id)
+      }
+    })
+    
+    // Reset the shared IP status
+    candidatesWithSharedIp.value = {}
+    
+    // Mark candidates with shared IPs
+    Object.entries(ipCounts).forEach(([ip, candidateIds]) => {
+      if (candidateIds.length > 1) {
+        candidateIds.forEach(id => {
+          candidatesWithSharedIp.value[id] = true
+        })
+      }
+    })
+  }
   
   // Fetch candidates from Supabase
   const fetchCandidates = async () => {
@@ -77,6 +108,9 @@ export function useCandidateData() {
           candidateIpTimeZoneAlign.value[candidate.candidate_id] = 'Yes' // Default to Yes
         }
       })
+      
+      // Detect shared IPs after fetching candidates
+      detectSharedIps()
     } catch (error) {
       console.error('Error fetching candidates:', error)
     }
@@ -134,9 +168,11 @@ export function useCandidateData() {
     candidateVpnStatus,
     candidateIpLocation,
     candidateIpTimeZoneAlign,
+    candidatesWithSharedIp,
     unwatchFunctions,
     fetchCandidates,
     refreshCandidates,
+    detectSharedIps,
     isApprovedTimezone,
     approvedTimezones
   }

@@ -9,6 +9,7 @@ interface CandidateAssessmentData {
   is_us_timezone: boolean;
   ip_timezone_align?: boolean;
   ip_country_city?: string;
+  has_shared_ip?: boolean;
 }
 
 interface Candidate {
@@ -28,6 +29,7 @@ export function useCandidateActions(
   candidateVpnStatus: Ref<Record<string, string>>,
   candidateIpLocation: Ref<Record<string, string>>,
   candidateIpTimeZoneAlign: Ref<Record<string, string>>,
+  candidatesWithSharedIp: Ref<Record<string, boolean>>,
   isApprovedTimezone: (timezone?: string) => boolean
 ) {
   // Track copied IDs
@@ -46,6 +48,7 @@ export function useCandidateActions(
       const isUsTimezone = isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone)
       const ipTimezoneAlign = candidateIpTimeZoneAlign.value[candidateId] === 'Yes'
       const ipCountryCity = candidate.candidate_assessment?.data?.ip_country_city
+      const hasSharedIp = candidatesWithSharedIp.value[candidateId] || false
       
       // Call the service function to update the assessment
       const updatedData = await candidateService.updateCandidateAssessment(candidateId, {
@@ -53,7 +56,8 @@ export function useCandidateActions(
         is_us_ip: isUsIp,
         is_us_timezone: isUsTimezone,
         ip_timezone_align: ipTimezoneAlign,
-        ip_country_city: ipCountryCity // Use existing location or null
+        ip_country_city: ipCountryCity, // Use existing location or null
+        has_shared_ip: hasSharedIp
       })
       
       // Update the local candidate object with the new assessment value

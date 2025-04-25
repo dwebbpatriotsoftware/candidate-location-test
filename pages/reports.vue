@@ -25,6 +25,7 @@
       :candidateVpnStatus="candidateVpnStatus"
       :candidateIpLocation="candidateIpLocation"
       :candidateIpTimeZoneAlign="candidateIpTimeZoneAlign"
+      :candidatesWithSharedIp="candidatesWithSharedIp"
       :copiedIds="copiedIds"
       :isApprovedTimezone="isApprovedTimezone"
       @openQuestionsModal="openQuestionsModal"
@@ -114,9 +115,11 @@ const {
   candidateVpnStatus,
   candidateIpLocation,
   candidateIpTimeZoneAlign,
+  candidatesWithSharedIp,
   unwatchFunctions,
   fetchCandidates,
   refreshCandidates,
+  detectSharedIps,
   isApprovedTimezone
 } = useCandidateData()
 
@@ -134,6 +137,7 @@ const {
   candidateVpnStatus,
   candidateIpLocation,
   candidateIpTimeZoneAlign,
+  candidatesWithSharedIp,
   isApprovedTimezone
 )
 
@@ -191,8 +195,18 @@ const setupIndividualWatchers = () => {
       }
     )
     
+    // Watch shared IP status for this specific candidate
+    const unwatchSharedIp = watch(
+      () => candidatesWithSharedIp.value[id],
+      async (newValue, oldValue) => {
+        if (newValue !== oldValue) {
+          await updateCandidateAssessment(id)
+        }
+      }
+    )
+    
     // Store unwatch functions to clean up later
-    unwatchFunctions.value.push(unwatchVpn, unwatchIp, unwatchIpTimeZone)
+    unwatchFunctions.value.push(unwatchVpn, unwatchIp, unwatchIpTimeZone, unwatchSharedIp)
   })
 }
 

@@ -7,15 +7,22 @@ export const candidateService = {
     is_us_ip: boolean,
     is_us_timezone: boolean,
     ip_timezone_align?: boolean,
-    ip_country_city?: string
+    ip_country_city?: string,
+    has_shared_ip?: boolean
   }) {
     const supabase = useSupabase()
     
     // Determine the value string based on the combination of booleans
     let value = ""
     let reason = ""
-    if (!assessmentData.is_us_ip || !assessmentData.is_us_timezone) {
-      value = "Exit",
+    
+    // Check for shared IP first (highest priority)
+    if (assessmentData.has_shared_ip) {
+      value = "Exit"
+      reason = "Candidate has a shared IP with other candidates"
+    }
+    else if (!assessmentData.is_us_ip || !assessmentData.is_us_timezone) {
+      value = "Exit"
       reason = "Candidate is not in the US"
     }
     else if (!assessmentData.is_vpn && assessmentData.is_us_ip && assessmentData.is_us_timezone) {
@@ -45,7 +52,8 @@ export const candidateService = {
         is_us_ip: assessmentData.is_us_ip,
         is_us_timezone: assessmentData.is_us_timezone,
         ip_timezone_align: assessmentData.ip_timezone_align || false,
-        ip_country_city: assessmentData.ip_country_city 
+        ip_country_city: assessmentData.ip_country_city,
+        has_shared_ip: assessmentData.has_shared_ip || false
       },
       value: value,
       reason: reason

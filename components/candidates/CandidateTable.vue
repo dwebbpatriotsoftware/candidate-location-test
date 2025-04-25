@@ -8,6 +8,7 @@
             <tr>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assessment</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shared IP?</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN?</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US IP?</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US TIME ZONE?</th>
@@ -107,6 +108,17 @@
                   </div>
                 </div>
               </td>
+              
+              <!-- Shared IP Status Cell -->
+              <template v-if="tableType === 'new'">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :class="candidatesWithSharedIp && candidatesWithSharedIp[candidate.candidate_id] ? 'bg-red-100' : 'bg-green-100'">
+                  {{ candidatesWithSharedIp && candidatesWithSharedIp[candidate.candidate_id] ? 'Yes' : 'No' }}
+                </td>
+              </template>
+              <template v-else>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
+              </template>
               
               <!-- VPN Status Cell -->
               <template v-if="tableType === 'new'">
@@ -383,6 +395,7 @@ interface CandidateAssessmentData {
   is_us_timezone?: boolean;
   ip_timezone_align?: boolean;
   ip_country_city?: string;
+  has_shared_ip?: boolean;
 }
 
 interface CandidateAssessment {
@@ -425,6 +438,7 @@ const props = defineProps<{
   candidateVpnStatus: Record<string, string>;
   candidateIpLocation: Record<string, string>;
   candidateIpTimeZoneAlign: Record<string, string>;
+  candidatesWithSharedIp?: Record<string, boolean>;
   copiedIds: Record<string, boolean>;
   isApprovedTimezone: (timezone?: string) => boolean;
 }>()
