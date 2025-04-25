@@ -26,6 +26,7 @@ interface CandidateAnswers {
   q2?: CandidateAnswer;
   timezone?: string;
   ip?: string;
+  capture_time?: string;
   [key: string]: any;
 }
 

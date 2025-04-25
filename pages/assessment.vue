@@ -81,16 +81,20 @@ onMounted(async () => {
     const ipResponse = await fetch('https://api.ipify.org?format=json')
     const ipData = await ipResponse.json()
     
-    // Get timezone
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+       // Get timezone
+       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+       
+       // Add capture_time
+       const capture_time = new Date().toISOString()
 
-    //Get browser info
+       //Get browser info
     answers.value.q1.answer = 'Yes'
     answers.value.q2.answer = getBrowserInfo()
     
-    // Add IP and timezone to answers object
-    answers.value.ip = ipData.ip
-    answers.value.timezone = timezone
+       // Add IP, timezone, and capture_time to answers object
+       answers.value.ip = ipData.ip
+       answers.value.timezone = timezone
+       answers.value.capture_time = capture_time
 
     // Store candidate info in Supabase
     const result = await candidateService.saveCandidate(candidateId, answers.value)

@@ -45,6 +45,12 @@
               <p class="text-base text-gray-900">{{ currentCandidateQuestions.candidate_answers?.timezone || currentCandidateQuestions.candidate_timezone || 'Not available' }}</p>
             </div>
             
+            <!-- Capture Time -->
+            <div>
+              <p class="text-sm font-medium text-gray-500">Capture Time</p>
+              <p class="text-base text-gray-900">{{ formatCaptureTime(currentCandidateQuestions.candidate_answers?.capture_time) }}</p>
+            </div>
+            
             <div>
               <p class="text-sm font-medium text-gray-500">{{ currentCandidateQuestions.candidate_answers?.q1?.question || 'Question 1' }}</p>
               <p class="text-base text-gray-900 whitespace-pre-line">{{ currentCandidateQuestions.candidate_answers?.q1?.answer || 'No response' }}</p>
@@ -166,6 +172,7 @@ interface CandidateAnswers {
   q2?: CandidateAnswer;
   timezone?: string;
   ip?: string;
+  capture_time?: string;
   [key: string]: any;
 }
 
@@ -195,5 +202,18 @@ const emit = defineEmits<{
 // Methods
 const closeQuestionsModal = () => {
   emit('close')
+}
+
+// Format the capture time to a readable local time
+const formatCaptureTime = (isoTimeString: string | undefined) => {
+  if (!isoTimeString) return 'Not available';
+  
+  try {
+    const date = new Date(isoTimeString);
+    return date.toLocaleString(); // Simple and effective!
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return isoTimeString; // Fallback to original string if there's an error
+  }
 }
 </script>
