@@ -8,7 +8,7 @@
             <tr>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assessment</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shared IP?</th>
+              <th v-if="tableType === 'new'" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shared IP?</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN?</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US IP?</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US TIME ZONE?</th>
@@ -110,15 +110,10 @@
               </td>
               
               <!-- Shared IP Status Cell -->
-              <template v-if="tableType === 'new'">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="candidatesWithSharedIp && candidatesWithSharedIp[candidate.candidate_id] ? 'bg-red-100' : 'bg-green-100'">
-                  {{ candidatesWithSharedIp && candidatesWithSharedIp[candidate.candidate_id] ? 'Yes' : 'No' }}
-                </td>
-              </template>
-              <template v-else>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"></td>
-              </template>
+              <td v-if="tableType === 'new'" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                  :class="candidatesWithSharedIp && candidatesWithSharedIp[candidate.candidate_id] ? 'bg-red-100' : 'bg-green-100'">
+                {{ candidatesWithSharedIp && candidatesWithSharedIp[candidate.candidate_id] ? 'Yes' : 'No' }}
+              </td>
               
               <!-- VPN Status Cell -->
               <template v-if="tableType === 'new'">

@@ -19,7 +19,7 @@ export const candidateService = {
     // Check for shared IP first (highest priority)
     if (assessmentData.has_shared_ip) {
       value = "Exit"
-      reason = "Candidate has a shared IP with other candidates"
+      reason = "IP shared with other candidates"
     }
     else if (!assessmentData.is_us_ip || !assessmentData.is_us_timezone) {
       value = "Exit"
