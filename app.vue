@@ -2,16 +2,16 @@
   <div class="min-h-screen bg-white">
     <nav class="bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex h-16 items-center relative">
-          <div class="flex items-center justify-center w-full">
+        <div class="d-flex h-16 items-center relative">
+          <div class="d-flex items-center justify-center w-full">
             <img src="/images/patriot-logo.svg" alt="Patriot Software" class="h-16 w-auto" />
           </div>
-          <div class="flex items-center space-x-4 absolute right-0">
+          <div class="d-flex items-center space-x-4 absolute right-0">
             <ClientOnly>
               <NuxtLink 
                 v-if="!isAssessmentPage"
                 :to="authLinkDestination" 
-                class="bg-pink-600 text-white px-4 py-2 rounded-md hover:bg-pink-500 transition duration-150 shadow-sm"
+                class="bg-primary color-white px-4 py-2 rounded-md hover:bg-primary-800 transition duration-150 shadow-sm"
                 @click.prevent="handleAuthClick"
               >
                 {{ authLinkText }}

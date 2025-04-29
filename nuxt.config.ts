@@ -3,6 +3,11 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: false },
   modules: ['@nuxtjs/tailwindcss'],
+  tailwindcss: {
+    configPath: '~/tailwind.config.js',
+    cssPath: '~/tailwind/styles.css',
+    exposeConfig: true,
+  },
   runtimeConfig: {
     // Server-side environment variables (not exposed to the client)
     public: {

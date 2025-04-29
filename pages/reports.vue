@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-6">
-    <div class="flex justify-between items-center">
-      <h1 class="text-3xl font-bold text-gray-900">Assessment Reports</h1>
-      <div class="flex items-center">
+    <div class="d-flex justify-between items-center">
+      <h1 class="font-size-largest font-bold color-gray-900">Assessment Reports</h1>
+      <div class="d-flex items-center">
         <button 
           @click="refreshCandidates" 
-          class="text-indigo-600 hover:text-indigo-500 font-medium transition duration-150 flex items-center gap-1"
+          class="color-primary hover:color-primary-800 font-bold transition duration-150 d-flex items-center gap-1"
           :disabled="isRefreshing"
         >
           <span v-if="isRefreshing">Refreshing...</span>

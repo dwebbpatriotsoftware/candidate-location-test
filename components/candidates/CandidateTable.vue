@@ -1,28 +1,28 @@
 <template>
   <div class="mb-8">
-    <h2 class="text-xl font-semibold text-gray-800 mb-3">{{ title }}</h2>
+    <h2 class="font-size-medium font-bold color-gray-800 mb-3">{{ title }}</h2>
     <div class="bg-white rounded-lg shadow overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="min-w-full divide-y border-1-b-light">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Candidate ID</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assessment</th>
-              <th v-if="tableType === 'new'" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shared IP?</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">VPN?</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US IP?</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">US TIME ZONE?</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP/TIME ZONE?</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <th class="px-6 py-3 text-left font-size-smallest font-bold color-gray-500 uppercase tracking-wider">Candidate ID</th>
+              <th class="px-6 py-3 text-left font-size-smallest font-bold color-gray-500 uppercase tracking-wider">Assessment</th>
+              <th v-if="tableType === 'new'" class="px-6 py-3 text-left font-size-smallest font-bold color-gray-500 uppercase tracking-wider">Shared IP?</th>
+              <th class="px-6 py-3 text-left font-size-smallest font-bold color-gray-500 uppercase tracking-wider">VPN?</th>
+              <th class="px-6 py-3 text-left font-size-smallest font-bold color-gray-500 uppercase tracking-wider">US IP?</th>
+              <th class="px-6 py-3 text-left font-size-smallest font-bold color-gray-500 uppercase tracking-wider">US TIME ZONE?</th>
+              <th class="px-6 py-3 text-left font-size-smallest font-bold color-gray-500 uppercase tracking-wider">IP/TIME ZONE?</th>
+              <th class="px-6 py-3 text-left font-size-smallest font-bold color-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
+          <tbody class="bg-white divide-y border-1-b-light">
             <tr 
               v-for="candidate in candidates" 
               :key="candidate.candidate_id" 
-              class="hover:bg-gray-50"
+              class="hover:bg-gray-100"
             > 
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+              <td class="px-6 py-4 whitespace-nowrap font-size-small color-gray-500"
                   :class="{
                     'bg-red-100': candidate.candidate_assessment?.value === 'Exit',
                     'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
@@ -66,13 +66,13 @@
                 <span>{{ candidate.candidate_id }}</span>
               </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+              <td class="px-6 py-4 whitespace-nowrap font-size-small color-gray-500"
                   :class="{
-                    'bg-red-100': candidate.candidate_assessment?.value === 'Exit',
-                    'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
-                    'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
+                    'bg-alert-light': candidate.candidate_assessment?.value === 'Exit',
+                    'bg-attention-light': candidate.candidate_assessment?.value === 'Caution',
+                    'bg-confirm-light': candidate.candidate_assessment?.value === 'Proceed'
                   }">
-                <div class="flex items-center">
+                <div class="d-flex items-center">
                   <div class="relative group flex items-center mr-2">
                     <button 
                       @click="openQuestionsModal(candidate)"
