@@ -1,0 +1,17 @@
+# The docker compose specification documents the syntax in this file.
+# https://github.com/compose-spec/compose-spec/blob/master/spec.md
+# Newer release of docker-compose ignore the version element but it gets us IntelliSense in Rider.
+version: "2.4"
+
+# This file is used for the local dependencies needed by the application
+# It is named as such because this convention is needed by Visual Studio to be included in the Run Configuration
+services:
+  truetax-database-service:
+    image: postgis/postgis:14-3.5 # Matches the current Postgres version of the production patriot_pay cluster
+    ports:
+      - "5428:5432" # Maps the internal container port of 5432 to the external port of 5428. This means connection strings will point at 5428. (This is to avoid conflicts with any existing running instances of Postgres on the default port)
+    restart: always # Restart the service by default if it crashes
+    environment: # The local database is created using the following environment variables
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: party_george
+      POSTGRES_DB: candidate-services
