@@ -24,9 +24,9 @@
             > 
               <td class="px-6 py-4 whitespace-nowrap font-size-small color-gray-500"
                   :class="{
-                    'bg-red-100': candidate.candidate_assessment?.value === 'Exit',
-                    'bg-yellow-100': candidate.candidate_assessment?.value === 'Caution',
-                    'bg-green-100': candidate.candidate_assessment?.value === 'Proceed'
+                    'bg-alert-light': candidate.candidate_assessment?.value === 'Exit',
+                    'bg-attention-light': candidate.candidate_assessment?.value === 'Caution',
+                    'bg-confirm-light': candidate.candidate_assessment?.value === 'Proceed'
                   }">
                 <div class="flex items-center">
                   <div class="relative">
@@ -110,15 +110,15 @@
               </td>
               
               <!-- Shared IP Status Cell -->
-              <td v-if="tableType === 'new'" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  :class="candidatesWithSharedIp && candidatesWithSharedIp[candidate.candidate_id] ? 'bg-red-100' : 'bg-green-100'">
+              <td v-if="tableType === 'new'" class="px-6 py-4 whitespace-nowrap font-size-small color-gray-500"
+                  :class="candidatesWithSharedIp && candidatesWithSharedIp[candidate.candidate_id] ? 'bg-alert-light' : 'bg-confirm-light'">
                 {{ candidatesWithSharedIp && candidatesWithSharedIp[candidate.candidate_id] ? 'Yes' : 'No' }}
               </td>
               
               <!-- VPN Status Cell -->
               <template v-if="tableType === 'new'">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-yellow-100' : 'bg-green-100'">
+                <td class="px-6 py-4 whitespace-nowrap font-size-small color-gray-500"
+                    :class="candidateVpnStatus[candidate.candidate_id] === 'Yes' ? 'bg-attention-light' : 'bg-confirm-light'">
                   <select 
                     v-model="candidateVpnStatus[candidate.candidate_id]" 
                     class="bg-transparent border-0 focus:ring-0 focus:outline-none"
@@ -129,16 +129,16 @@
                 </td>
               </template>
               <template v-else>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="candidate.candidate_assessment?.data?.is_vpn ? 'bg-yellow-100' : 'bg-green-100'">
+                <td class="px-6 py-4 whitespace-nowrap font-size-small color-gray-500"
+                    :class="candidate.candidate_assessment?.data?.is_vpn ? 'bg-attention-light' : 'bg-confirm-light'">
                   {{ candidate.candidate_assessment?.data?.is_vpn ? 'Yes' : 'No' }}
                 </td>
               </template>
               
               <!-- US IP Status Cell -->
               <template v-if="tableType === 'new'">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="candidateIpLocation[candidate.candidate_id] === 'Yes' ? 'bg-green-100' : 'bg-red-100'">
+                <td class="px-6 py-4 whitespace-nowrap font-size-small color-gray-500"
+                    :class="candidateIpLocation[candidate.candidate_id] === 'Yes' ? 'bg-confirm-light' : 'bg-alert-light'">
                   <div class="flex items-center">
                     <div class="relative group flex items-center mr-2">
                       <button 
@@ -190,8 +190,8 @@
                 </td>
               </template>
               <template v-else>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="candidate.candidate_assessment?.data?.is_us_ip ? 'bg-green-100' : 'bg-red-100'">
+                <td class="px-6 py-4 whitespace-nowrap font-size-small color-gray-500"
+                    :class="candidate.candidate_assessment?.data?.is_us_ip ? 'bg-confirm-light' : 'bg-alert-light'">
                   {{ candidate.candidate_assessment?.data?.is_us_ip ? 'Yes' : 'No' }}
                   <!-- IP Location sub-text -->
                   <div class="text-xs text-gray-500">
@@ -201,8 +201,8 @@
               </template>
               
               <!-- US Time Zone Status Cell -->
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                  :class="isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'bg-green-100' : 'bg-red-100'">
+              <td class="px-6 py-4 whitespace-nowrap font-size-small color-gray-500"
+                  :class="isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'bg-confirm-light' : 'bg-alert-light'">
                 {{ isApprovedTimezone(candidate.candidate_answers?.timezone || candidate.candidate_timezone) ? 'Yes' : 'No' }}
                 <div class="text-xs text-gray-500">
                   ({{ candidate.candidate_answers?.timezone || candidate.candidate_timezone || 'Unknown timezone' }})
@@ -211,8 +211,8 @@
               
               <!-- IP/Time Zone Alignment Cell -->
               <template v-if="tableType === 'new'">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="candidateIpTimeZoneAlign[candidate.candidate_id] === 'Yes' ? 'bg-green-100' : 'bg-yellow-100'">
+                <td class="px-6 py-4 whitespace-nowrap font-size-small color-gray-500"
+                    :class="candidateIpTimeZoneAlign[candidate.candidate_id] === 'Yes' ? 'bg-confirm-light' : 'bg-attention-light'">
                   <select 
                     v-model="candidateIpTimeZoneAlign[candidate.candidate_id]" 
                     class="bg-transparent border-0 focus:ring-0 focus:outline-none"
@@ -223,8 +223,8 @@
                 </td>
               </template>
               <template v-else>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-                    :class="candidate.candidate_assessment?.data?.ip_timezone_align ? 'bg-green-100' : 'bg-yellow-100'">
+                <td class="px-6 py-4 whitespace-nowrap font-size-small color-gray-500"
+                    :class="candidate.candidate_assessment?.data?.ip_timezone_align ? 'bg-confirm-light' : 'bg-attention-light'">
                   {{ candidate.candidate_assessment?.data?.ip_timezone_align ? 'Yes' : 'No' }}
                 </td>
               </template>
