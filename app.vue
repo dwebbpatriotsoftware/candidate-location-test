@@ -28,9 +28,17 @@
                   v-if="isAuthenticated"
                   to="/admin/jobs" 
                   class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                  :class="{ 'text-indigo-600': isAdminPage }"
+                  :class="{ 'text-indigo-600': isAdminPage && !isApplicantsPage }"
                 >
                   Admin
+                </NuxtLink>
+                <NuxtLink 
+                  v-if="isAuthenticated"
+                  to="/admin/applicants" 
+                  class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  :class="{ 'text-indigo-600': isApplicantsPage }"
+                >
+                  Applicants
                 </NuxtLink>
               </div>
             </div>
@@ -66,6 +74,7 @@ const isAssessmentPage = computed(() => route.path === '/assessment')
 const isJobsPage = computed(() => route.path.startsWith('/jobs'))
 const isReportsPage = computed(() => route.path === '/reports')
 const isAdminPage = computed(() => route.path.startsWith('/admin'))
+const isApplicantsPage = computed(() => route.path === '/admin/applicants')
 
 // Determine auth link text based on authentication state
 const authLinkText = computed(() => {

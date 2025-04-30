@@ -191,6 +191,62 @@ export function useJobStore() {
     }
   }
   
+  // Additional methods for all applications
+  const fetchAllApplications = async () => {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      const supabase = useSupabase()
+      const { data, error: fetchError } = await supabase
+        .from('job_applications')
+        .select(`
+          *,
+          job_posting:job_posting_id(title)
+        `)
+        .order('created_at', { ascending: false })
+      
+      if (fetchError) throw fetchError
+      
+      jobApplications.value = data || []
+    } catch (err: any) {
+      error.value = err.message || 'Failed to fetch applications'
+      console.error('Error fetching applications:', err)
+    } finally {
+      isLoading.value = false
+    }
+  }
+  
+  const updateApplicationStatus = async (applicationId: string, status: string) => {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      const supabase = useSupabase()
+      const { data, error: updateError } = await supabase
+        .from('job_applications')
+        .update({ status })
+        .eq('id', applicationId)
+        .select()
+      
+      if (updateError) throw updateError
+      
+      // Update the application in the local state
+      const index = jobApplications.value.findIndex(app => app.id === applicationId)
+      if (index !== -1 && data && data[0]) {
+        jobApplications.value[index] = data[0]
+      }
+      
+      return data && data[0]
+    } catch (err: any) {
+      error.value = err.message || 'Failed to update application status'
+      console.error('Error updating application status:', err)
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     // State
     jobPostings,
@@ -213,6 +269,8 @@ export function useJobStore() {
     fetchJobQuestions,
     addJobQuestion,
     submitApplication,
-    fetchJobApplications
+    fetchJobApplications,
+    fetchAllApplications,
+    updateApplicationStatus
   }
 }

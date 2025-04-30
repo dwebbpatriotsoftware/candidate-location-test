@@ -10,7 +10,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   await initAuth()
   setupAuthListener()
   
-  if (!isAuthenticated.value && to.path === '/reports') {
+  // Protect reports and all admin routes
+  if (!isAuthenticated.value && (
+      to.path === '/reports' || 
+      to.path.startsWith('/admin/')
+    )) {
     return navigateTo('/login')
   }
 })
