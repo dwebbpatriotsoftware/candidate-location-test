@@ -1,0 +1,249 @@
+<template>
+  <div class="application-form">
+    <div v-if="isSubmitted" class="p-6 space-y-4 text-center">
+      <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h2 class="text-xl font-semibold text-gray-900">Application Submitted</h2>
+      <p class="text-gray-700">Thank you for your application. We will review it and get back to you soon.</p>
+    </div>
+    
+    <form v-else @submit.prevent="submitApplication" class="space-y-6">
+      <!-- Common fields section -->
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Personal Information</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            id="firstName"
+            label="First Name"
+            type="text"
+            :value="formData.firstName"
+            @update:value="formData.firstName = $event"
+            required
+          />
+          
+          <FormField
+            id="lastName"
+            label="Last Name"
+            type="text"
+            :value="formData.lastName"
+            @update:value="formData.lastName = $event"
+            required
+          />
+        </div>
+        
+        <FormField
+          id="email"
+          label="Email"
+          type="email"
+          :value="formData.email"
+          @update:value="formData.email = $event"
+          required
+        />
+        
+        <FormField
+          id="phone"
+          label="Phone"
+          type="phone"
+          :value="formData.phone"
+          @update:value="formData.phone = $event"
+          required
+        />
+        
+        <FormField
+          id="address"
+          label="Address"
+          type="text"
+          :value="formData.address"
+          @update:value="formData.address = $event"
+          required
+        />
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormField
+            id="city"
+            label="City"
+            type="text"
+            :value="formData.city"
+            @update:value="formData.city = $event"
+            required
+          />
+          
+          <FormField
+            id="state"
+            label="State"
+            type="text"
+            :value="formData.state"
+            @update:value="formData.state = $event"
+            required
+          />
+          
+          <FormField
+            id="zipCode"
+            label="Zip Code"
+            type="text"
+            :value="formData.zipCode"
+            @update:value="formData.zipCode = $event"
+            required
+          />
+        </div>
+      </div>
+      
+      <!-- Resume upload section -->
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Resume</h3>
+        
+        <ResumeUploader
+          :candidate-id="candidateId"
+          @upload-success="handleResumeUpload"
+          @upload-error="handleResumeError"
+          @file-removed="resumePath = null"
+        />
+        
+        <div v-if="resumeError" class="mt-2 text-sm text-red-600">
+          {{ resumeError }}
+        </div>
+      </div>
+      
+      <!-- Dynamic job questions section -->
+      <div v-if="jobQuestions.length > 0" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Additional Questions</h3>
+        
+        <div v-for="question in jobQuestions" :key="question.id" class="mb-4">
+          <FormField
+            :id="`question-${question.id}`"
+            :label="question.question_text"
+            :type="question.question_type"
+            :value="formData.answers[question.id || ''] || ''"
+            @update:value="updateAnswer(question.id || '', $event)"
+            :required="question.required"
+            :options="question.options"
+          />
+        </div>
+      </div>
+      
+      <!-- Submit button -->
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150"
+          :disabled="isSubmitting"
+        >
+          <span v-if="isSubmitting">Submitting...</span>
+          <span v-else>Submit Application</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useJobStore } from '../../composables/useJobStore'
+import FormField from './FormField.vue'
+import ResumeUploader from './ResumeUploader.vue'
+import { useRoute } from 'vue-router'
+
+// Props
+const props = defineProps({
+  jobId: {
+    type: String,
+    required: true
+  }
+})
+
+// Setup
+const route = useRoute()
+const jobStore = useJobStore()
+const candidateId = ref(generateCandidateId())
+const resumePath = ref<string | null>(null)
+const resumeError = ref<string | null>(null)
+const isSubmitting = ref(false)
+const isSubmitted = ref(false)
+
+// Form data
+const formData = reactive({
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  address: '',
+  city: '',
+  state: '',
+  zipCode: '',
+  answers: {} as Record<string, any>
+})
+
+// Fetch job questions
+onMounted(async () => {
+  await jobStore.fetchJobQuestions(props.jobId)
+})
+
+// Computed
+const jobQuestions = computed(() => jobStore.jobQuestions.value)
+
+// Methods
+function generateCandidateId() {
+  return 'candidate_' + Math.random().toString(36).substring(2, 15)
+}
+
+function updateAnswer(questionId: string, value: any) {
+  formData.answers[questionId] = value
+}
+
+function handleResumeUpload(path: string) {
+  resumePath.value = path
+  resumeError.value = null
+}
+
+function handleResumeError(error: any) {
+  resumeError.value = error.message || 'Failed to upload resume'
+}
+
+async function submitApplication() {
+  // Validate resume
+  if (!resumePath.value) {
+    resumeError.value = 'Please upload your resume'
+    return
+  }
+  
+  isSubmitting.value = true
+  
+  try {
+    // Prepare application data
+    const applicationData = {
+      job_posting_id: props.jobId,
+      candidate_id: candidateId.value,
+      resume_path: resumePath.value,
+      status: 'submitted',
+      answers: {
+        personal_info: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zipCode: formData.zipCode
+        },
+        job_questions: formData.answers
+      }
+    }
+    
+    // Submit application
+    await jobStore.submitApplication(applicationData)
+    
+    // Show success message
+    isSubmitted.value = true
+  } catch (error: any) {
+    console.error('Error submitting application:', error)
+    alert('Failed to submit application. Please try again.')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+</script>

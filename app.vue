@@ -1,17 +1,46 @@
 <template>
   <div class="min-h-screen bg-white">
-    <nav class="bg-white">
+    <nav class="bg-white border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="d-flex h-16 items-center relative">
-          <div class="d-flex items-center justify-center w-full">
-            <img src="/images/patriot-logo.svg" alt="Patriot Software" class="h-16 w-auto" />
+        <div class="flex justify-between h-16 items-center">
+          <div class="flex items-center">
+            <NuxtLink to="/" class="flex-shrink-0">
+              <img src="/images/patriot-logo.svg" alt="Patriot Software" class="h-16 w-auto" />
+            </NuxtLink>
+            <div class="hidden md:block ml-10">
+              <div class="flex items-baseline space-x-4">
+                <NuxtLink 
+                  to="/jobs" 
+                  class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  :class="{ 'text-indigo-600': isJobsPage }"
+                >
+                  Jobs
+                </NuxtLink>
+                <NuxtLink 
+                  v-if="isAuthenticated"
+                  to="/reports" 
+                  class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  :class="{ 'text-indigo-600': isReportsPage }"
+                >
+                  Reports
+                </NuxtLink>
+                <NuxtLink 
+                  v-if="isAuthenticated"
+                  to="/admin/jobs" 
+                  class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  :class="{ 'text-indigo-600': isAdminPage }"
+                >
+                  Admin
+                </NuxtLink>
+              </div>
+            </div>
           </div>
-          <div class="d-flex items-center space-x-4 absolute right-0">
+          <div class="flex items-center space-x-4">
             <ClientOnly>
               <NuxtLink 
                 v-if="!isAssessmentPage"
                 :to="authLinkDestination" 
-                class="bg-primary color-white px-4 py-2 rounded-md hover:bg-primary-800 transition duration-150 shadow-sm"
+                class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-150 shadow-sm"
                 @click.prevent="handleAuthClick"
               >
                 {{ authLinkText }}
@@ -32,10 +61,11 @@ const route = useRoute()
 const router = useRouter()
 const { isAuthenticated, logout } = useAuthStore()
 
-// Check if current page is the assessment page
-const isAssessmentPage = computed(() => {
-  return route.path === '/assessment'
-})
+// Check current page
+const isAssessmentPage = computed(() => route.path === '/assessment')
+const isJobsPage = computed(() => route.path.startsWith('/jobs'))
+const isReportsPage = computed(() => route.path === '/reports')
+const isAdminPage = computed(() => route.path.startsWith('/admin'))
 
 // Determine auth link text based on authentication state
 const authLinkText = computed(() => {
