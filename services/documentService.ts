@@ -31,17 +31,37 @@ export const documentService = {
   },
 
   /**
-   * Get a public URL for a resume file
+   * Get a signed URL for a resume file
    * @param path The file path in storage
-   * @returns The public URL for the file
+   * @returns The signed URL for the file
    */
-  getResumeUrl(path: string) {
+  async getResumeUrl(path: string) {
     const supabase = useSupabase()
-    const { data } = supabase
-      .storage
-      .from('docs')
-      .getPublicUrl(path)
     
-    return data.publicUrl
+    // Ensure path doesn't start with a slash
+    const cleanPath = path.startsWith('/') ? path.substring(1) : path
+    
+    console.log('Getting URL for path:', cleanPath)
+    
+    try {
+      // Use signed URL instead of public URL
+      const { data, error } = await supabase
+        .storage
+        .from('docs')
+        .createSignedUrl(cleanPath, 60 * 60) // 1 hour expiration
+      
+      if (error) {
+        console.error('Error creating signed URL:', error)
+        throw error
+      }
+      
+      console.log('Generated signed URL:', data.signedUrl)
+      return data.signedUrl
+    } catch (error) {
+      console.error('Error getting resume URL:', error)
+      
+      // Return empty string as fallback
+      return ''
+    }
   }
 }

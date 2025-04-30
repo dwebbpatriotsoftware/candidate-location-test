@@ -1,9 +1,9 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 // Store the client instance
-let supabaseInstance = null
+let supabaseInstance: SupabaseClient | null = null
 
-export function useSupabase() {
+export function useSupabase(): SupabaseClient {
   // If we already have an instance, return it
   if (supabaseInstance) {
     return supabaseInstance
@@ -12,10 +12,12 @@ export function useSupabase() {
   // Otherwise create a new instance
   const runtimeConfig = useRuntimeConfig()
   
-  supabaseInstance = createClient(
-    runtimeConfig.public.supabaseUrl,
-    runtimeConfig.public.supabaseKey
-  )
+  const url = runtimeConfig.public.supabaseUrl.trim()
+  const key = runtimeConfig.public.supabaseKey.trim()
+  
+  console.log('Creating Supabase client with URL:', url)
+  
+  supabaseInstance = createClient(url, key)
   
   return supabaseInstance
 }

@@ -1,7 +1,12 @@
 <template>
   <div class="resume-viewer">
+    <!-- Error state -->
+    <div v-if="error || !resumeUrl" class="p-4 bg-red-50 text-red-700 rounded-md">
+      Unable to load resume. Please try again later.
+    </div>
+    
     <!-- PDF Viewer -->
-    <div v-if="isPdf" class="w-full h-[600px] border border-gray-300 rounded-md overflow-hidden">
+    <div v-else-if="isPdf" class="w-full h-[600px] border border-gray-300 rounded-md overflow-hidden">
       <iframe 
         :src="resumeUrl" 
         class="w-full h-full" 
@@ -10,7 +15,7 @@
     </div>
     
     <!-- Document Viewer (for non-PDF files) -->
-    <div v-else class="w-full border border-gray-300 rounded-md p-4">
+    <div v-else-if="resumeUrl" class="w-full border border-gray-300 rounded-md p-4">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center">
           <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,12 +55,23 @@ const isPdf = computed(() => {
   return fileName.value.toLowerCase().endsWith('.pdf')
 })
 
-onMounted(() => {
-  // Get the file name from the path
-  const pathParts = props.resumePath.split('/')
-  fileName.value = pathParts[pathParts.length - 1]
-  
-  // Get the public URL for the resume
-  resumeUrl.value = documentService.getResumeUrl(props.resumePath)
+const error = ref(false)
+
+onMounted(async () => {
+  try {
+    // Get the file name from the path
+    const pathParts = props.resumePath.split('/')
+    fileName.value = pathParts[pathParts.length - 1]
+    
+    console.log('Resume path:', props.resumePath) // Log the path
+    
+    // Get the signed URL for the resume
+    resumeUrl.value = await documentService.getResumeUrl(props.resumePath)
+    
+    console.log('Generated URL:', resumeUrl.value) // Log the generated URL
+  } catch (err) {
+    error.value = true
+    console.error('Error in ResumeViewer:', err)
+  }
 })
 </script>
