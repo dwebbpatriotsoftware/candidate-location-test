@@ -198,6 +198,11 @@
 import { ref, onMounted, computed } from 'vue'
 import { useJobStore } from '../../../composables/useJobStore'
 
+// Authentication middleware
+definePageMeta({
+  middleware: ['auth']
+})
+
 // Setup
 const jobStore = useJobStore()
 const isLoading = ref(true)

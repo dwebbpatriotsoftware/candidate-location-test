@@ -22,6 +22,11 @@
 import { useRouter } from 'vue-router'
 import JobForm from '../../../components/admin/JobForm.vue'
 
+// Authentication middleware
+definePageMeta({
+  middleware: ['auth']
+})
+
 const router = useRouter()
 
 const handleSubmit = (jobId: string) => {

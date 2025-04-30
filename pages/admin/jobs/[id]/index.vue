@@ -84,6 +84,11 @@ import { useRouter } from 'vue-router'
 import { useJobStore } from '../../../../composables/useJobStore'
 import JobForm from '../../../../components/admin/JobForm.vue'
 
+// Authentication middleware
+definePageMeta({
+  middleware: ['auth']
+})
+
 // Get job ID from route
 const route = useRoute()
 const jobId = computed(() => route.params.id as string)

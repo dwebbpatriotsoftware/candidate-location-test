@@ -193,6 +193,11 @@ import { ref, onMounted, computed } from 'vue'
 import { useJobStore } from '../../../../composables/useJobStore'
 import { documentService } from '../../../../services/documentService'
 
+// Authentication middleware
+definePageMeta({
+  middleware: ['auth']
+})
+
 // Get job ID from route
 const route = useRoute()
 const jobId = computed(() => route.params.id as string)
@@ -243,14 +248,16 @@ const getApplicantPhone = (application: any) => {
   return application.answers?.personal_info?.phone || 'No phone provided'
 }
 
-const viewApplication = (application: any) => {
+const viewApplication = async (application: any) => {
   // In a real app, this would open a modal or navigate to a details page
   alert(`Viewing application for ${getApplicantName(application)}`)
   
   // If there's a resume, we could open it
   if (application.resume_path) {
-    const resumeUrl = documentService.getResumeUrl(application.resume_path)
-    window.open(resumeUrl, '_blank')
+    const resumeUrl = await documentService.getResumeUrl(application.resume_path)
+    if (resumeUrl) {
+      window.open(resumeUrl, '_blank')
+    }
   }
 }
 
