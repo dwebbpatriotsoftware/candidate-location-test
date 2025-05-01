@@ -52,7 +52,7 @@ const isLoading = ref(true)
 const error = ref<string | null>(null)
 
 // Computed
-const jobPosting = computed(() => jobStore.currentJobPosting.value)
+const jobPosting = computed(() => jobStore.currentJob.value)
 
 // Fetch job posting
 onMounted(async () => {
@@ -60,7 +60,7 @@ onMounted(async () => {
   error.value = null
   
   try {
-    await jobStore.fetchJobPosting(jobId.value)
+    await jobStore.fetchJob(jobId.value)
   } catch (err: any) {
     error.value = err.message || 'Failed to load job posting'
   } finally {

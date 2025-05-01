@@ -21,16 +21,6 @@
           </svg>
           Pull Workable Jobs
         </button>
-        
-        <NuxtLink 
-          to="/admin/jobs/new" 
-          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Create Job Posting
-        </NuxtLink>
       </div>
     </div>
     
@@ -47,12 +37,12 @@
       {{ error }}
     </div>
     
-    <div v-else-if="jobStore.jobPostings.value.length === 0" class="py-12 text-center">
+    <div v-else-if="jobStore.jobs.length === 0 && activeTab !== 'workable'" class="py-12 text-center">
       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
       <h3 class="mt-2 text-lg font-medium text-gray-900">No job postings</h3>
-      <p class="mt-1 text-gray-500">Get started by creating a new job posting.</p>
+      <p class="mt-1 text-gray-500">Pull jobs from Workable to get started.</p>
     </div>
     
     <div v-else>
@@ -75,7 +65,7 @@
                 'ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium'
               ]"
             >
-              {{ jobStore.jobPostings.value.length }}
+              {{ jobStore.jobs?.length || 0 }}
             </span>
           </button>
           
@@ -95,7 +85,7 @@
                 'ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium'
               ]"
             >
-              {{ jobStore.publishedJobs.value.length }}
+              {{ jobStore.publishedJobs.length }}
             </span>
           </button>
           
@@ -115,7 +105,7 @@
                 'ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium'
               ]"
             >
-              {{ jobStore.draftJobs.value.length }}
+              {{ jobStore.draftJobs.length }}
             </span>
           </button>
           
@@ -135,7 +125,7 @@
                 'ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium'
               ]"
             >
-              {{ jobStore.closedJobs.value.length }}
+              {{ jobStore.closedJobs.length }}
             </span>
           </button>
           
@@ -189,16 +179,10 @@
           <thead class="bg-gray-50">
             <tr>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Shortcode
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Job Title
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Department
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Applications
               </th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Created
@@ -209,38 +193,60 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="job in filteredJobs" :key="job.id">
-              <td data-column="Job Title" class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ job.title }}</div>
-                <div v-if="job.workable_job" class="text-xs text-blue-600">Workable</div>
-              </td>
-              <td data-column="Department" class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-500">
-                  {{ job.workable_job ? (job.department?.name || 'Unknown') : getDepartmentName(job.department_id) }}
-                </div>
-              </td>
-              <td data-column="Status" class="px-6 py-4 whitespace-nowrap">
-                <span 
-                  :class="[
-                    job.status === 'published' ? 'bg-green-100 text-green-800' : 
-                    job.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 
-                    'bg-gray-100 text-gray-800',
-                    'px-2 inline-flex text-xs leading-5 font-semibold rounded-full'
-                  ]"
-                >
-                  {{ job.status ? (job.status.charAt(0).toUpperCase() + job.status.slice(1)) : 'Unknown' }}
-                </span>
-              </td>
-              <td data-column="Applications" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <!-- In a real app, this would show the actual count -->
-                0 applications
-              </td>
-              <td data-column="Created" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(job.created_at) }}
-              </td>
-              <td data-column="Actions" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex justify-end space-x-2">
-                  <template v-if="job.workable_job">
+            <!-- Display saved jobs -->
+            <template v-if="activeTab !== 'workable'">
+              <tr v-for="job in filteredJobs" :key="job.id">
+                <td data-column="Shortcode" class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">{{ job.id }}</div>
+                </td>
+                <td data-column="Job Title" class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">{{ job.title }}</div>
+                </td>
+                <td data-column="Created" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ formatDate(job.created_at) }}
+                </td>
+                <td data-column="Actions" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div class="flex justify-end space-x-2">
+                    <a 
+                      v-if="job.data?.shortcode"
+                      :href="`https://${runtimeConfig.public.workableSubDomain}.workable.com/jobs/${job.data.shortcode}`" 
+                      target="_blank" 
+                      class="text-indigo-600 hover:text-indigo-900"
+                    >
+                      View in Workable
+                    </a>
+                    <button 
+                      @click="confirmDelete(job)" 
+                      class="text-red-600 hover:text-red-900"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </template>
+            
+            <!-- Display Workable jobs -->
+            <template v-else>
+              <tr v-for="job in jobStore.workableJobs.value" :key="job.shortcode || ''">
+                <td data-column="Shortcode" class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">{{ job.shortcode || 'N/A' }}</div>
+                </td>
+                <td data-column="Job Title" class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">{{ job.title || 'Untitled Job' }}</div>
+                </td>
+                <td data-column="Created" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ formatDate(job.created_at) }}
+                </td>
+                <td data-column="Actions" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div class="flex justify-end space-x-2">
+                    <button 
+                      @click="saveJob(job)" 
+                      class="text-green-600 hover:text-green-900"
+                      :disabled="isJobSaved(job.shortcode)"
+                    >
+                      {{ isJobSaved(job.shortcode) ? 'Saved' : 'Save' }}
+                    </button>
                     <a 
                       v-if="job.shortcode"
                       :href="`https://${runtimeConfig.public.workableSubDomain}.workable.com/jobs/${job.shortcode}`" 
@@ -249,19 +255,10 @@
                     >
                       View in Workable
                     </a>
-                    <span v-else class="text-gray-400">No link available</span>
-                  </template>
-                  <template v-else>
-                    <NuxtLink :to="`/admin/jobs/${job.id}`" class="text-indigo-600 hover:text-indigo-900">
-                      Edit
-                    </NuxtLink>
-                    <NuxtLink :to="`/jobs/${job.id}`" class="text-gray-600 hover:text-gray-900">
-                      View
-                    </NuxtLink>
-                  </template>
-                </div>
-              </td>
-            </tr>
+                  </div>
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>
@@ -274,6 +271,28 @@ import { ref, onMounted, computed } from 'vue'
 import { useJobStore } from '../../../composables/useJobStore'
 import { useRuntimeConfig } from '#app'
 
+// Define types
+interface Job {
+  id: string;
+  title: string;
+  status: string;
+  data: any;
+  created_at?: string;
+  updated_at?: string;
+  last_synced_at?: string;
+}
+
+interface WorkableJob {
+  shortcode: string;
+  title: string;
+  state: string;
+  department?: {
+    name: string;
+  };
+  created_at?: string;
+  [key: string]: any;
+}
+
 // Authentication middleware
 definePageMeta({
   middleware: ['auth']
@@ -285,36 +304,25 @@ const isLoading = ref(true)
 const error = ref<string | null>(null)
 const activeTab = ref('all')
 const runtimeConfig = useRuntimeConfig()
+const jobToDelete = ref<Job | null>(null)
 
 // Computed
-const filteredJobs = computed(() => {
+const filteredJobs = computed<Job[]>(() => {
   if (activeTab.value === 'all') {
-    return jobStore.jobPostings.value
+    return jobStore.jobs.value
   } else if (activeTab.value === 'published') {
     return jobStore.publishedJobs.value
   } else if (activeTab.value === 'draft') {
     return jobStore.draftJobs.value
   } else if (activeTab.value === 'closed') {
     return jobStore.closedJobs.value
-  } else if (activeTab.value === 'workable') {
-    return jobStore.workableJobs.value.map(job => ({
-      ...job,
-      workable_job: true // Flag to identify Workable jobs
-    }))
   }
   return []
 })
 
-// Methods
-const getDepartmentName = (departmentId: string) => {
-  const departments = {
-    'dept_1': 'Engineering',
-    'dept_2': 'Marketing',
-    'dept_3': 'Sales',
-    'dept_4': 'Human Resources',
-    'dept_5': 'Finance'
-  }
-  return departments[departmentId as keyof typeof departments] || 'Unknown'
+// Check if a Workable job is already saved
+const isJobSaved = (shortcode: string) => {
+  return jobStore.jobs.value.some(job => job.id === shortcode)
 }
 
 const formatDate = (dateString: string | undefined) => {
@@ -339,6 +347,21 @@ const pullWorkableJobs = async () => {
   }
 }
 
+const saveJob = async (job: any) => {
+  if (!job || !job.shortcode) {
+    error.value = 'Job is missing a shortcode'
+    return
+  }
+  
+  if (isJobSaved(job.shortcode)) return
+  
+  try {
+    await jobStore.saveWorkableJob(job)
+  } catch (err: any) {
+    error.value = err.message || 'Failed to save job'
+  }
+}
+
 const changePage = async (page: number) => {
   if (page < 1 || page > jobStore.workablePagination.value.totalPages) {
     return
@@ -354,15 +377,36 @@ const changePage = async (page: number) => {
   }
 }
 
-// Fetch job postings
+const confirmDelete = (job: Job) => {
+  jobToDelete.value = job
+  
+  // In a real app, you would show a confirmation dialog
+  // For simplicity, we'll just confirm directly
+  if (confirm(`Are you sure you want to delete the job "${job.title}"?`)) {
+    deleteJob()
+  }
+}
+
+const deleteJob = async () => {
+  if (!jobToDelete.value) return
+  
+  try {
+    await jobStore.deleteJob(jobToDelete.value.id)
+    jobToDelete.value = null
+  } catch (err: any) {
+    error.value = err.message || 'Failed to delete job'
+  }
+}
+
+// Fetch jobs
 onMounted(async () => {
   isLoading.value = true
   error.value = null
   
   try {
-    await jobStore.fetchJobPostings()
+    await jobStore.fetchJobs()
   } catch (err: any) {
-    error.value = err.message || 'Failed to load job postings'
+    error.value = err.message || 'Failed to load jobs'
   } finally {
     isLoading.value = false
   }

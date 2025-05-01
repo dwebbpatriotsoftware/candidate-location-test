@@ -18,7 +18,7 @@
       {{ error }}
     </div>
     
-    <div v-else-if="publishedJobs.length === 0" class="py-12 text-center">
+    <div v-else-if="displayedJobs.length === 0" class="py-12 text-center">
       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
@@ -28,13 +28,36 @@
     
     <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       <div 
-        v-for="job in publishedJobs" 
+        v-for="job in displayedJobs" 
         :key="job.id" 
         class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200"
       >
         <div class="p-6">
           <h2 class="text-xl font-semibold text-gray-900 mb-2">{{ job.title }}</h2>
-          <p class="text-gray-600 line-clamp-3 mb-4">{{ truncateDescription(job.description) }}</p>
+          
+          <div class="mb-4 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">Created:</span>
+              <span class="text-sm font-medium">{{ formatDate(job.created_at) }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">Updated:</span>
+              <span class="text-sm font-medium">{{ formatDate(job.updated_at) }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">Status:</span>
+              <span 
+                class="text-sm font-medium px-2 py-1 rounded-full" 
+                :class="{
+                  'bg-green-100 text-green-800': job.status === 'published',
+                  'bg-yellow-100 text-yellow-800': job.status === 'draft',
+                  'bg-gray-100 text-gray-800': job.status === 'closed' || job.status === 'archived'
+                }"
+              >
+                {{ job.status }}
+              </span>
+            </div>
+          </div>
           
           <NuxtLink 
             :to="`/jobs/${job.id}`" 
@@ -54,19 +77,37 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useJobStore } from '../../composables/useJobStore'
+import { useAuthStore } from '../../composables/useAuthStore'
 
 // Setup
 const jobStore = useJobStore()
+const authStore = useAuthStore()
 const isLoading = ref(true)
 const error = ref<string | null>(null)
 
 // Computed
-const publishedJobs = computed(() => jobStore.publishedJobs.value)
+const displayedJobs = computed(() => {
+  if (authStore.isAuthenticated.value) {
+    return jobStore.jobs.value // Show all jobs if authenticated
+  } else {
+    return jobStore.publishedJobs.value // Show only published jobs if not authenticated
+  }
+})
 
 // Methods
-const truncateDescription = (description: string) => {
-  if (description.length <= 150) return description
-  return description.substring(0, 150) + '...'
+const formatDate = (dateString: string | undefined) => {
+  if (!dateString) return 'N/A'
+  try {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  } catch (error) {
+    console.error('Error formatting date:', error)
+    return 'Invalid date'
+  }
 }
 
 // Fetch job postings
@@ -75,7 +116,7 @@ onMounted(async () => {
   error.value = null
   
   try {
-    await jobStore.fetchJobPostings('published')
+    await jobStore.fetchJobs()
   } catch (err: any) {
     error.value = err.message || 'Failed to load job postings'
   } finally {
@@ -83,13 +124,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style>
-/* Add line-clamp utility if not already available in your Tailwind config */
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-</style>

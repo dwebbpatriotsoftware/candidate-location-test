@@ -62,6 +62,14 @@ export default defineEventHandler(async (event) => {
     
     const data = await response.json();
     
+    // Debug the structure of the response
+    console.log('Workable API response structure:', JSON.stringify(data, null, 2));
+    
+    // If there are jobs, log the first one to see its structure
+    if (data.jobs && data.jobs.length > 0) {
+      console.log('First job structure:', JSON.stringify(data.jobs[0], null, 2));
+    }
+    
     return {
       jobs: data.jobs || [],
       page,
