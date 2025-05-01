@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { jobService } from '../services/jobService'
+import { workableService } from '../services/workableService'
 
 // Define types
 interface JobQuestion {
@@ -247,6 +248,41 @@ export function useJobStore() {
     }
   }
 
+  // Workable jobs state
+  const workableJobs = ref<any[]>([])
+  const workablePagination = ref({
+    currentPage: 1,
+    totalPages: 1,
+    totalJobs: 0,
+    limit: 10
+  })
+
+  // Method to fetch Workable jobs with pagination
+  const fetchWorkableJobs = async (page = 1) => {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      // Get total count first (if we're on page 1)
+      if (page === 1) {
+        workablePagination.value.totalJobs = await workableService.getTotalJobsCount()
+        workablePagination.value.totalPages = Math.ceil(
+          workablePagination.value.totalJobs / workablePagination.value.limit
+        )
+      }
+      
+      // Fetch jobs for the current page
+      const result = await workableService.getJobs(page, workablePagination.value.limit)
+      workableJobs.value = result.jobs
+      workablePagination.value.currentPage = page
+    } catch (err: any) {
+      error.value = err.message || 'Failed to fetch Workable jobs'
+      console.error('Error fetching Workable jobs:', err)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     // State
     jobPostings,
@@ -271,6 +307,11 @@ export function useJobStore() {
     submitApplication,
     fetchJobApplications,
     fetchAllApplications,
-    updateApplicationStatus
+    updateApplicationStatus,
+    
+    // Workable
+    workableJobs,
+    workablePagination,
+    fetchWorkableJobs
   }
 }

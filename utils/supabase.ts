@@ -15,8 +15,6 @@ export function useSupabase(): SupabaseClient {
   const url = runtimeConfig.public.supabaseUrl.trim()
   const key = runtimeConfig.public.supabaseKey.trim()
   
-  console.log('Creating Supabase client with URL:', url)
-  
   supabaseInstance = createClient(url, key)
   
   return supabaseInstance

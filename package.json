@@ -10,8 +10,10 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "nuxt": "^3.15.2",
-    "@supabase/supabase-js": "^2.39.8"
+    "@efounders/workable-client": "^1.0.0-beta.3",
+    "@supabase/supabase-js": "^2.39.8",
+    "babel-runtime": "^6.26.0",
+    "nuxt": "^3.15.2"
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "^6.11.4",
