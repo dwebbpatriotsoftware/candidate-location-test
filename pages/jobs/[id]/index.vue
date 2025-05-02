@@ -125,22 +125,31 @@ onMounted(async () => {
 </script>
 
 <style>
-/* Custom styles for job description */
+/* Custom styles for job description that align with the application's styling */
 .job-description h3 {
-  margin-top: 1.5em;
-  margin-bottom: 0.75em;
-  font-weight: 600;
+  font-size: 1.25rem; /* 20px - matches global h3 */
+  font-weight: 400;
+  margin: 3rem 0 2rem;
+  line-height: 1.3;
+}
+
+.job-description h4 {
+  font-size: 1.125rem; /* 18px - matches global h4 */
+  font-weight: 500;
+  margin-bottom: 1rem;
+  line-height: 1.3;
 }
 
 .job-description p {
-  margin-bottom: 1em;
+  margin-bottom: 1.5rem; /* Matches global p margin */
+  line-height: 1.4;
 }
 
 .job-description ul, 
 .job-description ol {
-  margin-top: 0.5em;
-  margin-bottom: 1em;
-  padding-left: 1.5em;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
 }
 
 .job-description ul {
@@ -152,8 +161,9 @@ onMounted(async () => {
 }
 
 .job-description li {
-  margin-bottom: 0.25em;
-  display: list-item;
+  margin-bottom: 0.25rem;
+  display: list-item; /* Critical for list rendering */
+  line-height: 1.4;
 }
 
 /* Handle nested lists */
@@ -161,12 +171,22 @@ onMounted(async () => {
 .job-description ol ol,
 .job-description ul ol,
 .job-description ol ul {
-  margin-top: 0.25em;
-  margin-bottom: 0.25em;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 
 /* Fix for empty paragraphs used for spacing */
 .job-description p:empty {
-  margin: 0.5em 0;
+  margin: 0.5rem 0;
+}
+
+/* Links styling to match application's color scheme */
+.job-description a {
+  color: var(--primary-500); /* Using app's primary color */
+  text-decoration: underline;
+}
+
+.job-description a:hover {
+  color: var(--primary-800); /* Using app's darker primary color */
 }
 </style>
