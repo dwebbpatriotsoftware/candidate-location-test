@@ -1,4 +1,5 @@
 import { useSupabase } from '~/utils/supabase'
+import { workableService } from './workableService'
 
 export const jobService = {
   // Get all jobs
@@ -53,6 +54,18 @@ export const jobService = {
         throw new Error('Job shortcode is missing')
       }
       
+      // Fetch additional data from Workable API
+      console.log(`Fetching additional data for job ${id}`)
+      let questionsData = null
+      
+      try {
+        questionsData = await workableService.getJobWithAllData(id)
+        console.log('Successfully fetched job questions data')
+      } catch (err) {
+        console.error('Error fetching job questions data:', err)
+        // Continue even if we couldn't fetch the questions data
+      }
+      
       // Insert or update the job
       const { data, error } = await supabase
         .from('jobs')
@@ -61,6 +74,7 @@ export const jobService = {
           title,
           status,
           data: workableJob, // Store the complete job data as JSONB
+          questions: questionsData, // Store the combined questions data in the new column
           updated_at: new Date().toISOString(),
           last_synced_at: new Date().toISOString()
         }, {
