@@ -1,6 +1,16 @@
 import { useSupabase } from '~/utils/supabase'
 import { workableService } from './workableService'
 
+// Define interfaces
+interface JobForm {
+  id?: string;
+  job_id: string;
+  visible_questions: string[];
+  hidden_questions: string[];
+  created_at?: string;
+  updated_at?: string;
+}
+
 export const jobService = {
   // Get all jobs
   async getJobs() {
@@ -136,6 +146,88 @@ export const jobService = {
       return data
     } catch (error) {
       console.error('Error submitting application:', error)
+      throw error
+    }
+  },
+
+  // Get job form by job ID
+  async getJobForm(jobId: string) {
+    try {
+      const supabase = useSupabase()
+      const { data, error } = await supabase
+        .from('job_form')
+        .select('*')
+        .eq('job_id', jobId)
+        .single()
+      
+      if (error) {
+        // If no record found, return null instead of throwing an error
+        if (error.code === 'PGRST116') {
+          return null
+        }
+        throw error
+      }
+      
+      return data as JobForm
+    } catch (error) {
+      console.error('Error fetching job form:', error)
+      throw error
+    }
+  },
+  
+  // Save job form
+  async saveJobForm(jobForm: JobForm) {
+    try {
+      const supabase = useSupabase()
+      
+      // Insert or update the job form
+      const { data, error } = await supabase
+        .from('job_form')
+        .upsert({
+          job_id: jobForm.job_id,
+          visible_questions: jobForm.visible_questions,
+          hidden_questions: jobForm.hidden_questions,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'job_id'
+        })
+      
+      if (error) throw error
+      return data
+    } catch (error) {
+      console.error('Error saving job form:', error)
+      throw error
+    }
+  },
+  
+  // Get all questions for a job (including form customizations)
+  async getJobQuestions(jobId: string) {
+    try {
+      // First get the job data
+      const job = await this.getJob(jobId)
+      if (!job || !job.questions) {
+        return []
+      }
+      
+      // Then get any form customizations
+      const jobForm = await this.getJobForm(jobId)
+      
+      // If no customizations exist, return all questions from the job data
+      if (!jobForm) {
+        // Extract questions from the job.questions data
+        const allQuestions = job.questions.questions_map || {}
+        return Object.values(allQuestions)
+      }
+      
+      // If customizations exist, apply them
+      const questionsMap = job.questions.questions_map || {}
+      const visibleQuestions = jobForm.visible_questions
+        .map(id => questionsMap[id])
+        .filter(q => q) // Filter out any undefined questions
+      
+      return visibleQuestions
+    } catch (error) {
+      console.error('Error getting job questions:', error)
       throw error
     }
   }

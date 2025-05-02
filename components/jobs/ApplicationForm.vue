@@ -183,7 +183,19 @@ onMounted(async () => {
 })
 
 // Computed
-const jobQuestions = computed(() => jobStore.jobQuestions.value)
+const jobQuestions = computed(() => {
+  // Use the questions from the job store, which now includes form customizations
+  return jobStore.jobQuestions.value.map(question => ({
+    id: question.id,
+    question_text: question.body || question.label,
+    question_type: question.type,
+    required: question.required,
+    options: question.choices ? question.choices.map((choice: { id: string; body: string }) => ({
+      value: choice.id,
+      label: choice.body
+    })) : []
+  }))
+})
 
 // Methods
 function generateCandidateId() {

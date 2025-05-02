@@ -26,7 +26,7 @@
       <div v-else-if="jobPosting" class="mt-4">
         <h1 class="text-3xl font-bold text-gray-900">{{ jobPosting.title }}</h1>
         <div class="mt-2 text-gray-600">
-          <p class="whitespace-pre-line">{{ jobPosting.description }}</p>
+          <p class="whitespace-pre-line">{{ jobPosting.data?.description || '' }}</p>
         </div>
       </div>
     </div>
@@ -54,13 +54,17 @@ const error = ref<string | null>(null)
 // Computed
 const jobPosting = computed(() => jobStore.currentJob.value)
 
-// Fetch job posting
+  // Fetch job posting and questions
 onMounted(async () => {
   isLoading.value = true
   error.value = null
   
   try {
+    // Fetch job data
     await jobStore.fetchJob(jobId.value)
+    
+    // Fetch job questions with form customizations applied
+    await jobStore.fetchJobQuestions(jobId.value)
   } catch (err: any) {
     error.value = err.message || 'Failed to load job posting'
   } finally {

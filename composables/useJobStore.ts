@@ -9,6 +9,7 @@ export function useJobStore() {
     title: string;
     status: string;
     data: any;
+    questions?: any;
     created_at?: string;
     updated_at?: string;
     last_synced_at?: string;
@@ -23,6 +24,15 @@ export function useJobStore() {
     };
     created_at?: string;
     [key: string]: any;
+  }
+
+  interface JobForm {
+    id?: string;
+    job_id: string;
+    visible_questions: string[];
+    hidden_questions: string[];
+    created_at?: string;
+    updated_at?: string;
   }
 
   // State
@@ -153,9 +163,8 @@ export function useJobStore() {
     error.value = null
     
     try {
-      // For now, we'll return an empty array since there's no API endpoint for this yet
-      // In a real implementation, you would fetch questions from an API
-      jobQuestions.value = []
+      // Fetch questions with form customizations applied
+      jobQuestions.value = await jobService.getJobQuestions(jobId)
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch job questions'
       console.error('Error fetching job questions:', err)
@@ -179,6 +188,38 @@ export function useJobStore() {
     }
   }
   
+  // Job form methods
+  const jobForm = ref<JobForm | null>(null)
+  
+  const fetchJobForm = async (jobId: string) => {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      jobForm.value = await jobService.getJobForm(jobId)
+    } catch (err: any) {
+      error.value = err.message || 'Failed to fetch job form'
+      console.error('Error fetching job form:', err)
+    } finally {
+      isLoading.value = false
+    }
+  }
+  
+  const saveJobForm = async (form: JobForm) => {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      await jobService.saveJobForm(form)
+      jobForm.value = form
+    } catch (err: any) {
+      error.value = err.message || 'Failed to save job form'
+      console.error('Error saving job form:', err)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     // State
     jobs,
@@ -188,6 +229,7 @@ export function useJobStore() {
     workablePagination,
     isLoading,
     error,
+    jobForm,
     
     // Computed
     publishedJobs,
@@ -202,6 +244,8 @@ export function useJobStore() {
     fetchJobQuestions,
     saveWorkableJob,
     deleteJob,
-    submitApplication
+    submitApplication,
+    fetchJobForm,
+    saveJobForm
   }
 }
