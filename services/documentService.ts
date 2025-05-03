@@ -31,6 +31,35 @@ export const documentService = {
   },
 
   /**
+   * Upload a cover letter file to Supabase storage
+   * @param file The file to upload
+   * @param candidateId The ID of the candidate
+   * @returns The file path in storage
+   */
+  async uploadCoverLetter(file: File, candidateId: string) {
+    const supabase = useSupabase()
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${candidateId}-cover-letter-${Date.now()}.${fileExt}`
+    
+    // Upload the file to the 'docs' bucket in the 'cover-letters' folder
+    const { data, error } = await supabase
+      .storage
+      .from('docs')
+      .upload(`cover-letters/${fileName}`, file, {
+        cacheControl: '3600',
+        upsert: false
+      })
+      
+    if (error) {
+      console.error('Error uploading cover letter:', error)
+      throw error
+    }
+    
+    // Return the file path for storing in the application record
+    return data.path
+  },
+
+  /**
    * Get a signed URL for a resume file
    * @param path The file path in storage
    * @returns The signed URL for the file
@@ -59,6 +88,41 @@ export const documentService = {
       return data.signedUrl
     } catch (error) {
       console.error('Error getting resume URL:', error)
+      
+      // Return empty string as fallback
+      return ''
+    }
+  },
+
+  /**
+   * Get a signed URL for a cover letter file
+   * @param path The file path in storage
+   * @returns The signed URL for the file
+   */
+  async getCoverLetterUrl(path: string) {
+    const supabase = useSupabase()
+    
+    // Ensure path doesn't start with a slash
+    const cleanPath = path.startsWith('/') ? path.substring(1) : path
+    
+    console.log('Getting URL for path:', cleanPath)
+    
+    try {
+      // Use signed URL instead of public URL
+      const { data, error } = await supabase
+        .storage
+        .from('docs')
+        .createSignedUrl(cleanPath, 60 * 60) // 1 hour expiration
+      
+      if (error) {
+        console.error('Error creating signed URL:', error)
+        throw error
+      }
+      
+      console.log('Generated signed URL:', data.signedUrl)
+      return data.signedUrl
+    } catch (error) {
+      console.error('Error getting cover letter URL:', error)
       
       // Return empty string as fallback
       return ''

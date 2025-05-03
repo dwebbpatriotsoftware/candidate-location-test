@@ -92,6 +92,22 @@
         </div>
       </div>
       
+      <!-- Cover letter upload section -->
+      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Cover Letter</h3>
+        
+        <CoverLetterUploader
+          :candidate-id="candidateId"
+          @upload-success="handleCoverLetterUpload"
+          @upload-error="handleCoverLetterError"
+          @file-removed="coverLetterPath = null"
+        />
+        
+        <div v-if="coverLetterError" class="mt-2 text-sm text-red-600">
+          {{ coverLetterError }}
+        </div>
+      </div>
+      
       <!-- Resume upload section -->
       <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Resume</h3>
@@ -145,6 +161,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useJobStore } from '../../composables/useJobStore'
 import FormField from './FormField.vue'
 import ResumeUploader from './ResumeUploader.vue'
+import CoverLetterUploader from './CoverLetterUploader.vue'
 import { useRoute } from 'vue-router'
 
 // Props
@@ -159,6 +176,8 @@ const props = defineProps({
 const route = useRoute()
 const jobStore = useJobStore()
 const candidateId = ref(generateCandidateId())
+const coverLetterPath = ref<string | null>(null)
+const coverLetterError = ref<string | null>(null)
 const resumePath = ref<string | null>(null)
 const resumeError = ref<string | null>(null)
 const isSubmitting = ref(false)
@@ -206,6 +225,15 @@ function updateAnswer(questionId: string, value: any) {
   formData.answers[questionId] = value
 }
 
+function handleCoverLetterUpload(path: string) {
+  coverLetterPath.value = path
+  coverLetterError.value = null
+}
+
+function handleCoverLetterError(error: any) {
+  coverLetterError.value = error.message || 'Failed to upload cover letter'
+}
+
 function handleResumeUpload(path: string) {
   resumePath.value = path
   resumeError.value = null
@@ -230,6 +258,7 @@ async function submitApplication() {
       job_posting_id: props.jobId,
       candidate_id: candidateId.value,
       resume_path: resumePath.value,
+      cover_letter_path: coverLetterPath.value,
       status: 'submitted',
       answers: {
         personal_info: {
