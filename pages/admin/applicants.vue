@@ -18,7 +18,7 @@
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           >
             <option value="">All Jobs</option>
-            <option v-for="job in jobStore.jobPostings.value" :key="job.id" :value="job.id">
+            <option v-for="job in jobStore.jobs.value" :key="job.id" :value="job.id">
               {{ job.title }}
             </option>
           </select>
@@ -208,8 +208,8 @@ const dateFilter = ref('')
 
 // Fetch data
 onMounted(async () => {
-  // Fetch all job postings for the filter dropdown
-  await jobStore.fetchJobPostings()
+  // Fetch all jobs for the filter dropdown
+  await jobStore.fetchJobs()
   
   // Fetch all applications
   await jobStore.fetchAllApplications()
@@ -288,8 +288,8 @@ const getJobTitle = (application: any) => {
     return application.job_posting.title
   }
   
-  // Fallback: try to find the job in jobPostings
-  const job = jobStore.jobPostings.value.find(j => j.id === application.job_posting_id)
+  // Fallback: try to find the job in jobs
+  const job = jobStore.jobs.value.find(j => j.id === application.job_posting_id)
   return job ? job.title : 'Unknown Job'
 }
 

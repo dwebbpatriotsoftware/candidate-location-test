@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { jobService } from '../services/jobService'
 import { workableService } from '../services/workableService'
+import { useSupabase } from '../utils/supabase'
 
 export function useJobStore() {
   // Define types
@@ -40,6 +41,7 @@ export function useJobStore() {
   const currentJob = ref<Job | null>(null)
   const workableJobs = ref<WorkableJob[]>([])
   const jobQuestions = ref<any[]>([])
+  const jobApplications = ref<any[]>([])
   const isLoading = ref(false)
   const error = ref(null)
   const workablePagination = ref({
@@ -233,12 +235,78 @@ export function useJobStore() {
     return applicationFormData.value[jobId] || null
   }
 
+  // Fetch all job applications across all jobs
+  const fetchAllApplications = async () => {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      // Fetch all applications from the database
+      const supabase = useSupabase()
+      const { data, error: supabaseError } = await supabase
+        .from('job_applications')
+        .select('*, jobs:job_id(title)')
+        .order('created_at', { ascending: false })
+      
+      if (supabaseError) throw supabaseError
+      jobApplications.value = data || []
+    } catch (err: any) {
+      error.value = err.message || 'Failed to fetch applications'
+      console.error('Error fetching applications:', err)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  // Fetch applications for a specific job
+  const fetchJobApplications = async (jobId: string) => {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      jobApplications.value = await jobService.getJobApplications(jobId)
+    } catch (err: any) {
+      error.value = err.message || 'Failed to fetch job applications'
+      console.error('Error fetching job applications:', err)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  // Update application status
+  const updateApplicationStatus = async (applicationId: string, status: string) => {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      const supabase = useSupabase()
+      const { error: supabaseError } = await supabase
+        .from('job_applications')
+        .update({ status })
+        .eq('id', applicationId)
+      
+      if (supabaseError) throw supabaseError
+      
+      // Update local state
+      const index = jobApplications.value.findIndex(app => app.id === applicationId)
+      if (index !== -1) {
+        jobApplications.value[index].status = status
+      }
+    } catch (err: any) {
+      error.value = err.message || 'Failed to update application status'
+      console.error('Error updating application status:', err)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     // State
     jobs,
     currentJob,
     workableJobs,
     jobQuestions,
+    jobApplications,
     workablePagination,
     isLoading,
     error,
@@ -262,6 +330,9 @@ export function useJobStore() {
     fetchJobForm,
     saveJobForm,
     saveApplicationFormData,
-    getApplicationFormData
+    getApplicationFormData,
+    fetchAllApplications,
+    fetchJobApplications,
+    updateApplicationStatus
   }
 }
