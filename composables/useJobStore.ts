@@ -220,6 +220,19 @@ export function useJobStore() {
     }
   }
 
+  // Application form data persistence
+  const applicationFormData = ref<Record<string, any>>({})
+
+  // Save form data
+  const saveApplicationFormData = (jobId: string, data: any) => {
+    applicationFormData.value[jobId] = data
+  }
+
+  // Get form data
+  const getApplicationFormData = (jobId: string) => {
+    return applicationFormData.value[jobId] || null
+  }
+
   return {
     // State
     jobs,
@@ -230,6 +243,7 @@ export function useJobStore() {
     isLoading,
     error,
     jobForm,
+    applicationFormData,
     
     // Computed
     publishedJobs,
@@ -246,6 +260,8 @@ export function useJobStore() {
     deleteJob,
     submitApplication,
     fetchJobForm,
-    saveJobForm
+    saveJobForm,
+    saveApplicationFormData,
+    getApplicationFormData
   }
 }

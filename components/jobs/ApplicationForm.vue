@@ -142,8 +142,21 @@
         </div>
       </div>
       
-      <!-- Submit button -->
-      <div class="flex justify-end">
+      <!-- Submit button and back link -->
+      <div class="flex justify-between items-center">
+        <!-- Back to Description link (left side) -->
+        <NuxtLink 
+          :to="`/jobs/${props.jobId}`" 
+          class="text-indigo-600 hover:text-indigo-500 flex items-center"
+          @click="saveFormData"
+        >
+          <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Description
+        </NuxtLink>
+        
+        <!-- Submit button (right side) -->
         <button
           type="submit"
           class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150"
@@ -158,8 +171,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useJobStore } from '../../composables/useJobStore'
+import { useFormState } from '../../composables/useFormState'
 import FormField from './FormField.vue'
 import ResumeUploader from './ResumeUploader.vue'
 import CoverLetterUploader from './CoverLetterUploader.vue'
@@ -176,6 +190,7 @@ const props = defineProps({
 // Setup
 const route = useRoute()
 const jobStore = useJobStore()
+const formState = useFormState()
 const candidateId = ref(generateCandidateId())
 const coverLetterPath = ref<string | null>(null)
 const coverLetterError = ref<string | null>(null)
@@ -197,9 +212,82 @@ const formData = reactive({
   answers: {} as Record<string, any>
 })
 
-// Fetch job questions
+// Save form data when navigating away or when form changes
+const saveFormData = () => {
+  const data = {
+    firstName: formData.firstName,
+    lastName: formData.lastName,
+    email: formData.email,
+    phone: formData.phone,
+    address: formData.address,
+    city: formData.city,
+    state: formData.state,
+    zipCode: formData.zipCode,
+    answers: formData.answers,
+    resumePath: resumePath.value,
+    coverLetterPath: coverLetterPath.value
+  }
+  
+  formState.saveFormData(props.jobId, data)
+}
+
+// Debounce helper function
+function debounce(fn: Function, delay: number) {
+  let timeout: number | null = null
+  return function(this: any, ...args: any[]) {
+    const context = this
+    if (timeout !== null) clearTimeout(timeout)
+    timeout = window.setTimeout(() => fn.apply(context, args), delay)
+  }
+}
+
+// Auto-save form data when it changes
+const debouncedSave = debounce(saveFormData, 500)
+
+// Watch for changes in form data and save automatically
+watch(
+  [
+    () => formData.firstName,
+    () => formData.lastName,
+    () => formData.email,
+    () => formData.phone,
+    () => formData.address,
+    () => formData.city,
+    () => formData.state,
+    () => formData.zipCode,
+    () => formData.answers,
+    () => resumePath.value,
+    () => coverLetterPath.value
+  ],
+  () => {
+    debouncedSave()
+  },
+  { deep: true }
+)
+
+// Fetch job questions and load saved form data if available
 onMounted(async () => {
   await jobStore.fetchJobQuestions(props.jobId)
+  
+  // Try to load saved form data
+  const savedData = formState.getFormData(props.jobId)
+  if (savedData) {
+    console.log('Restoring form data from saved state:', savedData)
+    // Restore form data
+    formData.firstName = savedData.firstName || ''
+    formData.lastName = savedData.lastName || ''
+    formData.email = savedData.email || ''
+    formData.phone = savedData.phone || ''
+    formData.address = savedData.address || ''
+    formData.city = savedData.city || ''
+    formData.state = savedData.state || ''
+    formData.zipCode = savedData.zipCode || ''
+    formData.answers = savedData.answers || {}
+    resumePath.value = savedData.resumePath || null
+    coverLetterPath.value = savedData.coverLetterPath || null
+  } else {
+    console.log('No saved form data found for job:', props.jobId)
+  }
 })
 
 // Computed
@@ -333,6 +421,9 @@ async function submitApplication() {
     
     // Submit application
     await jobStore.submitApplication(applicationData)
+    
+    // Clear saved form data after successful submission
+    formState.clearFormData(props.jobId)
     
     // Show success message
     isSubmitted.value = true

@@ -29,13 +29,13 @@
     </div>
     
     <div v-if="jobPosting">
-      <ApplicationForm :job-id="jobId" />
+      <ApplicationForm :job-id="jobId" :key="jobId" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useJobStore } from '../../../composables/useJobStore'
 import ApplicationForm from '../../../components/jobs/ApplicationForm.vue'
 
@@ -51,6 +51,21 @@ const error = ref<string | null>(null)
 // Computed
 const jobPosting = computed(() => jobStore.currentJob.value)
 
+  // Check if we're coming from the description page
+const fromDescription = computed(() => route.query.from === 'description')
+
+// Watch for route changes to ensure data is saved when navigating away
+watch(
+  () => route.path,
+  (newPath, oldPath) => {
+    if (oldPath && oldPath.includes('/apply') && !newPath.includes('/apply')) {
+      // User is navigating away from the apply page
+      // The ApplicationForm component will handle saving the data
+      console.log('Navigating away from application form')
+    }
+  }
+)
+
   // Fetch job posting and questions
 onMounted(async () => {
   isLoading.value = true
@@ -62,6 +77,11 @@ onMounted(async () => {
     
     // Fetch job questions with form customizations applied
     await jobStore.fetchJobQuestions(jobId.value)
+    
+    // Log if we're coming from the description page
+    if (fromDescription.value) {
+      console.log('Returning to application form from job description')
+    }
   } catch (err: any) {
     error.value = err.message || 'Failed to load job posting'
   } finally {
