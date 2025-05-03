@@ -10,7 +10,7 @@
       v-if="type === 'text'"
       :id="id"
       v-model="localValue"
-      type="text"
+      :type="inputType || 'text'"
       :placeholder="placeholder"
       :required="required"
       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
@@ -139,6 +139,10 @@ const props = defineProps({
     validator: (value: string) => {
       return ['text', 'email', 'phone', 'textarea', 'select', 'radio', 'checkbox', 'date'].includes(value)
     }
+  },
+  inputType: {
+    type: String,
+    default: null
   },
   value: {
     type: [String, Number, Array] as PropType<string | number | string[]>,

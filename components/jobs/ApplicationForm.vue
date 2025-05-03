@@ -133,6 +133,7 @@
             :id="`question-${question.id}`"
             :label="question.question_text"
             :type="question.question_type"
+            :input-type="question.inputType"
             :value="formData.answers[question.id || ''] || ''"
             @update:value="updateAnswer(question.id || '', $event)"
             :required="question.required"
@@ -204,16 +205,71 @@ onMounted(async () => {
 // Computed
 const jobQuestions = computed(() => {
   // Use the questions from the job store, which now includes form customizations
-  return jobStore.jobQuestions.value.map(question => ({
-    id: question.id,
-    question_text: question.body || question.label,
-    question_type: question.type,
-    required: question.required,
-    options: question.choices ? question.choices.map((choice: { id: string; body: string }) => ({
-      value: choice.id,
-      label: choice.body
-    })) : []
-  }))
+  return jobStore.jobQuestions.value.map(question => {
+    // Base question object
+    const mappedQuestion = {
+      id: question.id,
+      question_text: question.body || question.label,
+      required: question.required,
+    };
+
+    // Map Workable question types to our form field types
+    switch (question.type) {
+      case 'free_text':
+        return {
+          ...mappedQuestion,
+          question_type: 'textarea',
+        };
+      case 'short_text':
+        return {
+          ...mappedQuestion,
+          question_type: 'text',
+        };
+      case 'multiple_choice':
+        return {
+          ...mappedQuestion,
+          question_type: question.single_answer ? 'radio' : 'checkbox',
+          options: question.choices?.map((choice: { id: string; body: string }) => ({
+            value: choice.id,
+            label: choice.body
+          })) || []
+        };
+      case 'boolean':
+        return {
+          ...mappedQuestion,
+          question_type: 'radio',
+          options: [
+            { value: 'true', label: 'Yes' },
+            { value: 'false', label: 'No' }
+          ]
+        };
+      case 'dropdown':
+        return {
+          ...mappedQuestion,
+          question_type: 'select',
+          options: question.choices?.map((choice: { id: string; body: string }) => ({
+            value: choice.id,
+            label: choice.body
+          })) || []
+        };
+      case 'numeric':
+        return {
+          ...mappedQuestion,
+          question_type: 'text', // Using text with number validation for now
+          inputType: 'number', // Additional property for input type
+        };
+      case 'date':
+        return {
+          ...mappedQuestion,
+          question_type: 'date',
+        };
+      default:
+        return {
+          ...mappedQuestion,
+          question_type: 'text', // Default fallback
+        };
+    }
+  });
 })
 
 // Methods
