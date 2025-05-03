@@ -399,7 +399,7 @@ async function submitApplication() {
   try {
     // Prepare application data
     const applicationData = {
-      job_posting_id: props.jobId,
+      job_id: props.jobId,
       candidate_id: candidateId.value,
       resume_path: resumePath.value,
       cover_letter_path: coverLetterPath.value,
