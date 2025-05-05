@@ -10,11 +10,20 @@
             <div class="hidden md:block ml-10">
               <div class="flex items-baseline space-x-4">
                 <NuxtLink 
-                  to="/jobs" 
+                  v-if="isAuthenticated"
+                  to="/admin/jobs" 
                   class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                  :class="{ 'text-indigo-600': isJobsPage }"
+                  :class="{ 'text-indigo-600': isAdminPage && !isApplicantsPage }"
                 >
-                  Jobs
+                  Manage Jobs
+                </NuxtLink>
+                <NuxtLink 
+                  v-if="isAuthenticated"
+                  to="/admin/applicants" 
+                  class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  :class="{ 'text-indigo-600': isApplicantsPage }"
+                >
+                  Manage Applications
                 </NuxtLink>
                 <NuxtLink 
                   v-if="isAuthenticated"
@@ -23,22 +32,6 @@
                   :class="{ 'text-indigo-600': isReportsPage }"
                 >
                   Reports
-                </NuxtLink>
-                <NuxtLink 
-                  v-if="isAuthenticated"
-                  to="/admin/jobs" 
-                  class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                  :class="{ 'text-indigo-600': isAdminPage && !isApplicantsPage }"
-                >
-                  Admin
-                </NuxtLink>
-                <NuxtLink 
-                  v-if="isAuthenticated"
-                  to="/admin/applicants" 
-                  class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                  :class="{ 'text-indigo-600': isApplicantsPage }"
-                >
-                  Applicants
                 </NuxtLink>
               </div>
             </div>

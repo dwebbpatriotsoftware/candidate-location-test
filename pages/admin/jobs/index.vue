@@ -1,26 +1,9 @@
 <template>
   <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <div class="mb-8 flex justify-between items-center">
+    <div class="mb-8">
       <div>
         <h1 class="text-3xl font-bold text-gray-900">Job Postings</h1>
         <p class="mt-2 text-gray-600">Manage job postings and applications</p>
-      </div>
-      
-      <div class="flex space-x-2">
-        <button 
-          @click="pullWorkableJobs" 
-          class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-          :disabled="isLoading"
-        >
-          <svg v-if="!isLoading" class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          <svg v-else class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Pull Workable Jobs
-        </button>
       </div>
     </div>
     
@@ -91,8 +74,28 @@
         </nav>
       </div>
       
-      <!-- Job listings table -->
-      <div class="overflow-x-auto">
+      <!-- Job listings table (shown when workable or our tabs are active) -->
+      <div v-if="activeTab === 'workable' || activeTab === 'our'" class="mt-6">
+        <!-- Workable tab controls -->
+        <div v-if="activeTab === 'workable'" class="mb-4 flex justify-between items-center">
+          <div class="flex space-x-2">
+            <button 
+              @click="pullWorkableJobs" 
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              :disabled="isLoading"
+            >
+              <svg v-if="!isLoading" class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <svg v-else class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Pull Workable Jobs
+            </button>
+          </div>
+        </div>
+        
         <!-- Pagination controls for Workable jobs -->
         <div v-if="activeTab === 'workable' && jobStore.workablePagination.value.totalPages > 1" class="mb-4 flex justify-between items-center">
           <div class="text-sm text-gray-700">
@@ -115,7 +118,9 @@
             </button>
           </div>
         </div>
-        <table class="min-w-full divide-y divide-gray-200 border-table responsive-table-labels">
+        
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 border-table responsive-table-labels">
           <thead class="bg-gray-50">
             <tr>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -205,6 +210,7 @@
             </template>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>
@@ -246,11 +252,17 @@ definePageMeta({
 const jobStore = useJobStore()
 const isLoading = ref(true)
 const error = ref<string | null>(null)
+const route = useRoute()
 const activeTab = ref('workable')
 const runtimeConfig = useRuntimeConfig()
 const jobToDelete = ref<Job | null>(null)
 
-// No longer need filteredJobs computed property as we're using jobStore.jobs.value directly
+// Set active tab based on query parameter if provided
+onMounted(() => {
+  if (route.query.tab === 'our') {
+    activeTab.value = 'our'
+  }
+})
 
 // Check if a Workable job is already saved
 const isJobSaved = (shortcode: string) => {

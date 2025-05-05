@@ -27,7 +27,7 @@
         <div>
           <h1 class="text-3xl font-bold text-gray-900">Applications</h1>
           <p class="mt-2 text-gray-600">
-            {{ jobStore.currentJobPosting.value?.title || 'Job' }} Applications
+            {{ jobStore.currentJob.value?.title || 'Job' }} Applications
           </p>
         </div>
         
@@ -268,7 +268,7 @@ onMounted(async () => {
   
   try {
     // Fetch job posting
-    await jobStore.fetchJobPosting(jobId.value)
+    await jobStore.fetchJob(jobId.value)
     
     // Fetch applications for this job
     await jobStore.fetchJobApplications(jobId.value)

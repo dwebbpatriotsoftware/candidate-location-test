@@ -79,6 +79,11 @@ import { ref, onMounted, computed } from 'vue'
 import { useJobStore } from '../../composables/useJobStore'
 import { useAuthStore } from '../../composables/useAuthStore'
 
+// Apply middleware to control access to this page
+definePageMeta({
+  middleware: ['jobs-access']
+})
+
 // Setup
 const jobStore = useJobStore()
 const authStore = useAuthStore()

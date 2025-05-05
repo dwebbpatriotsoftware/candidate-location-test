@@ -1,14 +1,7 @@
 <template>
   <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <div class="mb-8">
-      <div class="flex items-center">
-        <NuxtLink to="/jobs" class="text-indigo-600 hover:text-indigo-500 flex items-center">
-          <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Back to Jobs
-        </NuxtLink>
-      </div>
+      <!-- Back link removed as per requirements -->
     </div>
     
     <div v-if="isLoading" class="flex justify-center py-12">
