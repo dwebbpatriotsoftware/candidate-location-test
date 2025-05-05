@@ -397,6 +397,23 @@ async function submitApplication() {
   isSubmitting.value = true
   
   try {
+    // Get IP address
+    const ipResponse = await fetch('https://api.ipify.org?format=json')
+    const ipData = await ipResponse.json()
+    
+    // Get timezone
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+    
+    // Add capture_time
+    const capture_time = new Date().toISOString()
+    
+    // Create candidate_info object
+    const candidate_info = {
+      ip: ipData.ip,
+      timezone,
+      capture_time
+    }
+    
     // Prepare application data
     const applicationData = {
       job_id: props.jobId,
@@ -404,6 +421,7 @@ async function submitApplication() {
       resume_path: resumePath.value,
       cover_letter_path: coverLetterPath.value,
       status: 'submitted',
+      candidate_info, // Add the new candidate_info object
       answers: {
         personal_info: {
           firstName: formData.firstName,
