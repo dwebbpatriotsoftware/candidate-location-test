@@ -151,22 +151,56 @@
                   {{ formatDate(job.created_at) }}
                 </td>
                 <td data-column="Actions" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div class="flex justify-end space-x-2">
+                  <div class="flex justify-end items-center space-x-4">
+                    <!-- Copy button -->
+                    <button 
+                      @click="copyUrl(getJobUrl(job.id), job.id)" 
+                      class="relative focus:outline-none flex items-center"
+                      :aria-label="`Copy link to ${job.title}`"
+                    >
+                      <!-- Copy icon SVG -->
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        :class="[
+                          'h-5 w-5 transition-colors duration-200',
+                          jobStore.copiedUrls[job.id] ? 'text-green-500' : 'text-gray-400 hover:text-gray-600'
+                        ]"
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path 
+                          stroke-linecap="round" 
+                          stroke-linejoin="round" 
+                          stroke-width="2" 
+                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                        />
+                      </svg>
+                      
+                      <!-- Copied tooltip -->
+                      <span 
+                        v-if="jobStore.copiedUrls[job.id]" 
+                        class="absolute -top-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-green-500 text-white text-xs rounded shadow-lg"
+                      >
+                        Copied!
+                      </span>
+                    </button>
+                    
                     <NuxtLink 
                       :to="`/jobs/${job.id}`" 
-                      class="text-indigo-600 hover:text-indigo-900"
+                      class="text-indigo-600 hover:text-indigo-900 flex items-center"
                     >
                       View
                     </NuxtLink>
                     <NuxtLink 
                       :to="`/admin/jobs/${job.id}`" 
-                      class="text-green-600 hover:text-green-900"
+                      class="text-green-600 hover:text-green-900 flex items-center"
                     >
                       Edit
                     </NuxtLink>
                     <button 
                       @click="confirmDelete(job)" 
-                      class="text-red-600 hover:text-red-900"
+                      class="text-red-600 hover:text-red-900 flex items-center"
                     >
                       Delete
                     </button>
@@ -329,6 +363,21 @@ const confirmDelete = (job: Job) => {
   if (confirm(`Are you sure you want to delete the job "${job.title}"?`)) {
     deleteJob()
   }
+}
+
+// Get the full URL for a job (safe for SSR)
+const getJobUrl = (jobId: string) => {
+  // Check if we're in browser context
+  if (typeof window !== 'undefined' && window.location) {
+    return `${window.location.origin}/jobs/${jobId}`;
+  }
+  // Fallback for SSR context
+  return `/jobs/${jobId}`;
+}
+
+// Copy URL to clipboard
+const copyUrl = (url: string, jobId: string) => {
+  jobStore.copyUrl(url, jobId)
 }
 
 const deleteJob = async () => {

@@ -44,6 +44,7 @@ export function useJobStore() {
   const jobApplications = ref<any[]>([])
   const isLoading = ref(false)
   const error = ref(null)
+  const copiedUrls = ref<Record<string, boolean>>({})
   const workablePagination = ref({
     currentPage: 1,
     totalPages: 1,
@@ -300,6 +301,35 @@ export function useJobStore() {
     }
   }
 
+  // Copy URL to clipboard
+  const copyUrl = (url: string, jobId: string) => {
+    // Create a temporary textarea element
+    const textarea = document.createElement('textarea')
+    textarea.value = url
+    textarea.style.position = 'fixed' // Prevent scrolling to bottom
+    document.body.appendChild(textarea)
+    
+    // Select and copy the text
+    textarea.select()
+    document.execCommand('copy')
+    
+    // Remove the temporary element
+    document.body.removeChild(textarea)
+    
+    // Update the copied status for this specific URL
+    // Use Vue's reactivity system more explicitly
+    const newCopiedUrls = { ...copiedUrls.value }
+    newCopiedUrls[jobId] = true
+    copiedUrls.value = newCopiedUrls
+    
+    // Reset after 2 seconds
+    setTimeout(() => {
+      const resetCopiedUrls = { ...copiedUrls.value }
+      resetCopiedUrls[jobId] = false
+      copiedUrls.value = resetCopiedUrls
+    }, 2000)
+  }
+
   return {
     // State
     jobs,
@@ -312,6 +342,7 @@ export function useJobStore() {
     error,
     jobForm,
     applicationFormData,
+    copiedUrls,
     
     // Computed
     publishedJobs,
@@ -333,6 +364,7 @@ export function useJobStore() {
     getApplicationFormData,
     fetchAllApplications,
     fetchJobApplications,
-    updateApplicationStatus
+    updateApplicationStatus,
+    copyUrl
   }
 }
