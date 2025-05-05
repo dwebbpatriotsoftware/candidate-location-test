@@ -198,25 +198,32 @@
         >
           <!-- Card header with applicant info -->
           <div class="px-4 py-4 sm:px-6">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
-                <p class="text-sm font-medium text-indigo-600 truncate">
-                  {{ getApplicantName(application) }}
-                </p>
-                <div class="ml-2 flex-shrink-0 flex">
+            <div class="flex items-start justify-between">
+              <div>
+                <div class="flex items-start">
+                  <p class="text-sm font-medium text-indigo-600 truncate">
+                    {{ getApplicantName(application) }}
+                  </p>
                   <p 
+                    class="ml-2 px-2 inline-flex text-sm leading-5 font-semibold rounded-full"
                     :class="[
                       application.status === 'submitted' ? 'bg-green-100 text-green-800' : 
                       application.status === 'reviewed' ? 'bg-blue-100 text-blue-800' : 
                       application.status === 'rejected' ? 'bg-red-100 text-red-800' : 
                       application.status === 'accepted' ? 'bg-purple-100 text-purple-800' :
-                      'bg-gray-100 text-gray-800',
-                      'px-2 inline-flex text-xs leading-5 font-semibold rounded-full'
+                      'bg-gray-100 text-gray-800'
                     ]"
                   >
                     {{ application.status.charAt(0).toUpperCase() + application.status.slice(1) }}
                   </p>
                 </div>
+                <p class="flex items-start text-sm text-gray-500 mt-1">
+                  <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  {{ getApplicantCityState(application) }}
+                </p>
               </div>
               <div class="ml-2 flex-shrink-0 flex">
                 <button 
@@ -228,39 +235,20 @@
               </div>
             </div>
             
-            <div class="mt-2 sm:flex sm:justify-between">
-              <div class="sm:flex">
-                <p class="flex items-center text-sm text-gray-500">
-                  <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  {{ getApplicantEmail(application) }}
-                </p>
-                <p class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
-                  <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                  {{ getApplicantPhone(application) }}
-                </p>
-              </div>
-              <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p>
-                  Applied on <time :datetime="application.created_at">{{ formatDate(application.created_at) }}</time>
-                </p>
-              </div>
-            </div>
-            
             <!-- Job info -->
-            <div class="mt-2 flex items-center text-sm text-gray-500">
+            <div class="mt-2 flex items-start text-sm text-gray-500">
               <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <p>
-                Applied for: {{ getJobTitle(application) }}
-              </p>
+              Applied for: {{ getJobTitle(application) }}
+            </div>
+            
+            <!-- Applied on info -->
+            <div class="mt-2 flex items-start text-sm text-gray-500">
+              <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Applied on <time :datetime="application.created_at">{{ formatDate(application.created_at) }}</time>
             </div>
           </div>
           
@@ -466,6 +454,14 @@ const getApplicantLocation = (application: any) => {
   const personalInfo = application.answers?.personal_info
   if (personalInfo) {
     return `${personalInfo.city}, ${personalInfo.state} ${personalInfo.zipCode}`
+  }
+  return 'Location not provided'
+}
+
+const getApplicantCityState = (application: any) => {
+  const personalInfo = application.answers?.personal_info
+  if (personalInfo && personalInfo.city && personalInfo.state) {
+    return `${personalInfo.city}, ${personalInfo.state}`
   }
   return 'Location not provided'
 }
