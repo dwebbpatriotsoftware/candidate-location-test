@@ -61,7 +61,7 @@
               'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
             ]"
           >
-            2. Our Jobs
+            2. Saved Jobs
             <span
               :class="[
                 activeTab === 'our' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-900',

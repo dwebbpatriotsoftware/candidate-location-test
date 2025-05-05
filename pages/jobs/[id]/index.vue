@@ -1,8 +1,6 @@
 <template>
   <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <div class="mb-8">
-      <!-- Back link removed as per requirements -->
-    </div>
+    
     
     <div v-if="isLoading" class="flex justify-center py-12">
       <div class="animate-spin h-8 w-8 text-indigo-600">

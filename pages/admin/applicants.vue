@@ -238,11 +238,37 @@
               <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              Applied on <time :datetime="application.created_at">{{ formatDate(application.created_at) }}</time>
+              Applied on: <time :datetime="application.created_at"> {{ formatDate(application.created_at) }}</time>
             </div>
             
-            <!-- View details link -->
-            <div class="mt-3 flex items-start">
+            <!-- Action buttons and view details -->
+            <div class="mt-3 flex justify-between items-center">
+              <!-- Action buttons -->
+              <div class="flex space-x-2">
+                <button 
+                  v-if="application.status === 'submitted'"
+                  class="px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                  @click="updateStatus(application.id, 'reviewed')"
+                >
+                  Mark as Reviewed
+                </button>
+                <button 
+                  v-if="['submitted', 'reviewed'].includes(application.status)"
+                  class="px-2 py-1 border border-transparent shadow-sm text-xs font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                  @click="updateStatus(application.id, 'accepted')"
+                >
+                  Accept
+                </button>
+                <button 
+                  v-if="['submitted', 'reviewed'].includes(application.status)"
+                  class="px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-red-700 bg-white hover:bg-gray-50"
+                  @click="updateStatus(application.id, 'rejected')"
+                >
+                  Reject
+                </button>
+              </div>
+              
+              <!-- View details link -->
               <button 
                 @click="toggleApplicationDetails(application.id)"
                 class="flex items-center text-sm text-gray-500 hover:text-gray-700"
@@ -284,6 +310,18 @@
                   </dd>
                 </div>
                 
+                <!-- Cover Letter section -->
+                <div class="sm:col-span-2">
+                  <dt class="text-sm font-medium text-gray-500">Cover Letter</dt>
+                  <dd class="mt-1 text-sm text-gray-900">
+                    <CoverLetterViewer 
+                      v-if="application.cover_letter_path" 
+                      :cover-letter-path="application.cover_letter_path" 
+                    />
+                    <p v-else class="text-gray-500 italic">No cover letter provided</p>
+                  </dd>
+                </div>
+                
                 <!-- Resume section -->
                 <div class="sm:col-span-2">
                   <dt class="text-sm font-medium text-gray-500">Resume</dt>
@@ -309,30 +347,7 @@
               </dl>
             </div>
             
-            <!-- Actions -->
-            <div class="border-t border-gray-200 px-4 py-4 sm:px-6 bg-gray-50 flex justify-end space-x-3">
-              <button 
-                v-if="application.status === 'submitted'"
-                class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                @click="updateStatus(application.id, 'reviewed')"
-              >
-                Mark as Reviewed
-              </button>
-              <button 
-                v-if="['submitted', 'reviewed'].includes(application.status)"
-                class="px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-                @click="updateStatus(application.id, 'accepted')"
-              >
-                Accept
-              </button>
-              <button 
-                v-if="['submitted', 'reviewed'].includes(application.status)"
-                class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-gray-50"
-                @click="updateStatus(application.id, 'rejected')"
-              >
-                Reject
-              </button>
-            </div>
+            <!-- No actions here anymore, they've been moved to the main card -->
           </div>
         </div>
       </div>
@@ -344,6 +359,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useJobStore } from '../../composables/useJobStore'
 import ResumeViewer from '../../components/admin/ResumeViewer.vue'
+import CoverLetterViewer from '../../components/admin/CoverLetterViewer.vue'
 
 // Authentication middleware
 definePageMeta({

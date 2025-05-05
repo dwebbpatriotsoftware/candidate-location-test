@@ -165,12 +165,36 @@ export const jobService = {
         if (error.code === 'PGRST116') {
           return null
         }
+        
+        // For 406 errors, log but don't throw
+        // The error message or code might contain '406' for Not Acceptable errors
+        if (error.message?.includes('406') || error.code?.includes('406') || error.details?.includes('406')) {
+          console.warn('406 Not Acceptable error when fetching job form. This may indicate a permissions issue:', error)
+          return null
+        }
+        
         throw error
       }
       
       return data as JobForm
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching job form:', error)
+      
+      // Check for common network/API errors that we want to handle gracefully
+      if (
+        // Network errors
+        error.message?.includes('network') || 
+        error.message?.includes('connection') ||
+        // 406 errors that might be caught here
+        error.message?.includes('406') ||
+        // Any other error that should be handled gracefully
+        error.message?.includes('Not Acceptable')
+      ) {
+        console.warn('Handled error gracefully when fetching job form:', error.message)
+        return null
+      }
+      
+      // For unexpected errors, still throw to prevent silent failures
       throw error
     }
   },
@@ -206,29 +230,51 @@ export const jobService = {
       // First get the job data
       const job = await this.getJob(jobId)
       if (!job || !job.questions) {
+        console.warn(`No job or questions data found for job ID: ${jobId}`)
         return []
       }
       
-      // Then get any form customizations
-      const jobForm = await this.getJobForm(jobId)
+      // Extract questions map from job data for fallback
+      const questionsMap = job.questions.questions_map || {}
+      const allQuestions = Object.values(questionsMap)
       
-      // If no customizations exist, return all questions from the job data
-      if (!jobForm) {
-        // Extract questions from the job.questions data
-        const allQuestions = job.questions.questions_map || {}
-        return Object.values(allQuestions)
+      // If there are no questions at all, return empty array
+      if (allQuestions.length === 0) {
+        console.warn(`No questions found in job data for job ID: ${jobId}`)
+        return []
       }
       
-      // If customizations exist, apply them
-      const questionsMap = job.questions.questions_map || {}
-      const visibleQuestions = jobForm.visible_questions
-        .map(id => questionsMap[id])
-        .filter(q => q) // Filter out any undefined questions
-      
-      return visibleQuestions
+      try {
+        // Try to get form customizations, but don't let it fail the whole process
+        const jobForm = await this.getJobForm(jobId)
+        
+        // If no customizations exist, return all questions from the job data
+        if (!jobForm || !jobForm.visible_questions || jobForm.visible_questions.length === 0) {
+          console.log(`Using all questions for job ID: ${jobId} (no form customizations found)`)
+          return allQuestions
+        }
+        
+        // If customizations exist, apply them
+        const visibleQuestions = jobForm.visible_questions
+          .map(id => questionsMap[id])
+          .filter(q => q) // Filter out any undefined questions
+        
+        // If filtering resulted in no questions, fall back to all questions
+        if (visibleQuestions.length === 0) {
+          console.warn(`Form customization resulted in no questions, falling back to all questions for job ID: ${jobId}`)
+          return allQuestions
+        }
+        
+        return visibleQuestions
+      } catch (formError) {
+        // If there's any error getting the form, fall back to all questions
+        console.warn(`Error getting job form, falling back to all questions for job ID: ${jobId}`, formError)
+        return allQuestions
+      }
     } catch (error) {
       console.error('Error getting job questions:', error)
-      throw error
+      // Return empty array instead of throwing to prevent application failure
+      return []
     }
   }
 }
