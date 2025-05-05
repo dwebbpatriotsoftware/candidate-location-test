@@ -1,6 +1,16 @@
 <template>
   <div class="min-h-screen bg-white">
-    <nav class="bg-white border-b border-gray-200">
+    <!-- Simplified header for unauthenticated users on job details or apply page -->
+    <div v-if="isJobDetailsOrApplyPage && !isAuthenticated" class="bg-white border-b border-gray-200 py-4">
+      <div class="flex justify-center">
+        <NuxtLink to="/" class="flex-shrink-0">
+          <img src="/images/patriot-logo.svg" alt="Patriot Software" class="h-24 w-auto" />
+        </NuxtLink>
+      </div>
+    </div>
+    
+    <!-- Regular header for all other cases -->
+    <nav v-else class="bg-white border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
           <div class="flex items-center">
@@ -65,6 +75,11 @@ const { isAuthenticated, logout } = useAuthStore()
 // Check current page
 const isAssessmentPage = computed(() => route.path === '/assessment')
 const isJobsPage = computed(() => route.path.startsWith('/jobs'))
+const isJobDetailsPage = computed(() => route.path.match(/^\/jobs\/[^\/]+$/) !== null)
+const isJobDetailsOrApplyPage = computed(() => 
+  route.path.match(/^\/jobs\/[^\/]+$/) !== null || 
+  route.path.match(/^\/jobs\/[^\/]+\/apply$/) !== null
+)
 const isReportsPage = computed(() => route.path === '/reports')
 const isAdminPage = computed(() => route.path.startsWith('/admin'))
 const isApplicantsPage = computed(() => route.path === '/admin/applicants')
