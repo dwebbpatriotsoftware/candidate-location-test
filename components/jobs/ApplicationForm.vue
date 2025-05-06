@@ -12,8 +12,8 @@
     
     <form v-else @submit.prevent="submitApplication" class="space-y-6">
       <!-- Common fields section -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Personal Information</h3>
+      <div class="bg-white px-6 pt-4 pb-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900 mb-2 mt-3">Personal Information</h3>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
@@ -94,8 +94,8 @@
       </div>
       
       <!-- Cover letter upload section -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Cover Letter</h3>
+      <div class="bg-white px-6 pt-4 pb-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900 mb-2 mt-3">Cover Letter</h3>
         
         <CoverLetterUploader
           :candidate-id="candidateId"
@@ -110,8 +110,8 @@
       </div>
       
       <!-- Resume upload section -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Resume</h3>
+      <div class="bg-white px-6 pt-4 pb-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900 mb-2 mt-3">Resume</h3>
         
         <ResumeUploader
           :candidate-id="candidateId"
@@ -126,8 +126,8 @@
       </div>
       
       <!-- Dynamic job questions section -->
-      <div v-if="jobQuestions.length > 0" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Additional Questions</h3>
+      <div v-if="jobQuestions.length > 0" class="bg-white px-6 pt-4 pb-6 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900 mb-2 mt-3">Additional Questions</h3>
         
         <div v-for="question in jobQuestions" :key="question.id" class="mb-4">
           <FormField
