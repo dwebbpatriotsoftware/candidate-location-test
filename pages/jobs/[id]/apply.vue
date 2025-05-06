@@ -49,7 +49,6 @@ watch(
     if (oldPath && oldPath.includes('/apply') && !newPath.includes('/apply')) {
       // User is navigating away from the apply page
       // The ApplicationForm component will handle saving the data
-      console.log('Navigating away from application form')
     }
   }
 )
@@ -66,9 +65,9 @@ onMounted(async () => {
     // Fetch job questions with form customizations applied
     await jobStore.fetchJobQuestions(jobId.value)
     
-    // Log if we're coming from the description page
+    // Check if we're coming from the description page
     if (fromDescription.value) {
-      console.log('Returning to application form from job description')
+      // Coming from description page
     }
   } catch (err: any) {
     error.value = err.message || 'Failed to load job posting'

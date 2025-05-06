@@ -28,13 +28,11 @@ export function useFormState() {
   // Save form data
   const saveFormData = (jobId: string, data: any) => {
     applicationForms.value[jobId] = data
-    console.log('Form data saved for job:', jobId, data)
   }
   
   // Get form data
   const getFormData = (jobId: string) => {
     const data = applicationForms.value[jobId] || null
-    console.log('Retrieved form data for job:', jobId, data)
     return data
   }
   
@@ -42,7 +40,6 @@ export function useFormState() {
   const clearFormData = (jobId: string) => {
     if (applicationForms.value[jobId]) {
       delete applicationForms.value[jobId]
-      console.log('Cleared form data for job:', jobId)
     }
   }
   

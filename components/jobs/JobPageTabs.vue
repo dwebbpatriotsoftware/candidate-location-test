@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Job Information Section -->
-    <div v-if="job" class="bg-white py-6">
+    <div v-if="job && Object.keys(job).length > 0" class="bg-white py-6">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ job.title }}</h1>
         
@@ -89,7 +89,8 @@ const jobId = computed(() => route.params.id);
 const props = defineProps({
   job: {
     type: Object,
-    required: true
+    required: false,
+    default: () => ({})
   }
 });
 
