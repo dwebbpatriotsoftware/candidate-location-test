@@ -92,7 +92,7 @@ onMounted(async () => {
 .job-description h3 {
   font-size: 1.25rem; /* 20px - matches global h3 */
   font-weight: 400;
-  margin: 3rem 0 2rem;
+  margin: 0rem 0 2rem;
   line-height: 1.3;
 }
 
