@@ -20,6 +20,21 @@ export default defineEventHandler(async (event) => {
       })
     }
     
+    // Get the server-captured IP data from the event context
+    const reqIpData = event.context.reqIpData || { 'direct-ip': 'unknown' }
+    const reqIp = event.context.reqIp || 'unknown'
+    
+    // Add server-side IP data to candidate_info
+    if (body.candidate_info) {
+      body.candidate_info.req_ip = reqIp
+      body.candidate_info.req_ip_data = reqIpData
+    } else {
+      body.candidate_info = { 
+        req_ip: reqIp,
+        req_ip_data: reqIpData
+      }
+    }
+    
     // Create server-side Supabase client
     const supabase = createServerSupabaseClient(event)
     
