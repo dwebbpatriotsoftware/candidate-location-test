@@ -52,7 +52,8 @@ const handleLogin = async () => {
         ? currentPath.substring(0, currentPath.length - 6) 
         : '';
       
-      router.push(`${basePath}/reports`)
+      router.push('/admin/applicants')
+
     } catch (e) {
       console.error('Navigation error:', e);
       // Fallback to simple string-based navigation
