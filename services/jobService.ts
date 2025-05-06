@@ -15,15 +15,9 @@ export const jobService = {
   // Get all jobs
   async getJobs() {
     try {
-      const supabase = useSupabase()
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .order('updated_at', { ascending: false })
-      
-      if (error) throw error
+      const data = await $fetch('/api/jobs')
       return data || []
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching jobs:', error)
       throw error
     }
@@ -32,16 +26,9 @@ export const jobService = {
   // Get a specific job by ID (shortcode)
   async getJob(id: string) {
     try {
-      const supabase = useSupabase()
-      const { data, error } = await supabase
-        .from('jobs')
-        .select('*')
-        .eq('id', id)
-        .single()
-      
-      if (error) throw error
+      const data = await $fetch(`/api/jobs/${id}`)
       return data
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching job:', error)
       throw error
     }
@@ -93,7 +80,7 @@ export const jobService = {
       
       if (error) throw error
       return data
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving Workable job:', error)
       throw error
     }
@@ -110,7 +97,7 @@ export const jobService = {
       
       if (error) throw error
       return true
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting job:', error)
       throw error
     }
@@ -128,7 +115,7 @@ export const jobService = {
       
       if (error) throw error
       return data || []
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching job applications:', error)
       throw error
     }
@@ -137,14 +124,16 @@ export const jobService = {
   // Submit a job application
   async submitApplication(applicationData: any) {
     try {
-      const supabase = useSupabase()
-      const { data, error } = await supabase
-        .from('job_applications')
-        .insert(applicationData)
+      const data = await $fetch('/api/jobs/applications', {
+        method: 'POST',
+        body: applicationData,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
       
-      if (error) throw error
       return data
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting application:', error)
       throw error
     }
@@ -218,7 +207,7 @@ export const jobService = {
       
       if (error) throw error
       return data
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving job form:', error)
       throw error
     }
@@ -227,51 +216,9 @@ export const jobService = {
   // Get all questions for a job (including form customizations)
   async getJobQuestions(jobId: string) {
     try {
-      // First get the job data
-      const job = await this.getJob(jobId)
-      if (!job || !job.questions) {
-        console.warn(`No job or questions data found for job ID: ${jobId}`)
-        return []
-      }
-      
-      // Extract questions map from job data for fallback
-      const questionsMap = job.questions.questions_map || {}
-      const allQuestions = Object.values(questionsMap)
-      
-      // If there are no questions at all, return empty array
-      if (allQuestions.length === 0) {
-        console.warn(`No questions found in job data for job ID: ${jobId}`)
-        return []
-      }
-      
-      try {
-        // Try to get form customizations, but don't let it fail the whole process
-        const jobForm = await this.getJobForm(jobId)
-        
-        // If no customizations exist, return all questions from the job data
-        if (!jobForm || !jobForm.visible_questions || jobForm.visible_questions.length === 0) {
-          console.log(`Using all questions for job ID: ${jobId} (no form customizations found)`)
-          return allQuestions
-        }
-        
-        // If customizations exist, apply them
-        const visibleQuestions = jobForm.visible_questions
-          .map(id => questionsMap[id])
-          .filter(q => q) // Filter out any undefined questions
-        
-        // If filtering resulted in no questions, fall back to all questions
-        if (visibleQuestions.length === 0) {
-          console.warn(`Form customization resulted in no questions, falling back to all questions for job ID: ${jobId}`)
-          return allQuestions
-        }
-        
-        return visibleQuestions
-      } catch (formError) {
-        // If there's any error getting the form, fall back to all questions
-        console.warn(`Error getting job form, falling back to all questions for job ID: ${jobId}`, formError)
-        return allQuestions
-      }
-    } catch (error) {
+      const data = await $fetch(`/api/jobs/questions/${jobId}`)
+      return data || []
+    } catch (error: any) {
       console.error('Error getting job questions:', error)
       // Return empty array instead of throwing to prevent application failure
       return []
