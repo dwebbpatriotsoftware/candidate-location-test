@@ -112,7 +112,36 @@ The list of time zones included here may not be exhaustive for the continental U
 
 The list includes time zones in states where we currently hire and states where we do not. For example, we don't hire in California, but the America/Los_Angeles time zone is on the list because some areas in Oregon may also use it. Similarly, most areas on the East Coast use the New_York time zone.
 
-# Nuxt 3 Minimal Starter
+# Authentication System
+
+This application uses Sidebase Auth for authentication, which provides improved session persistence and support for multiple authentication providers.
+
+## Authentication Features
+
+- Email/password authentication via Supabase
+- Session persistence across page refreshes
+- Support for Google OAuth (ready for implementation)
+- Route protection for admin and reports pages
+
+## Authentication Setup
+
+1. Copy `.env.example` to `.env` and fill in the required values:
+
+```bash
+cp .env.example .env
+```
+
+2. Generate a secure AUTH_SECRET:
+
+```bash
+npm run generate:auth-secret
+```
+
+3. Update the `.env` file with the generated secret.
+
+For more details on the authentication system, see the [Authentication Migration Guide](./docs/auth-migration.md).
+
+# Nuxt 3 Setup
 
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
@@ -121,14 +150,8 @@ Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introdu
 Make sure to install the dependencies:
 
 ```bash
-# yarn
-yarn install
-
 # npm
 npm install
-
-# pnpm
-pnpm install
 ```
 
 ## Development Server

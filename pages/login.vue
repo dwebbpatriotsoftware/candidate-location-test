@@ -30,6 +30,26 @@
         >
           Login
         </button>
+        
+        <!-- Google login button (commented out for future implementation) -->
+        <!-- 
+        <div class="relative mt-6">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-300"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white text-gray-500">Or continue with</span>
+          </div>
+        </div>
+        <button
+          type="button"
+          @click="handleGoogleLogin"
+          class="w-full flex items-center justify-center bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition duration-150 shadow-sm mt-6"
+        >
+          <span class="mr-2">G</span>
+          Google
+        </button>
+        -->
       </form>
     </div>
   </div>

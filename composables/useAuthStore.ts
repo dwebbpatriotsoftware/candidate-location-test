@@ -7,47 +7,38 @@ export const useAuthStore = () => {
   const user = useState<any>('user', () => null)
   const isAuthenticated = useState('isAuthenticated', () => false)
   
-  // Initialize auth state from existing session using server-side endpoint
+  // Initialize auth state from existing session
   const initAuth = async () => {
     try {
       // First check if we have a session in localStorage (client-side only)
       if (process.client) {
-        const localSession = localStorage.getItem('supabase-auth-token')
-        if (localSession) {
-          try {
-            const sessionData = JSON.parse(localSession)
-            if (sessionData && sessionData.access_token) {
-              // Set the session directly in Supabase client
-              const { data, error } = await supabase.auth.setSession({
-                access_token: sessionData.access_token,
-                refresh_token: sessionData.refresh_token || ''
-              })
-              
-              if (data?.session) {
-                user.value = data.session.user
-                isAuthenticated.value = true
-                return // Successfully restored session
-              }
-            }
-          } catch (e) {
-            console.error('Error parsing local session:', e)
-          }
+        // Try to get the session from Supabase client directly
+        const { data: { session }, error } = await supabase.auth.getSession()
+        
+        if (session) {
+          user.value = session.user
+          isAuthenticated.value = true
+          return // Successfully restored session
         }
       }
       
       // If client-side restoration failed or we're on server, try the API
-      const data = await $fetch('/api/auth/session')
-      if (data.session) {
-        user.value = data.session.user
-        isAuthenticated.value = true
-        
-        // Also update local storage for future refreshes
-        if (process.client && data.session) {
-          localStorage.setItem('supabase-auth-token', JSON.stringify({
-            access_token: data.session.access_token,
-            refresh_token: data.session.refresh_token
-          }))
+      try {
+        const data = await $fetch('/api/auth/session')
+        if (data.session) {
+          user.value = data.session.user
+          isAuthenticated.value = true
+          
+          // Also update Supabase client session
+          if (process.client && data.session) {
+            await supabase.auth.setSession({
+              access_token: data.session.access_token,
+              refresh_token: data.session.refresh_token
+            })
+          }
         }
+      } catch (apiError) {
+        console.error('API session fetch error:', apiError)
       }
     } catch (error) {
       console.error('Session initialization error:', error)
@@ -55,17 +46,32 @@ export const useAuthStore = () => {
   }
 
   // Set up auth state change listener
-  // Note: We still need this client-side for real-time auth state changes
   const setupAuthListener = () => {
-    supabase.auth.onAuthStateChange((event: string, session: any) => {
-      if (event === 'SIGNED_IN' && session) {
-        user.value = session.user
-        isAuthenticated.value = true
-      } else if (event === 'SIGNED_OUT') {
-        user.value = null
-        isAuthenticated.value = false
+    if (process.client) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
+        console.log('Auth state changed:', event, session)
+        if (event === 'SIGNED_IN' && session) {
+          user.value = session.user
+          isAuthenticated.value = true
+        } else if (event === 'SIGNED_OUT') {
+          user.value = null
+          isAuthenticated.value = false
+        } else if (event === 'TOKEN_REFRESHED' && session) {
+          user.value = session.user
+          isAuthenticated.value = true
+        } else if (event === 'INITIAL_SESSION' && session) {
+          user.value = session.user
+          isAuthenticated.value = true
+        }
+      })
+      
+      // Return unsubscribe function
+      return () => {
+        subscription.unsubscribe()
       }
-    })
+    }
+    
+    return () => {}
   }
 
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -80,12 +86,12 @@ export const useAuthStore = () => {
         user.value = data.session.user
         isAuthenticated.value = true
         
-        // Store session data in local storage for persistence
+        // Update Supabase client session
         if (process.client) {
-          localStorage.setItem('supabase-auth-token', JSON.stringify({
+          await supabase.auth.setSession({
             access_token: data.session.access_token,
             refresh_token: data.session.refresh_token
-          }))
+          })
         }
         
         return true
@@ -105,9 +111,9 @@ export const useAuthStore = () => {
         method: 'POST'
       })
       
-      // Clear local storage
+      // Clear Supabase client session
       if (process.client) {
-        localStorage.removeItem('supabase-auth-token')
+        await supabase.auth.signOut()
       }
       
       // Update local state
