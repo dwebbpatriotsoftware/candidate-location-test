@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
-import { H3Event } from 'h3'
+import { H3Event, parseCookies } from 'h3'
 
 // Create a Supabase client for server-side operations
 export function createServerSupabaseClient(event?: H3Event): SupabaseClient {
@@ -12,7 +12,36 @@ export function createServerSupabaseClient(event?: H3Event): SupabaseClient {
     throw new Error('Supabase URL and key must be defined in environment variables')
   }
   
-  return createClient(supabaseUrl, supabaseKey)
+  // Create client with session persistence
+  const supabase = createClient(supabaseUrl, supabaseKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: false,
+      storageKey: 'supabase-auth-token'
+    }
+  })
+  
+  // If we have an event, set the auth cookie from the request
+  if (event) {
+    const cookies = parseCookies(event)
+    const authCookie = cookies['supabase-auth-token']
+    
+    if (authCookie) {
+      try {
+        const authData = JSON.parse(authCookie)
+        // Set the auth data in the client
+        supabase.auth.setSession({
+          access_token: authData.access_token,
+          refresh_token: authData.refresh_token
+        })
+      } catch (e) {
+        console.error('Error parsing auth cookie:', e)
+      }
+    }
+  }
+  
+  return supabase
 }
 
 // Helper function to handle API errors consistently

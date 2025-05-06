@@ -70,7 +70,15 @@
 <script setup>
 const route = useRoute()
 const router = useRouter()
-const { isAuthenticated, logout } = useAuthStore()
+const { isAuthenticated, logout, initAuth, setupAuthListener } = useAuthStore()
+
+// Initialize auth state when app loads
+onMounted(async () => {
+  await initAuth()
+  if (process.client) {
+    setupAuthListener()
+  }
+})
 
 // Check current page
 const isAssessmentPage = computed(() => route.path === '/assessment')

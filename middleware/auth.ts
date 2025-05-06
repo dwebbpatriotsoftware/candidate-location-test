@@ -6,9 +6,20 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     return
   }
   
-  // Make sure auth state is initialized and set up listener
+  // Make sure auth state is initialized
   await initAuth()
-  setupAuthListener()
+  
+  // Set up listener only on client side
+  if (process.client) {
+    setupAuthListener()
+  }
+  
+  // Add a small delay to ensure auth state is fully processed
+  if (process.client && !isAuthenticated.value) {
+    // Try one more time with a small delay
+    await new Promise(resolve => setTimeout(resolve, 100))
+    await initAuth()
+  }
   
   // Protect reports and all admin routes
   if (!isAuthenticated.value && (

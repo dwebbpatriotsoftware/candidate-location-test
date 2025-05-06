@@ -4,16 +4,50 @@ import { useSupabase } from '~/utils/supabase'
 export const useAuthStore = () => {
   // Keep the client-side Supabase instance for candidate_info and other client-side operations
   const supabase = useSupabase()
-  const user = useState('user', () => null)
+  const user = useState<any>('user', () => null)
   const isAuthenticated = useState('isAuthenticated', () => false)
   
   // Initialize auth state from existing session using server-side endpoint
   const initAuth = async () => {
     try {
+      // First check if we have a session in localStorage (client-side only)
+      if (process.client) {
+        const localSession = localStorage.getItem('supabase-auth-token')
+        if (localSession) {
+          try {
+            const sessionData = JSON.parse(localSession)
+            if (sessionData && sessionData.access_token) {
+              // Set the session directly in Supabase client
+              const { data, error } = await supabase.auth.setSession({
+                access_token: sessionData.access_token,
+                refresh_token: sessionData.refresh_token || ''
+              })
+              
+              if (data?.session) {
+                user.value = data.session.user
+                isAuthenticated.value = true
+                return // Successfully restored session
+              }
+            }
+          } catch (e) {
+            console.error('Error parsing local session:', e)
+          }
+        }
+      }
+      
+      // If client-side restoration failed or we're on server, try the API
       const data = await $fetch('/api/auth/session')
       if (data.session) {
         user.value = data.session.user
         isAuthenticated.value = true
+        
+        // Also update local storage for future refreshes
+        if (process.client && data.session) {
+          localStorage.setItem('supabase-auth-token', JSON.stringify({
+            access_token: data.session.access_token,
+            refresh_token: data.session.refresh_token
+          }))
+        }
       }
     } catch (error) {
       console.error('Session initialization error:', error)
@@ -45,6 +79,15 @@ export const useAuthStore = () => {
       if (data.session) {
         user.value = data.session.user
         isAuthenticated.value = true
+        
+        // Store session data in local storage for persistence
+        if (process.client) {
+          localStorage.setItem('supabase-auth-token', JSON.stringify({
+            access_token: data.session.access_token,
+            refresh_token: data.session.refresh_token
+          }))
+        }
+        
         return true
       }
       
@@ -61,6 +104,11 @@ export const useAuthStore = () => {
       await $fetch('/api/auth/logout', {
         method: 'POST'
       })
+      
+      // Clear local storage
+      if (process.client) {
+        localStorage.removeItem('supabase-auth-token')
+      }
       
       // Update local state
       user.value = null

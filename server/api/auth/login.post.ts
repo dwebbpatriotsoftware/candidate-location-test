@@ -30,6 +30,21 @@ export default defineEventHandler(async (event) => {
       })
     }
     
+    // Ensure we have all necessary session data for client-side restoration
+    if (data.session) {
+      // Make sure we have the tokens in the response
+      const sessionData = {
+        ...data,
+        session: {
+          ...data.session,
+          // Ensure these fields are present for client-side storage
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token
+        }
+      }
+      return sessionData
+    }
+    
     // Return the session data
     return data
   } catch (error) {
