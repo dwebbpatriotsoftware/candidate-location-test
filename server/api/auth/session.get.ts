@@ -10,30 +10,37 @@ export default defineEventHandler(async (event) => {
     
     // Handle errors
     if (error) {
-      throw createError({
-        statusCode: 500,
-        message: error.message
-      })
+      console.error('Session fetch error:', error);
+      // Return empty data instead of throwing an error
+      return { session: null };
     }
     
     // Ensure we have all necessary session data for client-side restoration
-    if (data.session) {
-      // Make sure we have the tokens in the response
-      const sessionData = {
-        ...data,
-        session: {
-          ...data.session,
-          // Ensure these fields are present for client-side storage
-          access_token: data.session.access_token,
-          refresh_token: data.session.refresh_token
+    if (data?.session) {
+      try {
+        // Make sure we have the tokens in the response
+        const sessionData = {
+          ...data,
+          session: {
+            ...data.session,
+            // Ensure these fields are present for client-side storage
+            access_token: data.session.access_token,
+            refresh_token: data.session.refresh_token
+          }
         }
+        return sessionData;
+      } catch (formatError) {
+        console.error('Error formatting session data:', formatError);
+        // Return empty data if we can't format the session
+        return { session: null };
       }
-      return sessionData
     }
     
-    // Return the session data
-    return data
+    // Return the session data or empty object if no session
+    return data || { session: null };
   } catch (error) {
-    return handleApiError(error)
+    console.error('Unhandled session API error:', error);
+    // Return empty data instead of throwing an error
+    return { session: null };
   }
 })

@@ -8,17 +8,24 @@ export const useAuthManager = () => {
   const user = useState<any>('user', () => null)
   const isAuthenticated = useState('isAuthenticated', () => false)
   
-  // Watch for changes in the auth state and update our state
-  watch(() => data.value?.user, (newUser) => {
-    if (newUser) {
-      user.value = newUser
-      isAuthenticated.value = true
+  // Use a single watcher that considers both sources of truth for authentication state
+  watch([() => data.value?.user, () => status.value], ([newUser, newStatus]) => {
+    console.log('Auth state update:', { user: !!newUser, status: newStatus });
+    
+    // If user is null, we're not authenticated regardless of status
+    if (!newUser) {
+      console.log('No user data, setting to unauthenticated');
+      isAuthenticated.value = false;
+    } else {
+      // Otherwise, require both user and authenticated status
+      isAuthenticated.value = (!!newUser && newStatus === 'authenticated');
+      console.log('Setting authentication state to:', isAuthenticated.value);
     }
-  }, { immediate: true })
-  
-  watch(() => status.value, (newStatus) => {
-    isAuthenticated.value = newStatus === 'authenticated'
-  }, { immediate: true })
+    
+    if (newUser) {
+      user.value = newUser;
+    }
+  }, { immediate: true });
   
   // Initialize Supabase session from Sidebase Auth session
   const initSupabaseSession = async () => {
@@ -59,17 +66,27 @@ export const useAuthManager = () => {
   // Logout
   const logout = async () => {
     try {
-      await signOut({ redirect: false })
+      console.log('Starting logout process');
+      
+      // Update local state immediately
+      user.value = null;
+      isAuthenticated.value = false;
+      
+      // Then sign out from auth providers
+      await signOut({ redirect: false });
       
       // Clear Supabase client session
-      const supabase = useSupabase()
-      await supabase.auth.signOut()
+      if (process.client) {
+        const supabase = useSupabase();
+        await supabase.auth.signOut();
+      }
       
-      // Update local state
-      user.value = null
-      isAuthenticated.value = false
+      // Double-check authentication state after logout
+      console.log('Logout complete, ensuring auth state is updated');
+      isAuthenticated.value = false;
     } catch (error) {
-      console.error('Logout error:', error)
+      console.error('Logout error:', error);
+      isAuthenticated.value = false;
     }
   }
   
@@ -79,18 +96,25 @@ export const useAuthManager = () => {
       const supabase = useSupabase()
       const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
         console.log('Auth state changed:', event, session)
-        if (event === 'SIGNED_IN' && session) {
-          user.value = session.user
-          isAuthenticated.value = true
+        
+        // Handle session events
+        if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') && session) {
+          console.log(`Auth event ${event} with session, updating user and auth state`);
+          user.value = session.user;
+          
+          // Don't directly set isAuthenticated here, let the watcher handle it
+          // This prevents conflicts with the status watcher
+          
+          // Instead, ensure the session is properly synced with Nuxt Auth if needed
+          if (status.value !== 'authenticated' && event === 'INITIAL_SESSION') {
+            console.log('Detected Supabase session but Nuxt Auth status is not authenticated, syncing...');
+            // We could potentially sync with Nuxt Auth here if needed
+          }
         } else if (event === 'SIGNED_OUT') {
-          user.value = null
-          isAuthenticated.value = false
-        } else if (event === 'TOKEN_REFRESHED' && session) {
-          user.value = session.user
-          isAuthenticated.value = true
-        } else if (event === 'INITIAL_SESSION' && session) {
-          user.value = session.user
-          isAuthenticated.value = true
+          console.log('Signed out event, clearing user and explicitly setting not authenticated');
+          user.value = null;
+          // Explicitly set not authenticated for SIGNED_OUT events
+          isAuthenticated.value = false;
         }
       })
       
@@ -106,40 +130,71 @@ export const useAuthManager = () => {
   // Initialize auth state with more robust approach
   const initAuth = async () => {
     try {
+      console.log('Initializing auth state...');
+      
+      // Check if we already have auth data from useAuth
+      if (status.value === 'authenticated' && data.value?.user) {
+        console.log('Already authenticated via useAuth');
+        user.value = data.value.user;
+        isAuthenticated.value = true;
+        
+        // Sync with Supabase if we have tokens
+        if (data.value?.supabaseAccessToken) {
+          await initSupabaseSession();
+        }
+        return;
+      }
+      
       // First check if we have a session in localStorage (client-side only)
       if (process.client) {
         // Try to get the session from Supabase client directly
-        const supabase = useSupabase()
-        const { data: { session }, error } = await supabase.auth.getSession()
+        const supabase = useSupabase();
+        const { data: { session }, error } = await supabase.auth.getSession();
         
         if (session) {
-          user.value = session.user
-          isAuthenticated.value = true
-          return // Successfully restored session
+          console.log('Found Supabase session');
+          user.value = session.user;
+          isAuthenticated.value = true;
+          return; // Successfully restored session
+        } else {
+          console.log('No Supabase session found');
         }
       }
       
       // If client-side restoration failed or we're on server, try the API
       try {
-        const sessionData = await $fetch('/api/auth/session')
+        const sessionData = await $fetch('/api/auth/session');
         if (sessionData.session) {
-          user.value = sessionData.session.user
-          isAuthenticated.value = true
+          console.log('Found session via API');
+          user.value = sessionData.session.user;
+          isAuthenticated.value = true;
           
           // Also update Supabase client session
           if (process.client && sessionData.session) {
-            const supabase = useSupabase()
+            const supabase = useSupabase();
             await supabase.auth.setSession({
               access_token: sessionData.session.access_token,
               refresh_token: sessionData.session.refresh_token
-            })
+            });
           }
+        } else {
+          console.log('No session found via API');
         }
       } catch (apiError) {
-        console.error('API session fetch error:', apiError)
+        console.error('API session fetch error:', apiError);
       }
+      
+      // Final check - if we still don't have a user, we're not authenticated
+      // regardless of what the status says
+      if (!user.value) {
+        console.log('No user data found, setting to unauthenticated regardless of status');
+        isAuthenticated.value = false;
+      } else if (!isAuthenticated.value) {
+        console.log('No authentication found, setting to unauthenticated');
+      }
+      
     } catch (error) {
-      console.error('Session initialization error:', error)
+      console.error('Session initialization error:', error);
     }
   }
   
