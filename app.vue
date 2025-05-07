@@ -68,9 +68,11 @@
 </template>
 
 <script setup>
+import { useAuth } from '~/composables/useAuth'
+
 const route = useRoute()
 const router = useRouter()
-const { isAuthenticated, logout } = useAuthStore()
+const { isAuthenticated, logout } = useAuth()
 
 // Check current page
 const isAssessmentPage = computed(() => route.path === '/assessment')

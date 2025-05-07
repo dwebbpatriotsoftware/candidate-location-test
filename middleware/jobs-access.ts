@@ -1,10 +1,10 @@
 import { defineNuxtRouteMiddleware, navigateTo, abortNavigation } from '#app'
-import { useAuthStore } from '~/composables/useAuthStore'
+import { useAuth } from '~/composables/useAuth'
 
 export default defineNuxtRouteMiddleware((to) => {
   // Only apply this middleware to the /jobs index page, not to individual job pages
   if (to.path === '/jobs') {
-    const { isAuthenticated } = useAuthStore()
+    const { isAuthenticated } = useAuth()
     
     // For authenticated users, redirect to the Manage Jobs page with "our" tab selected
     if (isAuthenticated.value) {

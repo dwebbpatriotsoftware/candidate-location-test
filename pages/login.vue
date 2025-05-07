@@ -36,12 +36,20 @@
 </template>
 
 <script setup>
+import { useAuth } from '~/composables/useAuth'
 const router = useRouter()
-const { login } = useAuthStore()
+const { login, error: authError, isLoading } = useAuth()
 
 const email = ref('')
 const password = ref('')
 const error = ref('')
+
+// Sync error from auth store
+watch(authError, (newError) => {
+  if (newError) {
+    error.value = newError
+  }
+})
 
 const handleLogin = async () => {
   if (await login(email.value, password.value)) {
