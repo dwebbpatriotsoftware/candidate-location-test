@@ -8,7 +8,7 @@
  * node scripts/generate-auth-secret.js
  */
 
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 // Generate a random string of 32 bytes (256 bits) and encode it as base64
 const generateSecret = () => {

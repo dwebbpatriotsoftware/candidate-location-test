@@ -70,7 +70,7 @@
 <script setup>
 const route = useRoute()
 const router = useRouter()
-const { isAuthenticated, logout, initAuth, setupAuthListener } = useAuthStore()
+const { isAuthenticated, logout, initAuth, setupAuthListener } = useAuthManager()
 
 // Initialize auth state when app loads
 onMounted(async () => {

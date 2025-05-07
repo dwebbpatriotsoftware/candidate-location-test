@@ -57,7 +57,7 @@
 
 <script setup>
 const router = useRouter()
-const { login } = useAuthStore()
+const { login } = useAuthManager()
 
 const email = ref('')
 const password = ref('')

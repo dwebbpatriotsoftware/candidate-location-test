@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  const { isAuthenticated, initAuth, setupAuthListener } = useAuthStore()
+  const { isAuthenticated, initAuth, setupAuthListener } = useAuthManager()
   
   // Add check for login page to prevent redirect loop
   if (to.path === '/login') {

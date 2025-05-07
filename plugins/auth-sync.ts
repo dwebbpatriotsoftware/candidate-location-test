@@ -1,7 +1,7 @@
 export default defineNuxtPlugin(async () => {
   // Only run on client-side
   if (process.client) {
-    const { isAuthenticated, initAuth } = useAuthStore()
+    const { isAuthenticated, initAuth } = useAuthManager()
     
     // Initialize auth state
     await initAuth()

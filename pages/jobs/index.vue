@@ -77,7 +77,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useJobStore } from '../../composables/useJobStore'
-import { useAuthStore } from '../../composables/useAuthStore'
+import { useAuthManager } from '../../composables/useAuthManager'
 
 // Apply middleware to control access to this page
 definePageMeta({
@@ -86,7 +86,7 @@ definePageMeta({
 
 // Setup
 const jobStore = useJobStore()
-const authStore = useAuthStore()
+const authStore = useAuthManager()
 const isLoading = ref(true)
 const error = ref<string | null>(null)
 
