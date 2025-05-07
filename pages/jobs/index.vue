@@ -77,7 +77,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useJobStore } from '../../composables/useJobStore'
-import { useAuthStore } from '../../composables/useAuthStore'
+import { useAuth } from '../../composables/useAuth'
 
 // Apply middleware to control access to this page
 definePageMeta({
@@ -86,13 +86,14 @@ definePageMeta({
 
 // Setup
 const jobStore = useJobStore()
-const authStore = useAuthStore()
+const { isAuthenticated } = useAuth()
 const isLoading = ref(true)
 const error = ref<string | null>(null)
 
 // Computed
 const displayedJobs = computed(() => {
-  if (authStore.isAuthenticated.value) {
+  if (isAuthenticated.value) {
+
     return jobStore.jobs.value // Show all jobs if authenticated
   } else {
     return jobStore.publishedJobs.value // Show only published jobs if not authenticated

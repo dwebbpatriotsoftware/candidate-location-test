@@ -1,7 +1,8 @@
 <script setup>
-// Redirect to login page
-definePageMeta({
-  middleware: 'redirect-to-login'
+// Direct redirect instead of using middleware
+const router = useRouter()
+onMounted(() => {
+  router.push('/login')
 })
 </script>
 

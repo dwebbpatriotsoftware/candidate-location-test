@@ -101,7 +101,7 @@ const handleAuthClick = async () => {
   if (isAuthenticated.value) {
     await logout()
     // Redirect to home page after logout
-    router.push('/')
+    router.push('/login')
   }
 }
 </script>
