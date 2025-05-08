@@ -3,9 +3,7 @@
     <!-- Simplified header for unauthenticated users on job details or apply page -->
     <div v-if="isJobDetailsOrApplyPage && !isAuthenticated" class="bg-white border-b border-gray-200 py-4">
       <div class="flex justify-center">
-        <NuxtLink to="/" class="flex-shrink-0">
           <img src="/images/patriot-logo.svg" alt="Patriot Software" class="h-24 w-auto" />
-        </NuxtLink>
       </div>
     </div>
     
