@@ -189,167 +189,15 @@
         <p class="mt-1 text-gray-500">There are no applications matching your filters.</p>
       </div>
       
-      <!-- Applications list with card design -->
+      <!-- Applications list with ApplicantCard component -->
       <div v-else class="space-y-4">
-        <div 
+        <ApplicantCard
           v-for="application in filteredApplications" 
           :key="application.id"
-          class="bg-white shadow overflow-hidden sm:rounded-lg"
-        >
-          <!-- Card header with applicant info -->
-          <div class="px-4 py-4 sm:px-6">
-            <div>
-              <div class="flex items-start">
-                <p class="text-sm font-medium text-indigo-600 truncate">
-                  {{ getApplicantName(application) }}
-                </p>
-                <p 
-                  class="ml-2 px-2 inline-flex text-sm leading-5 font-semibold rounded-full"
-                  :class="[
-                    application.status === 'submitted' ? 'bg-green-100 text-green-800' : 
-                    application.status === 'reviewed' ? 'bg-blue-100 text-blue-800' : 
-                    application.status === 'rejected' ? 'bg-red-100 text-red-800' : 
-                    application.status === 'accepted' ? 'bg-purple-100 text-purple-800' :
-                    'bg-gray-100 text-gray-800'
-                  ]"
-                >
-                  {{ application.status.charAt(0).toUpperCase() + application.status.slice(1) }}
-                </p>
-              </div>
-              <p class="flex items-start text-sm text-gray-500 mt-1">
-                <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                {{ getApplicantCityState(application) }}
-              </p>
-            </div>
-            
-            <!-- Job info -->
-            <div class="mt-2 flex items-start text-sm text-gray-500">
-              <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              Applied for: {{ getJobTitle(application) }}
-            </div>
-            
-            <!-- Applied on info -->
-            <div class="mt-2 flex items-start text-sm text-gray-500">
-              <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              Applied on: <time :datetime="application.created_at"> {{ formatDate(application.created_at) }}</time>
-            </div>
-            
-            <!-- Action buttons and view details -->
-            <div class="mt-3 flex justify-between items-center">
-              <!-- Action buttons -->
-              <div class="flex space-x-2">
-                <button 
-                  v-if="application.status === 'submitted'"
-                  class="px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                  @click="updateStatus(application.id, 'reviewed')"
-                >
-                  Mark as Reviewed
-                </button>
-                <button 
-                  v-if="['submitted', 'reviewed'].includes(application.status)"
-                  class="px-2 py-1 border border-transparent shadow-sm text-xs font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-                  @click="updateStatus(application.id, 'accepted')"
-                >
-                  Accept
-                </button>
-                <button 
-                  v-if="['submitted', 'reviewed'].includes(application.status)"
-                  class="px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-red-700 bg-white hover:bg-gray-50"
-                  @click="updateStatus(application.id, 'rejected')"
-                >
-                  Reject
-                </button>
-              </div>
-              
-              <!-- View details link -->
-              <button 
-                @click="toggleApplicationDetails(application.id)"
-                class="flex items-center text-sm text-gray-500 hover:text-gray-700"
-              >
-                <span>{{ expandedApplications.includes(application.id) ? 'Show less' : 'See more details' }}</span>
-                <svg 
-                  class="ml-1 h-4 w-4 transition-transform" 
-                  :class="{ 'transform rotate-180': expandedApplications.includes(application.id) }"
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          
-          <!-- Expanded details section -->
-          <div v-if="expandedApplications.includes(application.id)">
-            <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
-              <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
-                <div class="sm:col-span-1">
-                  <dt class="text-sm font-medium text-gray-500">Email</dt>
-                  <dd class="mt-1 text-sm text-gray-900">{{ getApplicantEmail(application) }}</dd>
-                </div>
-                <div class="sm:col-span-1">
-                  <dt class="text-sm font-medium text-gray-500">Phone</dt>
-                  <dd class="mt-1 text-sm text-gray-900">{{ getApplicantPhone(application) }}</dd>
-                </div>
-                <div class="sm:col-span-1">
-                  <dt class="text-sm font-medium text-gray-500">Applied on</dt>
-                  <dd class="mt-1 text-sm text-gray-900">{{ formatDate(application.created_at) }}</dd>
-                </div>
-                <div class="sm:col-span-1">
-                  <dt class="text-sm font-medium text-gray-500">Location</dt>
-                  <dd class="mt-1 text-sm text-gray-900">
-                    {{ getApplicantLocation(application) }}
-                  </dd>
-                </div>
-                
-                <!-- Cover Letter section -->
-                <div class="sm:col-span-2">
-                  <dt class="text-sm font-medium text-gray-500">Cover Letter</dt>
-                  <dd class="mt-1 text-sm text-gray-900">
-                    <CoverLetterViewer 
-                      v-if="application.cover_letter_path" 
-                      :cover-letter-path="application.cover_letter_path" 
-                    />
-                    <p v-else class="text-gray-500 italic">No cover letter provided</p>
-                  </dd>
-                </div>
-                
-                <!-- Resume section -->
-                <div class="sm:col-span-2">
-                  <dt class="text-sm font-medium text-gray-500">Resume</dt>
-                  <dd class="mt-1 text-sm text-gray-900">
-                    <ResumeViewer 
-                      v-if="application.resume_path" 
-                      :resume-path="application.resume_path" 
-                    />
-                    <p v-else class="text-gray-500 italic">No resume provided</p>
-                  </dd>
-                </div>
-                
-                <!-- Additional questions section -->
-                <div class="sm:col-span-2">
-                  <dt class="text-sm font-medium text-gray-500">Additional Information</dt>
-                  <dd class="mt-1 text-sm text-gray-900 space-y-2">
-                    <div v-for="(answer, questionId) in application.answers?.job_questions" :key="questionId">
-                      <p class="font-medium">{{ getQuestionText(questionId) }}</p>
-                      <p>{{ answer }}</p>
-                    </div>
-                  </dd>
-                </div>
-              </dl>
-            </div>
-            
-            <!-- No actions here anymore, they've been moved to the main card -->
-          </div>
-        </div>
+          :application="application"
+          :jobs="jobStore.jobs.value"
+          @update-status="updateStatus"
+        />
       </div>
     </div>
   </div>
@@ -358,8 +206,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useJobStore } from '../../composables/useJobStore'
-import ResumeViewer from '../../components/admin/ResumeViewer.vue'
-import CoverLetterViewer from '../../components/admin/CoverLetterViewer.vue'
+import ApplicantCard from '../../components/admin/ApplicantCard.vue'
 
 // Authentication middleware
 definePageMeta({
@@ -374,7 +221,6 @@ const jobFilter = ref('')
 const statusFilter = ref('')
 const dateFilter = ref('')
 const activeTab = ref('all')
-const expandedApplications = ref<string[]>([])
 
 // Fetch data
 onMounted(async () => {
@@ -453,61 +299,6 @@ const filteredApplications = computed(() => {
 })
 
 // Methods
-const formatDate = (dateString: string | undefined) => {
-  if (!dateString) return 'N/A'
-  const date = new Date(dateString)
-  return date.toLocaleDateString()
-}
-
-const getApplicantName = (application: any) => {
-  const personalInfo = application.answers?.personal_info
-  if (personalInfo) {
-    return `${personalInfo.firstName} ${personalInfo.lastName}`
-  }
-  return 'Unknown Applicant'
-}
-
-const getApplicantEmail = (application: any) => {
-  return application.answers?.personal_info?.email || 'No email provided'
-}
-
-const getApplicantPhone = (application: any) => {
-  return application.answers?.personal_info?.phone || 'No phone provided'
-}
-
-const getApplicantLocation = (application: any) => {
-  const personalInfo = application.answers?.personal_info
-  if (personalInfo) {
-    return `${personalInfo.city}, ${personalInfo.state} ${personalInfo.zipCode}`
-  }
-  return 'Location not provided'
-}
-
-const getApplicantCityState = (application: any) => {
-  const personalInfo = application.answers?.personal_info
-  if (personalInfo && personalInfo.city && personalInfo.state) {
-    return `${personalInfo.city}, ${personalInfo.state}`
-  }
-  return 'Location not provided'
-}
-
-const getJobTitle = (application: any) => {
-  // Try to get the title from the joined job_posting data
-  if (application.jobs && application.jobs.title) {
-    return application.jobs.title
-  }
-  
-  // Fallback: try to find the job in jobs
-  const job = jobStore.jobs.value.find(j => j.id === application.job_id)
-  return job ? job.title : 'Unknown Job'
-}
-
-const getQuestionText = (questionId: string | number) => {
-  // This would need to fetch the question text from somewhere
-  // For now, just return a placeholder
-  return `Question ${questionId}`
-}
-
 const updateStatus = async (applicationId: string | undefined, status: string) => {
   if (!applicationId) return
   
@@ -515,15 +306,6 @@ const updateStatus = async (applicationId: string | undefined, status: string) =
     await jobStore.updateApplicationStatus(applicationId, status)
   } catch (error) {
     console.error('Failed to update application status:', error)
-  }
-}
-
-const toggleApplicationDetails = (applicationId: string) => {
-  const index = expandedApplications.value.indexOf(applicationId)
-  if (index === -1) {
-    expandedApplications.value.push(applicationId)
-  } else {
-    expandedApplications.value.splice(index, 1)
   }
 }
 </script>
