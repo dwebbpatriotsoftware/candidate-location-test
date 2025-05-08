@@ -1,13 +1,6 @@
 <template>
-  <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-    <!-- Page header -->
-    <div class="mb-8">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900">All Applicants</h1>
-        <p class="mt-2 text-gray-600">View and manage applications across all job postings</p>
-      </div>
-    </div>
-    
+  <div class="max-w-7xl mx-auto py-0 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-2xl font-bold mb-6">Job Applications</h1>
     <!-- Loading state -->
     <div v-if="isLoading" class="flex justify-center py-12">
       <div class="animate-spin h-8 w-8 text-indigo-600">
