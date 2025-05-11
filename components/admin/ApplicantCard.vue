@@ -7,18 +7,38 @@
           <p class="text-sm font-medium text-indigo-600 truncate">
             {{ getApplicantName(application) }}
           </p>
-          <p 
-            class="ml-2 px-2 inline-flex text-sm leading-5 font-semibold rounded-full"
-            :class="[
-              application.status === 'submitted' ? 'bg-green-100 text-green-800' : 
-              application.status === 'reviewed' ? 'bg-blue-100 text-blue-800' : 
-              application.status === 'rejected' ? 'bg-red-100 text-red-800' : 
-              application.status === 'accepted' ? 'bg-purple-100 text-purple-800' :
-              'bg-gray-100 text-gray-800'
-            ]"
-          >
-            {{ application.status.charAt(0).toUpperCase() + application.status.slice(1) }}
-          </p>
+          <div class="flex items-center">
+            <p 
+              class="ml-2 px-2 inline-flex text-sm leading-5 font-semibold rounded-full"
+              :class="[
+                application.status === 'submitted' ? 'bg-green-100 text-green-800' : 
+                application.status === 'reviewed' ? 'bg-blue-100 text-blue-800' : 
+                application.status === 'disqualified_by_location' ? 'bg-red-100 text-red-800' : 
+                application.status === 'accepted' ? 'bg-purple-100 text-purple-800' :
+                'bg-gray-100 text-gray-800'
+              ]"
+            >
+              {{ application.status === 'disqualified_by_location' ? 'Rejected' : application.status.charAt(0).toUpperCase() + application.status.slice(1) }}
+            </p>
+            
+            <!-- Workable status badge -->
+            <p 
+              v-if="application.workable_candidate_id" 
+              class="ml-2 px-2 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800"
+              title="Candidate has been pushed to Workable"
+            >
+              Workable
+            </p>
+            
+            <!-- Workable error badge -->
+            <p 
+              v-if="application.workable_error" 
+              class="ml-2 px-2 inline-flex text-sm leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+              :title="application.workable_error"
+            >
+              Workable Error
+            </p>
+          </div>
         </div>
         <p class="flex items-start text-sm text-gray-500 mt-1">
           <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,7 +86,7 @@
           <button 
             v-if="['submitted', 'reviewed'].includes(application.status)"
             class="px-2 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-red-700 bg-white hover:bg-gray-50"
-            @click="$emit('update-status', application.id, 'rejected')"
+            @click="$emit('update-status', application.id, 'disqualified_by_location')"
           >
             Reject
           </button>
@@ -135,6 +155,28 @@
                 :resume-path="application.resume_path" 
               />
               <p v-else class="text-gray-500 italic">No resume provided</p>
+            </dd>
+          </div>
+          
+          <!-- Workable status section -->
+          <div v-if="application.workable_candidate_id || application.workable_error" class="sm:col-span-2">
+            <dt class="text-sm font-medium text-gray-500">Workable Status</dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              <div v-if="application.workable_candidate_id" class="flex items-center text-blue-600">
+                <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Pushed to Workable (ID: {{ application.workable_candidate_id }})
+              </div>
+              <div v-if="application.workable_error" class="flex items-center text-red-600">
+                <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Error: {{ application.workable_error }}
+              </div>
+              <div v-if="application.workable_status" class="mt-1">
+                Status: <span class="font-medium">{{ application.workable_status }}</span>
+              </div>
             </dd>
           </div>
           

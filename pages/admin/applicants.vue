@@ -46,7 +46,7 @@
               <option value="">All Statuses</option>
               <option value="submitted">Submitted</option>
               <option value="reviewed">Reviewed</option>
-              <option value="rejected">Rejected</option>
+              <option value="disqualified_by_location">Rejected</option>
               <option value="accepted">Accepted</option>
             </select>
           </div>
@@ -132,9 +132,9 @@
           </button>
           
           <button
-            @click="activeTab = 'rejected'"
+            @click="activeTab = 'disqualified_by_location'"
             :class="[
-              activeTab === 'rejected'
+              activeTab === 'disqualified_by_location'
                 ? 'border-indigo-500 text-indigo-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
               'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
@@ -143,7 +143,7 @@
             Rejected
             <span
               :class="[
-                activeTab === 'rejected' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-900',
+                activeTab === 'disqualified_by_location' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-900',
                 'ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium'
               ]"
             >
@@ -236,7 +236,7 @@ const reviewedApplications = computed(() => {
 })
 
 const rejectedApplications = computed(() => {
-  return applyFilters(jobStore.jobApplications.value).filter(app => app.status === 'rejected')
+  return applyFilters(jobStore.jobApplications.value).filter(app => app.status === 'disqualified_by_location')
 })
 
 const acceptedApplications = computed(() => {

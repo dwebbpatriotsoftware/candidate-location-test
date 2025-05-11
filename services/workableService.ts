@@ -68,6 +68,31 @@ interface CombinedJobData {
 }
 
 export const workableService = {
+  async pushCandidateToWorkable(shortcode: string, applicationId: string, status: string) {
+    // Map the application status to the appropriate Workable status
+    const workableStatus = status === 'accepted' ? 'accepted' : 'disqualified_by_location';
+    try {
+      const response = await fetch(`/api/workable/jobs/${shortcode}/candidates`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          applicationId,
+          status
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to push candidate: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error pushing candidate to Workable:', error);
+      throw error;
+    }
+  },
   async getJobs(page = 1, limit = 10) {
     try {
       // Use the server API endpoint

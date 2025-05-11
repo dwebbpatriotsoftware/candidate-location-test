@@ -89,7 +89,8 @@ export function useJobStore() {
     error.value = null
     
     try {
-      currentJob.value = await jobService.getJob(id)
+      const job = await jobService.getJob(id)
+      currentJob.value = job as Job
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch job'
       console.error('Error fetching job:', err)
@@ -281,6 +282,14 @@ export function useJobStore() {
     
     try {
       const supabase = useSupabase()
+      
+      // Find the application in our local state
+      const application = jobApplications.value.find(app => app.id === applicationId)
+      if (!application) {
+        throw new Error('Application not found')
+      }
+      
+      // Update status in database
       const { error: supabaseError } = await supabase
         .from('job_applications')
         .update({ status })
@@ -292,6 +301,30 @@ export function useJobStore() {
       const index = jobApplications.value.findIndex(app => app.id === applicationId)
       if (index !== -1) {
         jobApplications.value[index].status = status
+      }
+      
+      // If accepting or disqualifying, push to Workable
+      if (status === 'accepted' || status === 'disqualified_by_location') {
+        try {
+          // Get the job shortcode (which is the job ID in our system)
+          const jobId = application.job_id
+          
+          // Push to Workable
+          const result = await workableService.pushCandidateToWorkable(jobId, applicationId, status)
+          
+          // Update local state with Workable status
+          if (index !== -1) {
+            jobApplications.value[index].workable_status = status === 'accepted' ? 'qualified' : 'disqualified'
+            jobApplications.value[index].workable_candidate_id = result.id
+          }
+        } catch (workableError: any) {
+          console.error('Error pushing to Workable:', workableError)
+          // Don't throw the error, just log it - we still want to update the status
+          // But we should update the UI to show the error
+          if (index !== -1) {
+            jobApplications.value[index].workable_error = workableError.message
+          }
+        }
       }
     } catch (err: any) {
       error.value = err.message || 'Failed to update application status'
