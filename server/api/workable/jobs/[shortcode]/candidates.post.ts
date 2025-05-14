@@ -17,7 +17,6 @@ const rateLimiter = async () => {
   // Check if we've hit the rate limit
   if (callCount >= 10) {
     const waitTime = resetTime - now;
-    console.log(`Rate limit reached. Waiting ${waitTime}ms before next call.`);
     await new Promise(resolve => setTimeout(resolve, waitTime));
     
     // Reset after waiting
@@ -33,7 +32,6 @@ export default defineEventHandler(async (event) => {
   try {
     // Get the shortcode from the URL
     const shortcode = event.context.params?.shortcode;
-    
     if (!shortcode) {
       throw new Error('Job shortcode is required');
     }
